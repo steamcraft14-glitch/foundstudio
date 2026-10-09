@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /design-system/
+Disallow: /found-logo/v*/comparacion*
+
+Sitemap: https://foundstudio.cl/sitemap.xml

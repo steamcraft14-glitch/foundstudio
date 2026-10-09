@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-09T12:00:00.000Z",
+  "title": "Design System: {found} studio",
+  "extensions": {
+    "colorMeta": {
+      "navy":         { "role": "primary",   "displayName": "Logo Navy",     "canonical": "#1E2A4A", "tonalRamp": ["#030824", "#172241", "#313E60", "#4E5D81", "#6D7DA2", "#8D9EC5", "#B2C4ED", "#DCEEFF"] },
+      "cream":        { "role": "primary",   "displayName": "Bone Cream",    "canonical": "#F2ECDF", "tonalRamp": ["#0F0B04", "#28241A", "#443F35", "#625D52", "#827D71", "#A39E92", "#C9C4B7", "#F4EEE1"] },
+      "signal-blue":  { "role": "secondary", "displayName": "Signal Blue",   "canonical": "#6F86C9", "tonalRamp": ["#030036", "#101C56", "#293A77", "#455999", "#637ABC", "#839BE0", "#A8C2FF", "#D1ECFF"] },
+      "navy-2":       { "role": "neutral",   "displayName": "Raised Navy",   "canonical": "#253259", "tonalRamp": ["#030629", "#162146", "#303E66", "#4C5C86", "#6B7CA8", "#8C9DCC", "#B0C3F4", "#DAEEFF"] },
+      "navy-deep":    { "role": "neutral",   "displayName": "Shadow Navy",   "canonical": "#0F1630", "tonalRamp": ["#040821", "#1A223D", "#353E5C", "#525C7C", "#717C9D", "#929DC0", "#B7C3E7", "#E1EEFF"] },
+      "muted":        { "role": "neutral",   "displayName": "Warm Muted",    "canonical": "#E2DACA", "tonalRamp": ["#100A02", "#292317", "#453F32", "#645D4F", "#847C6E", "#A59E8E", "#CBC3B4", "#F6EEDD"] },
+      "line":         { "role": "neutral",   "displayName": "Rule Navy",     "canonical": "#3A4670", "tonalRamp": ["#040529", "#172047", "#313D66", "#4E5B87", "#6D7BA9", "#8D9CCC", "#B2C2F4", "#DCEDFF"] },
+      "cream-2":      { "role": "neutral",   "displayName": "Cream Shade",   "canonical": "#E8E0CF", "tonalRamp": ["#100A02", "#292316", "#463F31", "#645D4E", "#847D6D", "#A59E8E", "#CBC3B3", "#F6EEDD"] },
+      "ink-soft":     { "role": "neutral",   "displayName": "Slate Ink",     "canonical": "#46506E", "tonalRamp": ["#040820", "#1A223D", "#353E5B", "#525C7B", "#717C9D", "#929DBF", "#B7C3E6", "#E1EEFF"] },
+      "paper":        { "role": "neutral",   "displayName": "Paper",         "canonical": "#FFFFFF", "tonalRamp": ["#0B0B0B", "#242424", "#404040", "#5D5D5D", "#7D7D7D", "#9E9E9E", "#C4C4C4", "#EEEEEE"] },
+      "err-on-cream": { "role": "neutral",   "displayName": "Error Brick",   "canonical": "#A3261A", "tonalRamp": ["#2D0000", "#4F0000", "#721D14", "#953E33", "#BA5F51", "#DF8071", "#FFA696", "#FFD0BF"] },
+      "ok-on-cream":  { "role": "neutral",   "displayName": "Success Green", "canonical": "#1F6B3A", "tonalRamp": ["#001500", "#003102", "#004F1F", "#236E3D", "#478F5C", "#69B27C", "#8ED8A1", "#B8FFCA"] }
+    },
+    "typographyMeta": {
+      "display":   { "displayName": "Display",   "purpose": "The opening story question only; Fredoka 700." },
+      "headline":  { "displayName": "Headline",  "purpose": "Section headings and chapter captions; Fredoka 600." },
+      "title":     { "displayName": "Title",     "purpose": "Case names, step names, service names, FAQ questions." },
+      "body":      { "displayName": "Body",      "purpose": "Running text in Manrope; 16px under 860px." },
+      "body-lead": { "displayName": "Body Lead", "purpose": "Section ledes in warm muted." },
+      "label":     { "displayName": "Label",     "purpose": "Buttons and form labels, Manrope 800." },
+      "mono":      { "displayName": "Mono",      "purpose": "URL pills, search query, placeholder captions, Ejemplo ficticio foot." },
+      "mono-tag":  { "displayName": "Mono Tag",  "purpose": "The window status tag only; uppercase." }
+    },
+    "shadows": [
+      { "name": "window", "value": "10px 12px 0 0 #0F1630", "purpose": "Story browser window; 6px 7px under 860px." },
+      { "name": "case-window", "value": "7px 8px 0 0 #0F1630", "purpose": "Portfolio browser windows." },
+      { "name": "form-card", "value": "10px 12px 0 0 #1E2A4A", "purpose": "Form card on the cream contact ground; 6px 7px under 860px." },
+      { "name": "button-lift", "value": "4px 5px 0 0 #0F1630", "purpose": "Primary button hover with translate(-2px, -2px); removed on active." },
+      { "name": "floating-action", "value": "4px 5px 0 0 #0F1630", "purpose": "WhatsApp floating button." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "Default easing for hover lifts, caption swaps, toggles, toasts." },
+      { "name": "state-fast", "value": "0.2s", "purpose": "Color, background and lift transitions on buttons, chips, links." },
+      { "name": "glow-shift", "value": "--glow 1s ease", "purpose": "Chapter halo color crossfade behind the window." },
+      { "name": "window-wipe", "value": "clip-path inset(0 0 100% 0) to inset(0), power2.inOut, 0.7 timeline units; outgoing page scale .92, opacity .25", "purpose": "Page change inside the browser window, scroll-scrubbed (scrub 0.6) on a single pin." },
+      { "name": "caption-swap", "value": "opacity .5s + translateY(14px) .6s, ease-out, .08s delay", "purpose": "Story captions entering per chapter." },
+      { "name": "section-reveal", "value": "autoAlpha + y, 0.6s power3.out, stagger 0.06", "purpose": "Section content entrance below the story." },
+      { "name": "reduced-motion", "value": "animations off, transitions off, final states shown", "purpose": "prefers-reduced-motion: reduce; URL not typed, no glitch, no lift." }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "360px" },
+      { "name": "sm", "value": "600px" },
+      { "name": "window-container", "value": "560px (container query on the window viewport)" },
+      { "name": "md", "value": "860px" },
+      { "name": "lg", "value": "980px" },
+      { "name": "rail", "value": "1100px" }
+    ],
+    "chapterGlow": [
+      { "chapter": "404", "value": "#33406A" },
+      { "chapter": "restaurante", "value": "#7A1E12" },
+      { "chapter": "barberia", "value": "#8A6B22" },
+      { "chapter": "almacen", "value": "#1F6B3A" },
+      { "chapter": "banqueteria", "value": "#6E3A58" },
+      { "chapter": "construccion", "value": "#9A4A1A" },
+      { "chapter": "tu-negocio", "value": "#3B4A7C" }
+    ],
+    "demoWorlds": {
+      "scope": "Contained layer: only inside the browser window viewport, always labeled Ejemplo ficticio. Not brand tokens.",
+      "worlds": [
+        { "name": "restaurante", "colors": ["#FBF4E8", "#7A1E12", "#3B1A12", "#F2C14E", "#F1E2C7"], "fonts": ["Young Serif"] },
+        { "name": "barberia", "colors": ["#0E0E0E", "#EDE6D6", "#C8A24A", "#A39D90"], "fonts": ["Anton", "JetBrains Mono (slots)"] },
+        { "name": "almacen", "colors": ["#FFFDF6", "#1F6B3A", "#173B22", "#F6C945"], "fonts": ["Baloo 2"] },
+        { "name": "banqueteria", "colors": ["#F6EFE7", "#3A1D2E", "#E5D6CC"], "fonts": ["Bodoni Moda italic"] },
+        { "name": "construccion", "colors": ["#E4E1DB", "#1C1C1C", "#F26B1D", "#9A3608"], "fonts": ["Barlow Condensed"] }
+      ]
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Cream pill on navy; lifts with a printed navy-deep offset on hover, presses flat.",
+      "html": "<a class=\"ds-btn ds-btn-primary\" href=\"#\">Quiero mi página</a>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 26px; border-radius: 999px; border: 2px solid transparent; font: 800 16px/1 \"Manrope\", system-ui, sans-serif; letter-spacing: -.005em; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background-color .2s, color .2s, transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s cubic-bezier(.16,1,.3,1); } .ds-btn-primary { background: #F2ECDF; color: #1E2A4A; box-shadow: 0 0 0 0 #0F1630; } .ds-btn-primary:hover { background: #FFFFFF; transform: translate(-2px, -2px); box-shadow: 4px 5px 0 0 #0F1630; } .ds-btn-primary:active { transform: none; box-shadow: none; } .ds-btn:focus-visible { outline: 2px solid #F2ECDF; outline-offset: 3px; }"
+    },
+    {
+      "name": "Primary Button on Cream",
+      "kind": "button",
+      "refersTo": "button-primary-on-cream",
+      "description": "Inverted primary inside the cream contact section (form submit).",
+      "html": "<button class=\"ds-btn-oncream\" type=\"button\">Enviar mensaje</button>",
+      "css": ".ds-btn-oncream { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 26px; border-radius: 999px; border: 2px solid transparent; background: #1E2A4A; color: #F2ECDF; font: 800 16px/1 \"Manrope\", system-ui, sans-serif; cursor: pointer; transition: background-color .2s, transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s cubic-bezier(.16,1,.3,1); } .ds-btn-oncream:hover { background: #283766; transform: translate(-2px, -2px); box-shadow: 4px 5px 0 0 #9AA3BD; } .ds-btn-oncream:active { transform: none; box-shadow: none; } .ds-btn-oncream:focus-visible { outline: 2px solid #1E2A4A; outline-offset: 3px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary pill with a 2px currentColor border; fills with the opposite ink on hover.",
+      "html": "<a class=\"ds-btn-line\" href=\"#\">Escríbenos por WhatsApp</a>",
+      "css": ".ds-btn-line { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 2px solid currentColor; background: transparent; color: #F2ECDF; font: 800 14px/1 \"Manrope\", system-ui, sans-serif; text-decoration: none; transition: background-color .2s, color .2s; } .ds-btn-line:hover { background: #F2ECDF; color: #1E2A4A; border-color: #F2ECDF; } .ds-btn-line:focus-visible { outline: 2px solid #F2ECDF; outline-offset: 3px; }"
+    },
+    {
+      "name": "Trade Chip",
+      "kind": "chip",
+      "refersTo": "chip-trade",
+      "description": "Cream-outlined pill that routes to the form with the trade preselected.",
+      "html": "<a class=\"ds-chip\" href=\"#\">Barbería</a>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border: 2px solid #F2ECDF; border-radius: 999px; color: #F2ECDF; text-decoration: none; font: 700 16px/1 \"Manrope\", system-ui, sans-serif; transition: background-color .2s, color .2s; } .ds-chip:hover { background: #F2ECDF; color: #1E2A4A; } .ds-chip:focus-visible { outline: 2px solid #F2ECDF; outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Paper field on the cream form card with a visible bold label.",
+      "html": "<label class=\"ds-field\"><span>Tu nombre</span><input type=\"text\" placeholder=\"Ej: Carolina\"></label>",
+      "css": ".ds-field { display: grid; gap: 7px; color: #1E2A4A; font-family: \"Manrope\", system-ui, sans-serif; } .ds-field span { font-weight: 800; font-size: 15px; } .ds-field input { width: 100%; min-height: 50px; padding: 12px 14px; border-radius: 12px; border: 2px solid #C9C3B4; background: #FFFFFF; color: #1E2A4A; font-size: 16px; transition: border-color .2s, box-shadow .2s; } .ds-field input::placeholder { color: #6B7187; } .ds-field input:hover { border-color: #8F8A7E; } .ds-field input:focus { outline: 3px solid rgb(30 42 74 / .22); outline-offset: 1px; border-color: #1E2A4A; }"
+    },
+    {
+      "name": "Header Navigation",
+      "kind": "nav",
+      "refersTo": "nav-header",
+      "description": "Fixed navy bar with a line rule, muted links and a small primary pill.",
+      "html": "<nav class=\"ds-nav\"><b>{found} studio</b><span class=\"ds-nav-links\"><a href=\"#\">Servicios</a><a href=\"#\">Portafolio</a><a href=\"#\">Preguntas</a></span><a class=\"ds-nav-cta\" href=\"#\">Quiero mi página</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 20px; height: 64px; padding: 0 24px; background: #1E2A4A; box-shadow: 0 1px 0 #3A4670; color: #F2ECDF; font-family: \"Manrope\", system-ui, sans-serif; } .ds-nav b { font: 700 22px/1 \"Fredoka\", sans-serif; } .ds-nav-links { display: flex; gap: 28px; margin-left: auto; font-size: 15px; font-weight: 600; } .ds-nav-links a { color: #E2DACA; text-decoration: none; padding: 10px 0; transition: color .2s; } .ds-nav-links a:hover { color: #F2ECDF; } .ds-nav-cta { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 999px; background: #F2ECDF; color: #1E2A4A; font-weight: 800; font-size: 14px; text-decoration: none; } .ds-nav a:focus-visible { outline: 2px solid #F2ECDF; outline-offset: 3px; border-radius: 6px; }"
+    },
+    {
+      "name": "Browser Window",
+      "kind": "custom",
+      "refersTo": "url-pill",
+      "description": "Signature: the logo's window with cream frame, dots, mono URL pill, status tag, progress bar and a hard navy-deep offset.",
+      "html": "<div class=\"ds-win\"><div class=\"ds-win-chrome\"><span class=\"ds-dots\"><i></i><i></i><i></i></span><span class=\"ds-url\">tunegocio.cl</span><span class=\"ds-tag\">Sin página</span><span class=\"ds-progress\"><i></i></span></div><div class=\"ds-win-vp\"><span class=\"ds-404\">404</span></div></div>",
+      "css": ".ds-win { width: 420px; max-width: 100%; background: #F2ECDF; border: 5px solid #F2ECDF; border-radius: 22px; box-shadow: 10px 12px 0 0 #0F1630; overflow: hidden; display: flex; flex-direction: column; } .ds-win-chrome { position: relative; display: flex; align-items: center; gap: 12px; padding: 9px 12px 11px; color: #1E2A4A; } .ds-dots { display: flex; gap: 6px; } .ds-dots i { width: 12px; height: 12px; border-radius: 50%; background: #1E2A4A; } .ds-dots i + i { background: transparent; box-shadow: inset 0 0 0 2.5px #1E2A4A; } .ds-url { flex: 1; min-width: 0; font: 500 13px/1 \"JetBrains Mono\", ui-monospace, monospace; background: #FFFFFF; border: 2px solid #1E2A4A; border-radius: 999px; padding: 7px 14px; white-space: nowrap; overflow: hidden; } .ds-tag { font: 500 11px/1 \"JetBrains Mono\", ui-monospace, monospace; letter-spacing: .04em; text-transform: uppercase; background: #1E2A4A; color: #F2ECDF; padding: 6px 10px; border-radius: 999px; } .ds-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #1E2A4A; } .ds-progress i { display: block; height: 100%; width: 35%; background: #6F86C9; } .ds-win-vp { height: 200px; background: #1E2A4A; border-radius: 0 0 16px 16px; display: grid; place-items: center; } .ds-404 { font: 700 96px/.86 \"Fredoka\", sans-serif; color: #F2ECDF; letter-spacing: -.02em; }"
+    },
+    {
+      "name": "Ruled List Item",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "Editorial list row used for services and FAQ instead of cards.",
+      "html": "<ul class=\"ds-list\"><li><h3>Página web</h3><p>Tu negocio en Google y en el celular, con WhatsApp a un toque.</p></li><li><h3>Tienda online</h3><p>Catálogo, carrito y pagos.</p></li></ul>",
+      "css": ".ds-list { list-style: none; margin: 0; padding: 0; border-top: 2px solid #F2ECDF; background: #1E2A4A; color: #F2ECDF; font-family: \"Manrope\", system-ui, sans-serif; } .ds-list li { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); column-gap: 28px; align-items: center; padding: 26px 0; border-bottom: 1px solid #3A4670; transition: background-color .3s; } .ds-list li:hover { background: linear-gradient(90deg, transparent, rgb(242 236 223 / .04) 30%, transparent); } .ds-list h3 { margin: 0; font: 600 30px/1.05 \"Fredoka\", sans-serif; } .ds-list p { margin: 0; color: #E2DACA; font-size: 17px; line-height: 1.55; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Window That Gets Fixed",
+    "overview": "The whole system is one object taken from the logo: a cream browser window with a thick frame, three dots, a mono URL pill and a hard navy-deep shadow, sitting on a navy ground. It starts broken (ERROR 404) and gets fixed into real pages. Everything outside the window speaks only navy and cream; everything inside it may become any trade's world. That split is the system's spine: the brand is the frame, the client is the content.\n\nThe tone is friendly and solid. Fredoka's bubbly display letters echo the logo's lettering, Manrope carries the reading, and JetBrains Mono appears only where the web itself talks (URLs, search queries, placeholder captions). Density is low on the navy sections, with long editorial lists divided by hairlines instead of card grids. Depth is printed, not lit: hard offset shadows in a single dark ink, never a soft glow under a card. The one atmospheric effect is a per-chapter radial halo behind the window.\n\nThe page closes by flipping the ground: the contact section turns cream with navy ink, so the form reads as the page's own \"fixed\" state.",
+    "keyCharacteristics": [
+      "Two brand colors only outside the window: navy #1E2A4A ground, cream #F2ECDF ink and chrome.",
+      "The browser window (thick cream frame, dots, mono URL pill, hard shadow) is the signature component and recurs at smaller scale for portfolio cases.",
+      "Pill geometry for every action (999px), soft-rounded frames (22px window, 16px case window, 12px fields).",
+      "Hard offset shadows in navy-deep, no blur; depth is a printed offset, not ambient light.",
+      "Lists over cards: services, steps and FAQ are ruled lists on navy.",
+      "Demo worlds (trade palettes and fonts) are contained inside the window viewport and never leak to the brand surface."
+    ],
+    "rules": [
+      { "name": "The Two-Inks-Outside Rule", "body": "Outside the browser window the page uses only navy and cream and their listed steps. Trade colors exist only inside the window viewport.", "section": "colors" },
+      { "name": "The Halo Is the Only Glow Rule", "body": "The per-chapter radial halo behind the window (stage glow, 60% opacity, transitioned over 1s) is the system's one atmospheric gradient. Its hue comes from the current chapter: 404 #33406A, restaurante #7A1E12, barbería #8A6B22, almacén #1F6B3A, banquetería #6E3A58, construcción #9A4A1A, tu negocio #3B4A7C.", "section": "colors" },
+      { "name": "The Browser Speaks Mono Rule", "body": "JetBrains Mono is reserved for things a browser or search box would print: URLs, queries, status tags, placeholder captions. Headings and buttons never use it.", "section": "typography" },
+      { "name": "The Balanced Heading Rule", "body": "Every h1 to h3 uses text-wrap: balance; prices and counts use tabular numerals.", "section": "typography" },
+      { "name": "The Printed Offset Rule", "body": "Shadows are solid offsets toward the lower right in the darkest ink of the surrounding ground (navy-deep on navy, navy on cream). No blur radius on brand surfaces.", "section": "elevation" },
+      { "name": "The Flat Until Touched Rule", "body": "Buttons are flat at rest; the offset appears only as a hover lift and disappears on press.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the brand surface to navy (#1E2A4A) and cream (#F2ECDF) plus their listed steps; confine every trade color and font to the window viewport.",
+      "Do use the logo files from found-logo/v7-studio (and the v7 404 icon) exactly as supplied.",
+      "Do render depth as a zero-blur offset in navy-deep (10px 12px on the window, 4px 5px on button hover).",
+      "Do make every action a pill of at least 44px height, labeled in Manrope 800.",
+      "Do set headings in Fredoka 600/700 with negative tracking and text-wrap: balance.",
+      "Do use JetBrains Mono only for URLs, search queries, status tags and placeholder captions.",
+      "Do keep secondary text on navy in warm muted (#E2DACA), never a cool gray.",
+      "Do label every demo world \"Ejemplo ficticio\" and give every story state a no-JS and reduced-motion final form."
+    ],
+    "donts": [
+      "Don't let a demo world's palette or font (Young Serif, Anton, Baloo 2, Bodoni Moda, Barlow Condensed) appear outside the browser window.",
+      "Don't add blurred drop shadows to brand surfaces; the offset is the only shadow.",
+      "Don't add a second atmospheric gradient; the chapter halo behind the window is the only glow (the faint 4% cream sheen on ruled-list hover is a state, not atmosphere).",
+      "Don't build icon-title-text card grids on navy; services, steps and FAQ are ruled lists.",
+      "Don't pin more than one section; the story stage is the single pin.",
+      "Don't set body text below 13px or in a font other than Manrope on brand surfaces.",
+      "Don't put small labels above headings; section heads are headline plus lede."
+    ]
+  }
+}

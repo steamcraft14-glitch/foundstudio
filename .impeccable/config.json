@@ -1,0 +1,71 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-09T08:42:55.272Z",
+        "reason": "brief-pinned: per-chapter halo behind the browser window comes from the user's approved prototype (data-glow per trade)"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "georgia",
+        "createdAt": "2026-10-09T08:56:19.400Z",
+        "reason": "sanctioned: font of a fictional trade example inside the browser window; DESIGN.md records these as the contained demo-worlds layer"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "baloo 2",
+        "createdAt": "2026-10-09T08:56:19.581Z",
+        "reason": "sanctioned: font of a fictional trade example inside the browser window; DESIGN.md records these as the contained demo-worlds layer"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "moda",
+        "createdAt": "2026-10-09T08:56:19.796Z",
+        "reason": "sanctioned: font of a fictional trade example inside the browser window; DESIGN.md records these as the contained demo-worlds layer"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "barlow condensed",
+        "createdAt": "2026-10-09T08:56:19.986Z",
+        "reason": "sanctioned: font of a fictional trade example inside the browser window; DESIGN.md records these as the contained demo-worlds layer"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "young serif",
+        "createdAt": "2026-10-09T08:56:20.173Z",
+        "reason": "sanctioned: font of a fictional trade example inside the browser window; DESIGN.md records these as the contained demo-worlds layer"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "anton",
+        "createdAt": "2026-10-09T08:56:20.365Z",
+        "reason": "sanctioned: font of a fictional trade example inside the browser window; DESIGN.md records these as the contained demo-worlds layer"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "bodoni moda",
+        "createdAt": "2026-10-09T08:56:20.553Z",
+        "reason": "sanctioned: font of a fictional trade example inside the browser window; DESIGN.md records these as the contained demo-worlds layer"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "didot",
+        "createdAt": "2026-10-09T08:56:21.068Z",
+        "reason": "sanctioned: font of a fictional trade example inside the browser window; DESIGN.md records these as the contained demo-worlds layer"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "impact",
+        "createdAt": "2026-10-09T08:56:21.239Z",
+        "reason": "sanctioned: font of a fictional trade example inside the browser window; DESIGN.md records these as the contained demo-worlds layer"
+      }
+    ]
+  }
+}

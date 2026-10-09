@@ -1,0 +1,5 @@
+# Playwright CLI output (may contain credentials)
+.playwright-cli/
+# Herramientas locales (Claude Code, skills, hooks): no se publican
+.claude/
+tests/screens/

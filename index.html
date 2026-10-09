@@ -1,11 +1,606 @@
 <!doctype html>
-<html lang="es">
+<html lang="es-CL">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{found} studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diseño web en Huechuraba y Santiago para pymes | {found} studio</title>
+<meta name="description" content="¿Tu negocio da 404? Hacemos páginas web, tiendas online, marketing digital y automatización con IA para pymes y emprendedores en Huechuraba y Santiago. Cotiza sin costo.">
+<link rel="canonical" href="https://foundstudio.cl/">
+<meta name="theme-color" content="#1E2A4A">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CL">
+<meta property="og:site_name" content="{found} studio">
+<meta property="og:url" content="https://foundstudio.cl/">
+<meta property="og:title" content="¿Tu negocio da 404? Te hacemos {found}.">
+<meta property="og:description" content="Páginas web, tiendas online, marketing digital y automatización con IA para pymes en Huechuraba y Santiago.">
+<meta property="og:image" content="https://foundstudio.cl/assets/img/og-found-studio.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo de {found} studio: una ventana de navegador con el texto ERROR 404">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="found-logo/v7/found-icono-404.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Fuentes de marca: no bloquean el primer pintado -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Manrope:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap"></noscript>
+
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
+<script>document.documentElement.classList.add("js")</script>
+<script defer src="assets/js/main.js?v=4"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": "https://foundstudio.cl/#negocio",
+  "name": "{found} studio",
+  "description": "Diseño y desarrollo web, tiendas online, marketing digital y automatización con IA para pymes y emprendedores de Chile.",
+  "url": "https://foundstudio.cl/",
+  "email": "contacto@foundstudio.cl",
+  "telephone": "+56942579133",
+  "image": "https://foundstudio.cl/assets/img/og-found-studio.png",
+  "logo": "https://foundstudio.cl/found-logo/v7/found-icono-404.png",
+  "priceRange": "$$",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Huechuraba",
+    "addressRegion": "Región Metropolitana",
+    "addressCountry": "CL"
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Huechuraba" },
+    { "@type": "City", "name": "Santiago" },
+    { "@type": "Country", "name": "Chile" }
+  ],
+  "knowsAbout": ["Diseño web", "Tiendas online", "Marketing digital", "Automatización con IA"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "¿Cuánto cuesta una página web?", "acceptedAnswer": { "@type": "Answer", "text": "Depende de lo que necesite tu negocio. Nos cuentas qué buscas y te enviamos una cotización sin costo en menos de 24 horas." } },
+    { "@type": "Question", "name": "¿Cuánto se demora?", "acceptedAnswer": { "@type": "Answer", "text": "Una página simple está lista en alrededor de una semana. Una tienda online, en unas tres semanas." } },
+    { "@type": "Question", "name": "¿Incluye el dominio?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. El primer año de tu dominio .cl va incluido y queda registrado a tu nombre." } },
+    { "@type": "Question", "name": "¿Puedo editarla yo?", "acceptedAnswer": { "@type": "Answer", "text": "No necesitas aprender nada: nos escribes por WhatsApp qué quieres cambiar y lo hacemos nosotros." } },
+    { "@type": "Question", "name": "¿Se ve bien en celular?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. La diseñamos primero para celular, que es donde te van a buscar la mayoría de tus clientes." } }
+  ]
+}
+</script>
 </head>
-<body style="margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif">
-<h1>{found} studio &middot; Muy pronto</h1>
+<body>
+<a class="skip" href="#contenido">Saltar al contenido</a>
+
+<header class="top" id="top">
+  <a class="brand" href="#inicio" aria-label="{found} studio, volver al inicio">
+    <img src="found-logo/v7-studio/found-studio-horizontal-oscuro.svg" alt="{found} studio" width="1130" height="279">
+  </a>
+  <nav class="menu" aria-label="Principal">
+    <a href="#servicios">Servicios</a>
+    <a href="#portafolio">Portafolio</a>
+    <a href="#proceso">Cómo trabajamos</a>
+    <a href="#preguntas">Preguntas</a>
+  </nav>
+  <a class="btn btn-cream btn-sm" href="#contacto" data-cta>Quiero mi página</a>
+</header>
+
+<main id="inicio">
+  <!-- ============ HISTORIA CON SCROLL ============ -->
+  <section class="story" id="story" aria-label="De error 404 a tu página web">
+    <div class="stage">
+      <div class="captions" id="captions">
+        <div class="cap is-on" data-cap="0">
+          <h1>¿Tu negocio da <span class="nowrap">404?</span></h1>
+          <p class="lede">Si alguien te busca y no te encuentra, para él no existes. <strong>Te hacemos {found}.</strong></p>
+          <div class="cap-actions">
+            <a class="btn btn-cream" href="#contacto" data-cta>Quiero mi página</a>
+            <span class="hint" aria-hidden="true">Baja y mira cómo lo arreglamos</span>
+          </div>
+        </div>
+        <div class="cap" data-cap="1">
+          <h2>Carta, reservas y cómo llegar.</h2>
+          <p>Un restaurante ficticio con lo que un cliente revisa en el celular antes de decidir dónde almorzar.</p>
+        </div>
+        <div class="cap" data-cap="2">
+          <h2>Tus clientes agendan solos.</h2>
+          <p>Una barbería ficticia con horas en línea: sin llamadas ni mensajes a las 11 de la noche. Prueba: elige un día y una hora.</p>
+        </div>
+        <div class="cap" data-cap="3">
+          <h2>Vende con despacho en tu comuna.</h2>
+          <p>Un almacén ficticio con catálogo, precios y carro de compras. Pruébalo: agrega productos con el botón +.</p>
+        </div>
+        <div class="cap" data-cap="4">
+          <h2>Cotizaciones que llegan solas.</h2>
+          <p>Una banquetería ficticia: paquetes claros, fotos de sus eventos y un formulario que llega directo al WhatsApp.</p>
+        </div>
+        <div class="cap" data-cap="5">
+          <h2>Confianza antes de la primera llamada.</h2>
+          <p>Una constructora ficticia con obras terminadas, años de experiencia y servicios claros: lo que alguien necesita ver para contratarte.</p>
+        </div>
+        <div class="cap" data-cap="6">
+          <h2>¿Y tu negocio?</h2>
+          <p>Estos son ejemplos. Tu página se diseña desde cero para tu rubro, con IA para que trabaje por ti.</p>
+        </div>
+      </div>
+
+      <div class="browser" role="region" aria-label="Vista previa de páginas web de ejemplo">
+        <div class="chrome">
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="url"><span class="lock" aria-hidden="true"></span><span id="urltext">tunegocio.cl</span><span class="caret" aria-hidden="true"></span></span>
+          <span class="tag" id="tag">Sin página</span>
+          <span class="progress" aria-hidden="true"><i id="progressbar"></i></span>
+          <span class="loadbar" id="loadbar" aria-hidden="true"></span>
+        </div>
+        <div class="vp" id="vp">
+
+          <!-- 00 · 404 -->
+          <article class="skin is-on" data-url="tunegocio.cl" data-tag="Sin página" data-glow="#33406a" aria-label="Página no encontrada">
+            <div class="page s404">
+              <div class="s404-in">
+                <p class="s404-err">ERROR</p>
+                <p class="s404-code" aria-hidden="true">404</p>
+                <p class="s404-h">Tu negocio no aparece</p>
+                <div class="s404-search" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+                  <span>barbería cerca de mí</span>
+                </div>
+                <p class="s404-p">Tus clientes te buscan en el celular. Si no tienes página, encuentran a otro.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 01 · Restaurante -->
+          <article class="skin" data-url="lapicadelbarrio.cl" data-tag="Ejemplo ficticio" data-glow="#7a1e12" aria-label="Ejemplo ficticio: restaurante La Picá del Barrio">
+            <div class="page rest">
+              <div class="rest-nav"><b>La Picá <em>del</em> Barrio</b><span class="rest-links"><span>Carta</span><span>Reservas</span><span>Cómo llegar</span></span></div>
+              <div class="rest-hero">
+                <div class="rest-copy">
+                  <p class="rest-kick">Huechuraba · desde 1998</p>
+                  <h3>Comida casera, como la de la casa.</h3>
+                  <p>Almuerzos, chorrillanas y sopaipillas pasadas. Mesas para el fin de semana: reserva antes de que se llene.</p>
+                  <div class="rest-btns"><span class="r-btn">Reservar mesa</span><span class="r-btn r-ghost">Ver la carta</span></div>
+                </div>
+                <div class="rest-art" aria-hidden="true">
+                  <svg viewBox="0 0 220 220">
+                    <defs><radialGradient id="rgPot" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#b8673c"/><stop offset="1" stop-color="#7c3a1d"/></radialGradient><radialGradient id="rgTop" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#f6d27a"/><stop offset=".7" stop-color="#e2a945"/><stop offset="1" stop-color="#b9772a"/></radialGradient></defs>
+                    <ellipse cx="114" cy="122" rx="98" ry="92" fill="#2b120c" opacity=".18"/>
+                    <circle cx="108" cy="110" r="96" fill="url(#rgPot)"/>
+                    <circle cx="108" cy="110" r="78" fill="#5e2814"/>
+                    <circle cx="108" cy="110" r="72" fill="url(#rgTop)"/>
+                    <g fill="#9a5a1c" opacity=".55"><ellipse cx="82" cy="90" rx="12" ry="7"/><ellipse cx="128" cy="134" rx="15" ry="8"/><ellipse cx="136" cy="86" rx="8" ry="5"/><ellipse cx="88" cy="136" rx="9" ry="5"/></g>
+                    <g fill="#fff6dc"><circle cx="100" cy="104" r="2"/><circle cx="116" cy="98" r="1.6"/><circle cx="120" cy="116" r="2"/><circle cx="96" cy="122" r="1.5"/><circle cx="108" cy="84" r="1.4"/><circle cx="142" cy="110" r="1.6"/><circle cx="76" cy="110" r="1.5"/></g>
+                    <path d="M40 60c8-14 22-26 38-32" stroke="#f7e9d0" stroke-width="5" stroke-linecap="round" fill="none" opacity=".45"/>
+                  </svg>
+                  <span class="rest-badge"><small>Menú del día</small><b>$6.990</b></span>
+                </div>
+              </div>
+              <div class="rest-menu">
+                <div class="rest-tabs"><span class="on">Almuerzos</span><span>Para compartir</span><span>Para tomar</span></div>
+                <ul>
+                  <li><span>Pastel de choclo en greda</span><i></i><b>$8.490</b></li>
+                  <li><span>Cazuela de vacuno</span><i></i><b>$7.990</b></li>
+                  <li><span>Porotos con riendas</span><i></i><b>$6.490</b></li>
+                  <li><span>Chorrillana para dos</span><i></i><b>$12.990</b></li>
+                  <li><span>Sopaipillas pasadas (6)</span><i></i><b>$2.500</b></li>
+                  <li><span>Mote con huesillo</span><i></i><b>$2.490</b></li>
+                </ul>
+              </div>
+              <div class="rest-info">
+                <div class="rest-map" aria-hidden="true">
+                  <svg viewBox="0 0 200 120" preserveAspectRatio="xMidYMid slice"><rect width="200" height="120" fill="#efe2c8"/><path d="M-10 84 210 52M60-10 92 130M140-10 128 130" stroke="#fff" stroke-width="9"/><path d="M-10 30 210 18" stroke="#fff" stroke-width="5"/><rect x="100" y="70" width="22" height="18" rx="3" fill="#d9c7a5"/><rect x="20" y="10" width="30" height="16" rx="3" fill="#c9dcb4"/><path d="M110 40c-8 0-14 6-14 13 0 10 14 23 14 23s14-13 14-23c0-7-6-13-14-13z" fill="#7a1e12"/><circle cx="110" cy="53" r="5" fill="#fbf4e8"/></svg>
+                </div>
+                <div class="rest-hours">
+                  <p><b>Abierto hoy</b> · 12:00 a 23:00</p>
+                  <p>Av. Recoleta 1234, Huechuraba</p>
+                  <p class="rest-stars" aria-hidden="true">★★★★★ <span>“La mejor cazuela del sector”</span></p>
+                </div>
+              </div>
+              <p class="demo-foot">Sitio de ejemplo ficticio creado por {found} studio</p>
+            </div>
+          </article>
+
+          <!-- 02 · Barbería -->
+          <article class="skin" data-url="navajabarber.cl" data-tag="Ejemplo ficticio" data-glow="#8a6b22" aria-label="Ejemplo ficticio: barbería Navaja">
+            <div class="page barb">
+              <div class="barb-nav"><b>NAVAJA</b><span>Barber shop · Huechuraba</span></div>
+              <div class="barb-hero">
+                <div>
+                  <h3>Corte clásico.<br><span>Estilo moderno.</span></h3>
+                  <p>Sin esperas ni filas: agenda tu hora en 30 segundos.</p>
+                </div>
+                <svg class="barb-art" viewBox="0 0 120 200" aria-hidden="true">
+                  <rect x="44" y="6" width="32" height="14" rx="4" fill="#c8a24a"/>
+                  <rect x="40" y="18" width="40" height="8" rx="3" fill="#9c7b2e"/>
+                  <defs><pattern id="pole" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(35)"><rect width="40" height="40" fill="#f2ece0"/><rect width="13" height="40" fill="#b3261e"/><rect x="20" width="13" height="40" fill="#1e3a6e"/></pattern></defs>
+                  <rect x="46" y="26" width="28" height="140" rx="12" fill="url(#pole)"/>
+                  <rect x="46" y="26" width="28" height="140" rx="12" fill="none" stroke="#c8a24a" stroke-width="2"/>
+                  <rect x="40" y="166" width="40" height="8" rx="3" fill="#9c7b2e"/>
+                  <rect x="44" y="174" width="32" height="14" rx="4" fill="#c8a24a"/>
+                </svg>
+              </div>
+              <div class="barb-svc">
+                <div><b>Corte</b><small>40 min</small><span>$10.000</span></div>
+                <div><b>Corte + barba</b><small>60 min</small><span>$15.000</span></div>
+                <div><b>Perfilado</b><small>20 min</small><span>$6.000</span></div>
+              </div>
+              <div class="barb-book">
+                <p class="barb-h">Reserva tu hora</p>
+                <div class="barb-days" role="group" aria-label="Elige un día (ejemplo)">
+                  <button type="button" class="is-sel" aria-pressed="true" data-day="Hoy">Hoy</button>
+                  <button type="button" aria-pressed="false" data-day="Mañana">Mañana</button>
+                  <button type="button" aria-pressed="false" data-day="Sábado">Sábado</button>
+                </div>
+                <div class="barb-slots" id="slots" role="group" aria-label="Elige una hora (ejemplo)"></div>
+                <button type="button" class="barb-go" id="agendar">Elige una hora</button>
+                <p class="barb-ok" id="barb-ok" role="status" aria-live="polite"></p>
+              </div>
+              <p class="demo-foot">Sitio de ejemplo ficticio creado por {found} studio</p>
+            </div>
+          </article>
+
+          <!-- 03 · Almacén -->
+          <article class="skin" data-url="almacendonarosa.cl" data-tag="Ejemplo ficticio" data-glow="#1f6b3a" aria-label="Ejemplo ficticio: Almacén Doña Rosa">
+            <div class="page alm">
+              <div class="alm-nav">
+                <b>Almacén <span>Doña Rosa</span></b>
+                <span class="alm-cart" id="cart" aria-live="polite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11h10.8L21 7H6.2"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17" cy="19.5" r="1.4"/></svg><span id="cartn">0</span><span class="sr">productos en el carro</span></span>
+              </div>
+              <div class="alm-banner">
+                <div>
+                  <h3>Despacho gratis en Huechuraba</h3>
+                  <p>Compras sobre $15.000. Pide antes de las 18:00 y llega hoy.</p>
+                  <div class="alm-meter" aria-hidden="true"><i id="meter"></i></div>
+                  <p class="alm-meter-t" id="meter-t">Te faltan $15.000 para el despacho gratis</p>
+                </div>
+              </div>
+              <div class="alm-cats" aria-hidden="true"><span class="on">Todo</span><span>Panadería</span><span>Lácteos</span><span>Verdulería</span><span>Despensa</span></div>
+              <div class="alm-prods">
+                <div class="prod"><div class="pimg" style="--bg:#f6e3bf"><svg viewBox="0 0 100 70"><ellipse cx="50" cy="44" rx="38" ry="20" fill="#c98a3d"/><ellipse cx="50" cy="38" rx="36" ry="20" fill="#e2a95a"/><path d="M28 32c6-4 12-4 18 0M46 30c6-4 12-4 18 0M60 36c4-3 9-3 12 0" stroke="#b9772a" stroke-width="3" fill="none" stroke-linecap="round"/></svg></div><b>Pan amasado (1 kg)</b><div class="row"><span>$2.200</span><button type="button" class="add" data-name="Pan amasado" data-price="2200" aria-label="Agregar pan amasado al carro">+</button></div></div>
+                <div class="prod"><div class="pimg" style="--bg:#e3edf6"><svg viewBox="0 0 100 70"><path d="M38 14h24l6 10v40H32V24z" fill="#fff" stroke="#9fb6cc" stroke-width="2"/><path d="M32 24h36" stroke="#9fb6cc" stroke-width="2"/><rect x="32" y="34" width="36" height="16" fill="#2f7fc1"/><path d="M42 10h16v4H42z" fill="#2f7fc1"/></svg></div><b>Leche entera 1 L</b><div class="row"><span>$1.090</span><button type="button" class="add" data-name="Leche entera" data-price="1090" aria-label="Agregar leche al carro">+</button></div></div>
+                <div class="prod"><div class="pimg" style="--bg:#f4e9da"><svg viewBox="0 0 100 70"><rect x="14" y="36" width="72" height="22" rx="4" fill="#c7b08e"/><g fill="#f3e2c7" stroke="#d9c3a0"><ellipse cx="26" cy="34" rx="9" ry="11"/><ellipse cx="44" cy="32" rx="9" ry="11"/><ellipse cx="62" cy="34" rx="9" ry="11"/><ellipse cx="78" cy="32" rx="8" ry="10"/></g></svg></div><b>Huevos de campo (12)</b><div class="row"><span>$3.490</span><button type="button" class="add" data-name="Huevos" data-price="3490" aria-label="Agregar huevos al carro">+</button></div></div>
+                <div class="prod"><div class="pimg" style="--bg:#e4efd5"><svg viewBox="0 0 100 70"><ellipse cx="40" cy="38" rx="20" ry="26" fill="#3f6b2a" transform="rotate(-20 40 38)"/><ellipse cx="64" cy="38" rx="18" ry="24" fill="#6f9a3a" transform="rotate(15 64 38)"/><ellipse cx="64" cy="40" rx="13" ry="18" fill="#d9e59b" transform="rotate(15 64 40)"/><circle cx="65" cy="44" r="7" fill="#8a5a2b"/></svg></div><b>Palta Hass (1 kg)</b><div class="row"><span>$4.990</span><button type="button" class="add" data-name="Paltas" data-price="4990" aria-label="Agregar paltas al carro">+</button></div></div>
+                <div class="prod"><div class="pimg" style="--bg:#f6dcd8"><svg viewBox="0 0 100 70"><path d="M44 6h12v8l6 10v40H38V24l6-10z" fill="#c8302a"/><rect x="38" y="32" width="24" height="14" fill="#fff"/><rect x="44" y="2" width="12" height="6" rx="1" fill="#7a1a15"/></svg></div><b>Bebida 3 L</b><div class="row"><span>$2.790</span><button type="button" class="add" data-name="Bebida" data-price="2790" aria-label="Agregar bebida al carro">+</button></div></div>
+                <div class="prod"><div class="pimg" style="--bg:#eadfd4"><svg viewBox="0 0 100 70"><path d="M34 12h32l4 52H30z" fill="#5a3826"/><path d="M34 12l4-6h24l4 6" fill="#3b2416"/><rect x="36" y="28" width="28" height="18" rx="2" fill="#f2c94c"/><path d="M44 37h12" stroke="#5a3826" stroke-width="3"/></svg></div><b>Café molido 250 g</b><div class="row"><span>$5.990</span><button type="button" class="add" data-name="Café" data-price="5990" aria-label="Agregar café al carro">+</button></div></div>
+              </div>
+              <p class="demo-foot">Sitio de ejemplo ficticio creado por {found} studio</p>
+            </div>
+            <p class="alm-toast" id="toast" aria-hidden="true"></p>
+          </article>
+
+          <!-- 04 · Banquetería -->
+          <article class="skin" data-url="mesalargaeventos.cl" data-tag="Ejemplo ficticio" data-glow="#6e3a58" aria-label="Ejemplo ficticio: banquetería Mesa Larga">
+            <div class="page evt">
+              <div class="evt-nav"><span>Eventos</span><b>Mesa Larga</b><span>Cotizar</span></div>
+              <div class="evt-hero">
+                <h3>Celebraciones que se recuerdan</h3>
+                <p>Banquetería para matrimonios, cumpleaños y eventos de empresa en Santiago.</p>
+              </div>
+              <div class="evt-gal" aria-hidden="true">
+                <div class="g1"><svg viewBox="0 0 200 140" preserveAspectRatio="xMidYMid slice"><rect width="200" height="140" fill="#3a1d2e"/><g fill="#f6d9a8" opacity=".9"><circle cx="40" cy="30" r="22" opacity=".18"/><circle cx="100" cy="24" r="26" opacity=".14"/><circle cx="160" cy="30" r="22" opacity=".18"/></g><rect x="10" y="88" width="180" height="10" rx="2" fill="#f6efe7"/><path d="M14 98h172l-6 42H20z" fill="#e8d7c8"/><g fill="#f6efe7"><rect x="38" y="56" width="5" height="32"/><rect x="98" y="50" width="5" height="38"/><rect x="158" y="56" width="5" height="32"/></g><g fill="#ffcf73"><ellipse cx="40.5" cy="52" rx="3" ry="6"/><ellipse cx="100.5" cy="46" rx="3" ry="6"/><ellipse cx="160.5" cy="52" rx="3" ry="6"/></g><g fill="#b98a86"><circle cx="66" cy="82" r="7"/><circle cx="130" cy="82" r="7"/></g><g fill="#7b4a5b"><circle cx="72" cy="84" r="5"/><circle cx="124" cy="84" r="5"/></g></svg></div>
+                <div class="g2"><svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice"><rect width="100" height="140" fill="#e9d6c4"/><ellipse cx="50" cy="80" rx="42" ry="30" fill="#fff"/><ellipse cx="50" cy="78" rx="34" ry="23" fill="#f6efe7"/><g><circle cx="36" cy="72" r="7" fill="#c98a5a"/><circle cx="52" cy="66" r="7" fill="#7b9a4a"/><circle cx="66" cy="76" r="7" fill="#c98a5a"/><circle cx="46" cy="86" r="7" fill="#b03a48"/><circle cx="62" cy="90" r="6" fill="#7b9a4a"/></g></svg></div>
+                <div class="g3"><svg viewBox="0 0 100 140" preserveAspectRatio="xMidYMid slice"><rect width="100" height="140" fill="#d8c2cf"/><rect x="24" y="78" width="52" height="34" rx="4" fill="#fff"/><rect x="32" y="50" width="36" height="30" rx="4" fill="#fbf3f6"/><rect x="40" y="30" width="20" height="22" rx="3" fill="#fff"/><path d="M24 92h52M32 64h36" stroke="#e6b8c8" stroke-width="3"/><circle cx="50" cy="24" r="5" fill="#b03a48"/><rect x="16" y="112" width="68" height="6" rx="3" fill="#8e6378"/></svg></div>
+              </div>
+              <div class="evt-packs">
+                <div><h4>Cóctel</h4><p>Hasta 50 personas, 12 bocados por persona, garzones incluidos.</p><b>desde $590.000</b></div>
+                <div><h4>Cena tres tiempos</h4><p>Entrada, fondo y postre, con montaje y vajilla.</p><b>desde $24.900 p/p</b></div>
+              </div>
+              <div class="evt-quote">
+                <p class="evt-qh">Cotiza tu evento</p>
+                <div class="evt-fields">
+                  <span><small>Tipo de evento</small>Matrimonio</span>
+                  <span><small>Invitados</small>80</span>
+                  <span><small>Fecha</small>14 de marzo</span>
+                </div>
+                <span class="evt-btn">Recibir cotización por WhatsApp</span>
+              </div>
+              <p class="demo-foot">Sitio de ejemplo ficticio creado por {found} studio</p>
+            </div>
+          </article>
+
+          <!-- 05 · Construcción -->
+          <article class="skin" data-url="cordilleraobras.cl" data-tag="Ejemplo ficticio" data-glow="#9a4a1a" aria-label="Ejemplo ficticio: constructora Cordillera Obras">
+            <div class="page con">
+              <div class="con-nav"><b>Cordillera <i>Obras</i></b><span>Presupuesto sin costo</span></div>
+              <div class="con-hero">
+                <div class="con-copy">
+                  <h3>Construimos y <span>ampliamos</span> tu casa</h3>
+                  <p>Ampliaciones, radieres y techumbres con garantía escrita y visita técnica gratis.</p>
+                  <span class="con-btn">Pedir visita técnica</span>
+                </div>
+                <svg class="con-art" viewBox="0 0 220 170" aria-hidden="true">
+                  <path d="M150 10v150M150 14h64M150 14l-40 0" stroke="#1c1c1c" stroke-width="4"/>
+                  <path d="M150 14l20 18M150 14l-20 18" stroke="#1c1c1c" stroke-width="2"/>
+                  <path d="M200 14v40" stroke="#1c1c1c" stroke-width="1.5"/><rect x="192" y="54" width="16" height="10" fill="#f26b1d"/>
+                  <rect x="20" y="90" width="110" height="70" fill="#d4cfc6"/>
+                  <path d="M12 92 75 44l63 48" fill="none" stroke="#f26b1d" stroke-width="6" stroke-linejoin="round"/>
+                  <g stroke="#8d877c" stroke-width="3"><path d="M40 90v70M60 90v70M80 90v70M100 90v70M120 90v70"/></g>
+                  <rect x="52" y="112" width="28" height="48" fill="#1c1c1c"/>
+                  <rect x="92" y="108" width="24" height="20" fill="#f2f0ec" stroke="#1c1c1c" stroke-width="3"/>
+                  <path d="M0 160h220" stroke="#1c1c1c" stroke-width="4"/>
+                </svg>
+              </div>
+              <div class="con-stats"><div><b>18</b><span>años en obra</span></div><div><b>240</b><span>obras terminadas</span></div><div><b>5 años</b><span>de garantía escrita</span></div></div>
+              <div class="con-works">
+                <div>Ampliaciones<small>Segundo piso y quinchos</small></div>
+                <div>Radieres<small>Patios y estacionamientos</small></div>
+                <div>Techumbres<small>Cambio y reparación</small></div>
+                <div>Remodelación<small>Cocinas y baños</small></div>
+              </div>
+              <p class="demo-foot">Sitio de ejemplo ficticio creado por {found} studio</p>
+            </div>
+          </article>
+
+          <!-- 06 · Tu negocio -->
+          <article class="skin" data-url="tunegocio.cl" data-tag="Tu turno" data-glow="#3b4a7c" aria-label="Tu negocio">
+            <div class="page you">
+              <div class="you-in">
+                <img class="you-logo" src="found-logo/v7-studio/found-studio-wordmark-oscuro.svg" alt="" width="836" height="359" loading="lazy">
+                <p class="you-h">¿Cuál es tu negocio?</p>
+                <div class="chips">
+                  <a href="#contacto" data-rubro="restaurante">Restaurante</a>
+                  <a href="#contacto" data-rubro="barbería">Barbería</a>
+                  <a href="#contacto" data-rubro="almacén">Almacén</a>
+                  <a href="#contacto" data-rubro="eventos">Eventos</a>
+                  <a href="#contacto" data-rubro="construcción">Construcción</a>
+                  <a href="#contacto" data-rubro="otro">Otro</a>
+                </div>
+                <a class="btn btn-cream" href="#contacto" data-cta>Quiero mi página</a>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="rail" id="rail" aria-label="Capítulos de la historia"></nav>
+
+  <div id="contenido">
+  <!-- ============ SERVICIOS ============ -->
+  <section class="sec services" id="servicios" aria-labelledby="servicios-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="servicios-h">Todo lo que tu negocio necesita para que lo encuentren.</h2>
+        <p>Un solo equipo para tu página, tus ventas en línea y tus redes. Hablas con personas, no con un call center.</p>
+      </div>
+      <ul class="svc-list">
+        <li>
+          <svg class="svc-ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="9" width="38" height="30" rx="5"/><path d="M5 17h38"/><circle cx="11" cy="13" r="1.3"/><circle cx="16" cy="13" r="1.3"/><path d="M13 26h14M13 31h9"/></svg>
+          <h3>Páginas web</h3>
+          <p>Diseño a medida para tu rubro, textos que venden, mapa, WhatsApp y Google listos. Dominio .cl el primer año incluido.</p>
+        </li>
+        <li>
+          <svg class="svc-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M7 10h5l4.5 20h20L41 16H14"/><circle cx="19" cy="37" r="2.6"/><circle cx="33" cy="37" r="2.6"/></svg>
+          <h3>Tiendas online</h3>
+          <p>Catálogo, carro de compras, pagos con tarjeta y transferencia, y despacho por comuna. Tú solo preparas los pedidos.</p>
+        </li>
+        <li>
+          <svg class="svc-ico" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 30V18l22-8v28L8 30z"/><path d="M30 16c4 1 6 4 6 8s-2 7-6 8"/><path d="M12 30l3 9h5l-2-8"/></svg>
+          <h3>Marketing digital</h3>
+          <p>Google Maps optimizado, campañas en Instagram y Google, y reportes mensuales simples: cuánta gente te vio y cuántos te escribieron.</p>
+        </li>
+        <li>
+          <svg class="svc-ico" viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="14" width="28" height="22" rx="6"/><path d="M24 8v6M18 24h.01M30 24h.01M19 30h10"/><path d="M6 22v6M42 22v6"/></svg>
+          <h3>Automatización con IA</h3>
+          <p>Respuestas automáticas en WhatsApp, reservas y cotizaciones que se ordenan solas, para que no se te escape ningún cliente.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ PORTAFOLIO ============ -->
+  <section class="sec work" id="portafolio" aria-labelledby="portafolio-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="portafolio-h">Negocios reales que ya no dan 404.</h2>
+        <p>Estos sí son clientes de verdad.</p>
+      </div>
+      <div class="folders">
+
+        <!-- CASO 1 · Para cambiar el cliente, edita href, el dominio de la hoja y los textos. -->
+        <a class="folder" href="https://lasdeliciasdenubi.cl/" target="_blank" rel="noopener" data-folder>
+          <span class="folder-back" aria-hidden="true"></span>
+          <span class="folder-paper" aria-hidden="true">
+            <span class="paper-chrome"><i></i><i></i><i></i><span>lasdeliciasdenubi.cl</span></span>
+            <!-- Opcional: una captura del sitio en la hoja. Ej: <img class="paper-shot" src="assets/img/portafolio/caso-1.webp" alt="" width="600" height="375" loading="lazy" decoding="async"> -->
+            <span class="paper-lines"><i></i><i></i><i></i><i></i></span>
+          </span>
+          <span class="folder-front">
+            <span class="folder-tag">Banquetería y catering</span>
+            <span class="folder-name">Las Delicias de Nubi</span>
+            <span class="folder-desc">Página web para mostrar sus servicios de banquetería y catering, y recibir cotizaciones.</span>
+            <span class="folder-cta"><span class="cta-open">Abrir sitio</span><span class="cta-pend">Link pendiente</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          </span>
+        </a>
+
+        <!-- CASO 2 · Para cambiar el cliente, edita href, el dominio de la hoja y los textos. -->
+        <a class="folder" href="https://gracia-vida.vercel.app/" target="_blank" rel="noopener" data-folder>
+          <span class="folder-back" aria-hidden="true"></span>
+          <span class="folder-paper" aria-hidden="true">
+            <span class="paper-chrome"><i></i><i></i><i></i><span>gracia-vida.vercel.app</span></span>
+            <!-- Opcional: una captura del sitio en la hoja. Ej: <img class="paper-shot" src="assets/img/portafolio/caso-2.webp" alt="" width="600" height="375" loading="lazy" decoding="async"> -->
+            <span class="paper-lines"><i></i><i></i><i></i><i></i></span>
+          </span>
+          <span class="folder-front">
+            <span class="folder-tag">Página de enlaces</span>
+            <span class="folder-name">Gracia &amp; Vida</span>
+            <span class="folder-desc">Página tipo Linktree: todos sus enlaces y redes en un solo lugar, lista para compartir.</span>
+            <span class="folder-cta"><span class="cta-open">Abrir sitio</span><span class="cta-pend">Link pendiente</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+          </span>
+        </a>
+
+        <!-- CASO 3 · Espacio para el próximo cliente: lleva al formulario de contacto. -->
+        <a class="folder folder--next" href="#contacto" data-folder data-cta>
+          <span class="folder-back" aria-hidden="true"></span>
+          <span class="folder-paper" aria-hidden="true">
+            <span class="paper-chrome"><i></i><i></i><i></i><span>tunegocio.cl</span></span>
+            <span class="paper-lines"><i></i><i></i><i></i><i></i></span>
+          </span>
+          <span class="folder-front">
+            <span class="folder-tag">Disponible</span>
+            <span class="folder-name">Próximamente: tu negocio</span>
+            <span class="folder-desc">Esta carpeta está esperando al próximo negocio que dejamos de ver en 404. ¿Será el tuyo?</span>
+            <span class="folder-cta"><span class="cta-open">Quiero ser el próximo</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          </span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROCESO ============ -->
+  <section class="sec process" id="proceso" aria-labelledby="proceso-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 id="proceso-h">De 404 a encontrado en cuatro pasos.</h2>
+        <p>Una página simple queda lista en alrededor de una semana. Una tienda online, en unas tres.</p>
+      </div>
+      <ol class="steps">
+        <li>
+          <span class="step-n" aria-hidden="true">1</span>
+          <h3>Conversamos</h3>
+          <p>Nos cuentas de tu negocio por WhatsApp o en una videollamada de 20 minutos. Te enviamos una cotización en menos de 24 horas.</p>
+        </li>
+        <li>
+          <span class="step-n" aria-hidden="true">2</span>
+          <h3>Diseñamos</h3>
+          <p>Armamos tu página con tus fotos, tus precios y tu forma de hablar. Te la mostramos y la ajustamos contigo.</p>
+        </li>
+        <li>
+          <span class="step-n" aria-hidden="true">3</span>
+          <h3>Publicamos</h3>
+          <p>La subimos con tu dominio .cl, la conectamos a Google Maps y a tu WhatsApp, y la dejamos lista para compartir.</p>
+        </li>
+        <li>
+          <span class="step-n" aria-hidden="true">4</span>
+          <h3>Te acompañamos</h3>
+          <p>¿Cambió un precio o abriste un nuevo horario? Nos escribes y lo actualizamos nosotros.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ PREGUNTAS ============ -->
+  <section class="sec faq" id="preguntas" aria-labelledby="preguntas-h">
+    <div class="wrap faq-grid">
+      <div class="sec-head">
+        <h2 id="preguntas-h">Preguntas que nos hacen siempre.</h2>
+        <p>¿Tienes otra? <a href="#contacto">Escríbenos</a> y te respondemos el mismo día.</p>
+      </div>
+      <div class="qa">
+        <details>
+          <summary>¿Cuánto cuesta una página web?</summary>
+          <p>Depende de lo que necesite tu negocio: no es lo mismo una página de presentación que una tienda con despacho. Nos cuentas qué buscas y te enviamos una cotización sin costo y sin compromiso en menos de 24 horas.</p>
+        </details>
+        <details>
+          <summary>¿Cuánto se demora?</summary>
+          <p>Una página simple está lista en alrededor de una semana. Una tienda online, en unas tres semanas. Te damos la fecha exacta junto con la cotización.</p>
+        </details>
+        <details>
+          <summary>¿Incluye el dominio?</summary>
+          <p>Sí. El primer año de tu dominio .cl (por ejemplo, tunegocio.cl) va incluido y queda registrado a tu nombre.</p>
+        </details>
+        <details>
+          <summary>¿Puedo editarla yo?</summary>
+          <p>No necesitas aprender nada técnico. Cuando quieras cambiar un precio, una foto o un horario, nos escribes por WhatsApp y lo hacemos nosotros.</p>
+        </details>
+        <details>
+          <summary>¿Se ve bien en celular?</summary>
+          <p>Sí. La diseñamos primero para celular, que es donde te van a buscar la mayoría de tus clientes, y después la adaptamos a computador.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACTO ============ -->
+  <section class="sec contact" id="contacto" aria-labelledby="contacto-h">
+    <div class="wrap contact-grid">
+      <div class="contact-copy">
+        <h2 id="contacto-h">Cuéntanos de tu negocio.</h2>
+        <p>Te respondemos en menos de 24 horas con una propuesta y una cotización sin costo.</p>
+        <div class="alt">
+          <a class="btn btn-line btn-sm" id="wa-inline" href="https://wa.me/56942579133" target="_blank" rel="noopener">
+            <svg class="wa-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.42.25-.69.25-1.29.18-1.41-.08-.13-.28-.2-.57-.35m-5.42 7.4h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.89 9.88m8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 0 0-3.48-8.41z"/></svg>
+            ¿Prefieres WhatsApp?
+          </a>
+          <p class="mail">También puedes escribirnos a <a href="mailto:contacto@foundstudio.cl">contacto@foundstudio.cl</a></p>
+        </div>
+      </div>
+
+      <form class="form" id="form" novalidate>
+        <input type="hidden" name="subject" id="f-subject" value="Nuevo contacto web">
+        <input type="hidden" name="from_name" value="Web foundstudio.cl">
+        <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <div class="field">
+          <label for="f-nombre">Tu nombre</label>
+          <input id="f-nombre" name="nombre" type="text" autocomplete="name" required>
+          <p class="err" id="e-nombre"></p>
+        </div>
+        <div class="field">
+          <label for="f-negocio">Nombre del negocio</label>
+          <input id="f-negocio" name="negocio" type="text" autocomplete="organization" required>
+          <p class="err" id="e-negocio"></p>
+        </div>
+        <div class="field">
+          <label for="f-rubro">Rubro</label>
+          <div class="select">
+            <select id="f-rubro" name="rubro" required>
+              <option value="" selected disabled>Elige tu rubro</option>
+              <option value="restaurante">Restaurante</option>
+              <option value="barbería">Barbería</option>
+              <option value="almacén">Almacén</option>
+              <option value="eventos">Eventos</option>
+              <option value="construcción">Construcción</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <p class="err" id="e-rubro"></p>
+        </div>
+        <div class="field">
+          <label for="f-telefono">Teléfono <span class="opt">(opcional)</span></label>
+          <input id="f-telefono" name="telefono" type="tel" autocomplete="tel" inputmode="tel" placeholder="+56 9 1234 5678">
+          <p class="err" id="e-telefono"></p>
+        </div>
+        <div class="field field-wide">
+          <label for="f-email">Correo</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" required>
+          <p class="err" id="e-email"></p>
+        </div>
+        <div class="field field-wide">
+          <label for="f-mensaje">¿Qué necesitas? <span class="opt">(opcional)</span></label>
+          <textarea id="f-mensaje" name="mensaje" rows="4" placeholder="Por ejemplo: quiero que mis clientes puedan ver la carta y reservar."></textarea>
+        </div>
+        <div class="form-foot field-wide">
+          <button class="btn btn-cream" type="submit" id="f-send">Enviar mensaje</button>
+          <p class="status" id="f-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <img src="found-logo/v7-studio/found-studio-wordmark-oscuro.svg" alt="{found} studio" width="836" height="359" loading="lazy" class="foot-logo">
+    <p class="foot-claim">¿Tu negocio da 404? Te hacemos {found}.</p>
+    <p class="foot-meta">Páginas web, tiendas online, marketing digital y automatización con IA para pymes y emprendedores de Chile. Desde Huechuraba, para todo Santiago.</p>
+    <p class="foot-meta"><a href="mailto:contacto@foundstudio.cl">contacto@foundstudio.cl</a> · <a href="https://wa.me/56942579133" id="wa-foot" target="_blank" rel="noopener">WhatsApp +56 9 4257 9133</a></p>
+    <p class="foot-small">© <span id="year">2026</span> {found} studio · foundstudio.cl</p>
+  </div>
+</footer>
+
+<a class="wa-fab" id="wa-fab" href="https://wa.me/56942579133" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.42.25-.69.25-1.29.18-1.41-.08-.13-.28-.2-.57-.35m-5.42 7.4h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.89 9.88m8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 0 0-3.48-8.41z"/></svg>
+</a>
 </body>
 </html>
