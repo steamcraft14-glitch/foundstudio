@@ -13,7 +13,7 @@ Static HTML/CSS/JS with no backend, published on GitHub Pages (foundstudio.cl). 
 Owners of small businesses (pymes) and entrepreneurs in Chile, mainly Huechuraba and Santiago: restaurants, barber shops, corner stores (almacenes), catering/events, and construction. They mostly browse on their phones, often arriving through a WhatsApp or Instagram link. They don't have a website, or they have a bad one, and they want customers to find them.
 
 ## Product Purpose
-{found} studio builds websites, online stores, digital marketing and AI automation for those businesses. This site has to make the owner feel the problem ("your business shows a 404") and then picture their own business online. Success means they send the contact form or a WhatsApp message.
+{found} studio builds websites, online stores, custom business software (inventory, sales and till, bookings — e.g. for botillerías and almacenes), digital marketing and AI automation for those businesses. This site has to make the owner feel the problem ("your business shows a 404") and then picture their own business online. Success means they send the contact form or a WhatsApp message.
 
 ## Positioning
 "¿Tu negocio da 404? Te hacemos {found}." The site shows, inside a browser window, what a real page for their trade would look like (restaurant, barber shop, store, catering, construction), with working interactions such as booking an hour or adding to cart. It does not just describe services.
@@ -28,8 +28,10 @@ Owners of small businesses (pymes) and entrepreneurs in Chile, mainly Huechuraba
 - Every trade example must be labeled "Ejemplo ficticio" (fictional example).
 
 ## Brand Commitments
-- Logo in `found-logo/` (latest set: `found-logo/v7-studio/`), used as-is.
-- Colors: navy #1E2A4A and cream #F2ECDF.
+- Logo in `found-logo/`; current set is `found-logo/v10-final/` (web copies cropped, unaltered, in `assets/brand/`).
+- Colors (v10): navy #1F2A4A (60%), cream #F2ECDF (30%), lilac #C586C0 (10%, the braces and accents). Code-editor colors #1E1E1E and #9CDCFE only in moments that show code.
+- Type (v10): Sora for everything; JetBrains Mono only for code moments.
+- Slogan: "Ctrl + found." (always written exactly like that).
 - Concept: "¿Tu negocio da 404? Te hacemos {found}."
 - Language: Chilean Spanish, warm but professional.
 - The approved prototype (browser window that goes from 404 to trade pages as you scroll) is binding.
@@ -42,7 +44,8 @@ Owners of small businesses (pymes) and entrepreneurs in Chile, mainly Huechuraba
 - Show, don't tell: the examples are the argument.
 - Mobile first: the owner sees it on a phone.
 - Honest: fictional examples are labeled as fictional; no invented numbers or testimonials.
-- One clear next step: quote via form, WhatsApp as the alternative.
+- One clear next step: quote via form, WhatsApp as the alternative. Every example and service leads to "cotizar" with the trade/service preselected.
+- Interactive over static: visitors should be able to touch the examples (book, add to cart, sell stock, calculate a quote).
 
 ## Accessibility & Inclusion
 Good contrast, full keyboard navigation, respect prefers-reduced-motion.

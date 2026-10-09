@@ -65,6 +65,18 @@
         "value": "impact",
         "createdAt": "2026-10-09T08:56:21.239Z",
         "reason": "sanctioned: font of a fictional trade example inside the browser window; DESIGN.md records these as the contained demo-worlds layer"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "roboto",
+        "createdAt": "2026-10-09T17:19:43.379Z",
+        "reason": "sanctioned: font of a fictional demo world inside the browser window (botillería app system-ui stack / construcción Barlow Condensed); DESIGN.md records demo worlds as contained"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "condensed",
+        "createdAt": "2026-10-09T17:19:43.640Z",
+        "reason": "sanctioned: font of a fictional demo world inside the browser window (botillería app system-ui stack / construcción Barlow Condensed); DESIGN.md records demo worlds as contained"
       }
     ]
   }

@@ -24,13 +24,14 @@ const WHATSAPP = "56942579133";
     "barbería": "una barbería",
     "almacén": "un almacén",
     "eventos": "una empresa de eventos",
-    "construcción": "una empresa de construcción"
+    "construcción": "una empresa de construcción",
+    "botillería": "una botillería"
   };
   function waUrl(rubro) {
     const frase = RUBRO_FRASE[rubro];
     const msg = frase
-      ? `Hola {found}, tengo ${frase} y quiero una página`
-      : "Hola {found}, quiero una página para mi negocio";
+      ? `Hola {found}, tengo ${frase} y quiero cotizar`
+      : "Hola {found}, quiero cotizar para mi negocio";
     return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`;
   }
   const waLinks = ["#wa-inline", "#wa-fab", "#wa-foot"].map(s => $(s)).filter(Boolean);
@@ -39,7 +40,11 @@ const WHATSAPP = "56942579133";
 
   /* ── Rubro preseleccionado ────────────────────────────── */
   const rubroSel = $("#f-rubro");
-  const CHAPTER_RUBRO = [null, "restaurante", "barbería", "almacén", "eventos", "construcción", null];
+  const CHAPTER_RUBRO = [null, "restaurante", "barbería", "almacén", "botillería", "eventos", "construcción", null];
+  const CHAPTER_SERV = [null, "web", "web", "tienda", "software", "web", "web", null];
+  const SERVICIO = { web: "página web", tienda: "tienda online", software: "software / inventario", marketing: "marketing digital", ia: "automatización con IA" };
+  const servSel = $("#f-servicio");
+  const chooseServ = k => { if (k && SERVICIO[k]) servSel.value = SERVICIO[k]; };
   let currentChapter = 0;
 
   function chooseRubro(rubro) {
@@ -55,16 +60,46 @@ const WHATSAPP = "56942579133";
     // Solo con teclado: en celular no abrimos el teclado de golpe.
     if (e.detail === 0) setTimeout(() => $("#f-nombre").focus({ preventScroll: true }), 450);
   }
-  $$("[data-rubro]").forEach(a => a.addEventListener("click", e => {
+  // Todo lo que dice "cotizar" lleva al formulario con el rubro y el servicio ya elegidos.
+  $$("[data-rubro], [data-servicio]").forEach(a => a.addEventListener("click", e => {
     chooseRubro(a.dataset.rubro);
+    chooseServ(a.dataset.servicio);
     focusFormIfKeyboard(e);
   }));
   $$("[data-cta]").forEach(a => a.addEventListener("click", e => {
-    // "Quiero mi página" desde un ejemplo: dejamos ese rubro elegido si aún no hay uno.
+    // desde un ejemplo: dejamos ese rubro y servicio elegidos si aún no hay uno
     const r = CHAPTER_RUBRO[currentChapter];
     if (r && !rubroSel.value) chooseRubro(r);
+    chooseServ(CHAPTER_SERV[currentChapter]);
     focusFormIfKeyboard(e);
   }));
+
+  /* ── Tu negocio: el nombre que escribes aparece en la URL, en el final y en el formulario ── */
+  const biz = $("#biz"), s404 = $(".s404"), s404h = $("#s404h"), s404p = $("#s404p");
+  const finalH = $("#final-h"), youH = $("#you-h"), negocio = $("#f-negocio");
+  const skin0 = $(".skin"), skinYou = $(".skin-you");
+  const P404 = s404p.textContent;
+  const slug = t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/&/g, "y").replace(/[^a-z0-9]+/g, "");
+  let bizName = "";
+  function setBiz(raw) {
+    bizName = raw.trim().replace(/\s+/g, " ").slice(0, 36);
+    const domain = (slug(bizName) || "tunegocio").slice(0, 28) + ".cl";
+    skin0.dataset.url = domain;
+    skinYou.dataset.url = domain;
+    s404.classList.toggle("has-name", !!bizName);
+    s404h.textContent = bizName ? `“${bizName}” no aparece` : "Tu negocio no aparece";
+    s404p.textContent = bizName ? "Así te ve hoy quien te busca. Baja y mira cómo podría verse." : P404;
+    finalH.textContent = bizName ? `¿Y ${bizName}?` : "¿Y tu negocio?";
+    youH.textContent = bizName ? `${bizName}, ¿qué necesitas?` : "¿Cuál es tu negocio?";
+    if (!negocio.dataset.touched) negocio.value = bizName;
+    if (currentChapter === 0 && window.__found) window.__found.showUrl(domain);
+  }
+  biz.addEventListener("input", () => setBiz(biz.value));
+  $("#namer").addEventListener("submit", e => {
+    e.preventDefault();
+    biz.blur();
+    if (window.__found) window.__found.goTo(1);
+  });
 
   /* ── Portafolio: carpetas que abren el sitio del cliente ── */
   // Mientras el href diga LINK_PENDIENTE, la carpeta no es un enlace (no se puede abrir ni enfocar).
@@ -78,9 +113,128 @@ const WHATSAPP = "56942579133";
       d.innerHTML = f.innerHTML;
       f.replaceWith(d);
     } else {
-      f.setAttribute("aria-label", `${f.querySelector(".folder-name").textContent}: abrir sitio en una pestaña nueva`);
+      // el nombre accesible es el texto visible; solo avisamos que abre otra pestaña
+      f.querySelector(".folder-cta").insertAdjacentHTML("beforeend", '<span class="sr"> (abre en una pestaña nueva)</span>');
     }
   });
+
+  /* ── Restaurante: carta por pestañas y reserva ─────────── */
+  const tabs = $$(".rest-tabs [role=tab]");
+  tabs.forEach(t => t.addEventListener("click", () => {
+    tabs.forEach(x => x.setAttribute("aria-selected", x === t));
+    $$(".rest-menu [data-panel]").forEach(ul => { ul.hidden = ul.dataset.panel !== t.dataset.tab; });
+  }));
+  let pax = 2;
+  $$("[data-pax]").forEach(b => b.addEventListener("click", () => {
+    pax = Math.min(12, Math.max(1, pax + Number(b.dataset.pax)));
+    $("#pax").textContent = pax;
+  }));
+  const hourBtns = $$(".rest-hours-pick button");
+  hourBtns.forEach(b => b.addEventListener("click", () => hourBtns.forEach(x => x.setAttribute("aria-pressed", x === b))));
+  $("#rest-go").addEventListener("click", () => {
+    const h = hourBtns.find(x => x.getAttribute("aria-pressed") === "true");
+    $("#rest-ok").textContent = h
+      ? `¡Mesa reservada! ${pax} ${pax === 1 ? "persona" : "personas"} a las ${h.textContent}.`
+      : "Elige una hora para reservar.";
+  });
+
+  /* ── Botillería: inventario y caja ──────────────────────── */
+  const boti = {
+    sales: 184300, tickets: 57,
+    rows: $$(".boti-row[data-name]"),
+    salesEl: $("#boti-sales"), ticketsEl: $("#boti-tickets"), lowEl: $("#boti-low"), warn: $("#boti-warn"),
+    alert: $("#boti-alert"), alertT: $("#boti-alert-t"), now: $("#boti-now"), toast: $("#boti-toast"), nowH: 38, t: 0
+  };
+  const botiToast = msg => {
+    boti.toast.textContent = msg; boti.toast.classList.add("show");
+    clearTimeout(boti.t); boti.t = setTimeout(() => boti.toast.classList.remove("show"), 1900);
+  };
+  const flash = row => { row.classList.remove("is-flash"); void row.offsetWidth; row.classList.add("is-flash"); setTimeout(() => row.classList.remove("is-flash"), 600); };
+  function botiRefresh() {
+    const low = [];
+    boti.rows.forEach(r => {
+      const n = Number($(".stk", r).textContent);
+      r.classList.toggle("is-low", n > 0 && n < 6);
+      r.classList.toggle("is-out", n === 0);
+      $(".sell", r).disabled = n === 0;
+      if (n < 6) low.push(r.dataset.name.split(" ").slice(0, 2).join(" "));
+    });
+    boti.lowEl.textContent = low.length;
+    boti.warn.classList.toggle("is-alert", low.length > 0);
+    boti.alert.classList.toggle("is-ok", low.length === 0);
+    boti.alertT.textContent = low.length === 0
+      ? "Todo el inventario con stock suficiente."
+      : low.length === 1 ? `${low[0]} está por agotarse.` : `${low.slice(0, -1).join(", ")} y ${low.at(-1)} están por agotarse.`;
+  }
+  boti.rows.forEach(r => {
+    const stk = $(".stk", r);
+    $(".sell", r).addEventListener("click", () => {
+      const n = Number(stk.textContent); if (n <= 0) return;
+      stk.textContent = n - 1;
+      boti.sales += Number(r.dataset.price); boti.tickets += 1;
+      boti.salesEl.textContent = "$" + clp.format(boti.sales);
+      boti.ticketsEl.textContent = boti.tickets;
+      boti.nowH = Math.min(96, boti.nowH + 6); boti.now.style.setProperty("--h", boti.nowH + "%");
+      flash(r); botiRefresh();
+      botiToast(n - 1 === 0 ? `Se agotó: ${r.dataset.name}` : `Venta: ${r.dataset.name} · $${clp.format(Number(r.dataset.price))}`);
+    });
+    $(".restock", r).addEventListener("click", () => {
+      stk.textContent = Number(stk.textContent) + 12;
+      flash(r); botiRefresh();
+      botiToast(`Repuesto: +12 ${r.dataset.name}`);
+    });
+  });
+  $("#boti-order").addEventListener("click", () => botiToast("Pedido enviado al proveedor por WhatsApp"));
+  botiRefresh();
+
+  /* ── Banquetería: cotizador ─────────────────────────────── */
+  const evtType = $$(".evt-type button"), guests = $("#evt-guests");
+  const evtCalc = () => {
+    const pp = Number(evtType.find(b => b.getAttribute("aria-pressed") === "true").dataset.pp);
+    $("#evt-n").textContent = guests.value;
+    $("#evt-total").textContent = "$" + clp.format(pp * Number(guests.value));
+  };
+  evtType.forEach(b => b.addEventListener("click", () => { evtType.forEach(x => x.setAttribute("aria-pressed", x === b)); evtCalc(); }));
+  guests.addEventListener("input", evtCalc);
+  $("#evt-go").addEventListener("click", () => {
+    $("#evt-ok").textContent = `¡Listo! Cotización para ${guests.value} invitados enviada por WhatsApp.`;
+  });
+  evtCalc();
+
+  /* ── Construcción: calculadora por m² ───────────────────── */
+  const conKind = $$(".con-kind button"), m2 = $("#con-m2");
+  const conCalc = () => {
+    const v = Number(conKind.find(b => b.getAttribute("aria-pressed") === "true").dataset.m2);
+    $("#con-n").textContent = m2.value;
+    $("#con-total").textContent = "$" + clp.format(v * Number(m2.value));
+  };
+  conKind.forEach(b => b.addEventListener("click", () => { conKind.forEach(x => x.setAttribute("aria-pressed", x === b)); conCalc(); }));
+  m2.addEventListener("input", conCalc);
+  $("#con-go").addEventListener("click", () => {
+    $("#con-ok").textContent = `Visita técnica solicitada para ${m2.value} m². Te llamamos hoy.`;
+  });
+  conCalc();
+
+  /* ── Editor de código: se escribe al aparecer ───────────── */
+  const editor = $(".editor");
+  $$(".editor .ln, .editor .editor-out").forEach((el, i) => el.style.setProperty("--i", i));
+  if (reduce || !("IntersectionObserver" in window)) editor.classList.add("is-run");
+  else new IntersectionObserver((en, ob) => {
+    if (en[0].isIntersecting) { editor.classList.add("is-run"); ob.disconnect(); }
+  }, { threshold: 0.35 }).observe(editor);
+
+  /* ── Botones con imán (solo con mouse y con movimiento) ── */
+  if (!reduce && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    $$(".btn-cream").forEach(b => {
+      b.classList.add("is-magnet");
+      b.addEventListener("mousemove", e => {
+        const r = b.getBoundingClientRect();
+        const x = (e.clientX - r.left - r.width / 2) / r.width, y = (e.clientY - r.top - r.height / 2) / r.height;
+        b.style.transform = `translate(${(x * 10).toFixed(1)}px, ${(y * 8).toFixed(1)}px)`;
+      });
+      b.addEventListener("mouseleave", () => { b.style.transform = ""; });
+    });
+  }
 
   /* ── Barbería: elegir día y hora ──────────────────────── */
   const HORAS = ["10:00", "10:45", "11:30", "12:15", "13:00", "15:30", "16:15"];
@@ -281,8 +435,8 @@ const WHATSAPP = "56942579133";
   const vp = $("#vp"), urlText = $("#urltext"), tag = $("#tag"), stage = $(".stage"), bar = $("#progressbar"), loadbar = $("#loadbar");
   stage.classList.add("is-ready");
   const N = skins.length;
-  const NAMES = ["Sin página", "Restaurante", "Barbería", "Almacén", "Banquetería", "Construcción", "¿Y tu negocio?"];
-  const READ = 1.4, HOLD = 0.7, VH_PER_UNIT = 52;
+  const NAMES = ["Sin página", "Restaurante", "Barbería", "Almacén", "Botillería", "Banquetería", "Construcción", "¿Y tu negocio?"];
+  const READ = 1.4, HOLD = 0.7, VH_PER_UNIT = 46;
   const extra = i => Math.max(0, pages[i].scrollHeight - vp.clientHeight);
   // el contenido interno solo se mueve con la historia: si el foco o un clic intenta desplazar la ventana, se vuelve a 0
   skins.forEach((s, i) => s.style.setProperty("--skin-bg", getComputedStyle(pages[i]).backgroundColor));
@@ -412,6 +566,21 @@ const WHATSAPP = "56942579133";
   }
 
   setStage(0);
+  // puente para el nombre del negocio (se escribe antes de que cargue GSAP)
+  window.__found = {
+    goTo,
+    showUrl: d => { clearInterval(typing); urlText.textContent = d; }
+  };
+  if (bizName) setBiz(bizName);
+
+  /* ── Proceso: la línea se llena y cada paso se ilumina al bajar ── */
+  const stepsLi = $$(".steps li"), fill = $("#steps-fill");
+  const lightSteps = p => {
+    fill.style.setProperty("--p", p.toFixed(3));
+    stepsLi.forEach((li, k) => li.classList.toggle("is-lit", p >= k / (stepsLi.length - 1) - 0.02));
+  };
+  if (reduce) lightSteps(1);
+  else ST.create({ trigger: ".steps-wrap", start: "top 72%", end: "bottom 62%", onUpdate: self => lightSteps(self.progress), onRefresh: self => lightSteps(self.progress) });
 
   // las fuentes cambian el alto de las páginas: recalcular
   let refreshT;
@@ -424,7 +593,7 @@ const WHATSAPP = "56942579133";
 
   /* ── Entradas suaves de las secciones ─────────────────── */
   if (!reduce) {
-    const REVEAL = ".sec-head, .svc-list li, .case, .steps li, .qa details, .form";
+    const REVEAL = ".sec-head, .svc-list li, .svc-gh, .soft-copy, .editor, .qa details, .form, .sec-cta";
     const below = $$(REVEAL).filter(el => el.getBoundingClientRect().top > innerHeight);
     gsap.set(below, { autoAlpha: 0, y: 18 });
     const show = els => gsap.to(els, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power3.out", stagger: 0.06, overwrite: true });

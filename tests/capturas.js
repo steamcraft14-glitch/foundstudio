@@ -21,16 +21,16 @@ async page => {
       }
       return r;
     });
-    const names = ["404", "restaurante", "barberia", "almacen", "banqueteria", "construccion", "tu-negocio"];
+    const names = ["404", "restaurante", "barberia", "almacen", "botilleria", "banqueteria", "construccion", "tu-negocio"];
     for (const [k, [a, b]] of Object.entries(ranges)) {
-      const f = k === "0" ? 0 : k === "6" ? 0.9 : 0.42;
+      const f = k === "0" ? 0 : k === "7" ? 0.9 : 0.42;
       await page.evaluate(y => scrollTo(0, y), Math.round(a + (b - a) * f));
       await page.waitForTimeout(1600);
       const file = `tests/screens/final-${tag}-${k}-${names[k]}.png`;
       await page.screenshot({ path: file });
       done.push(file);
     }
-    for (const id of ["servicios", "portafolio", "proceso", "preguntas", "contacto"]) {
+    for (const id of ["servicios", "software", "portafolio", "proceso", "preguntas", "contacto"]) {
       await page.evaluate(id => document.getElementById(id).scrollIntoView(), id);
       await page.waitForTimeout(1100);
       const file = `tests/screens/final-${tag}-s-${id}.png`;
