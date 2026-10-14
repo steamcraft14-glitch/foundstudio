@@ -2,7 +2,7 @@
 
 Qué exige la ley chilena a este sitio, qué ya está hecho en el código y qué depende de ti fuera del código.
 
-**Qué tipo de sitio es:** empresa privada, sitio estático (GitHub Pages), sin base de datos, sin pagos, sin cuentas de usuario. Recoge datos personales en el formulario de contacto y en el brief en línea (`/brief/`, incluye RUT opcional); ambos llegan al correo vía Web3Forms.
+**Qué tipo de sitio es:** empresa privada, sitio estático (GitHub Pages), sin pagos. Desde octubre de 2026 tiene un portal de clientes con base de datos, ingreso sin contraseña y archivos (Supabase), y correos con Resend. Recoge datos personales en el formulario de contacto y en el brief en línea (`/brief/`, incluye RUT opcional); ambos llegan al correo vía Web3Forms.
 
 - **Ley 21.719 (datos personales):** sí aplica, porque el formulario recoge datos de personas. Entra en vigencia el 1 de diciembre de 2026.
 - **Ley 21.663 (Ley Marco de Ciberseguridad):** no aplica directamente. Rige a servicios esenciales y operadores de importancia vital. Las buenas prácticas igual se aplican abajo.
@@ -35,9 +35,20 @@ Qué exige la ley chilena a este sitio, qué ya está hecho en el código y qué
 - Si agregas un servicio externo (analítica, mapa, chat, video), tienes que: (1) permitirlo en la CSP, (2) agregarlo a la tabla de proveedores de `privacidad.html` y (3) si usa cookies que no son necesarias, pedir consentimiento **antes** de cargarlo.
 - Si cambias la política, actualiza la fecha en `privacidad.html` y en `PRIVACIDAD_VERSION` de `main.js`.
 
+### Portal de clientes (Supabase)
+| Medida | Dónde |
+|---|---|
+| Permisos por fila (RLS) en todas las tablas: el visitante solo agrega cotizaciones y estimados; cada cliente ve solo su proyecto, brief, historial y archivos; el admin, todo. Probado en Postgres real (32 pruebas) | `supabase/migrations/`, `tests/rls.mjs` |
+| Privilegios por columna: el cliente no puede marcar su brief como enviado ni cambiar estados; eso lo hace la función del servidor | migración |
+| Archivos en bucket privado, carpeta por proyecto, 25 MB y tipos permitidos; descargas con enlaces firmados de 1 hora | migración, `portal.js`, `panel.js` |
+| Sin registro abierto: solo entran correos que el estudio invitó (`shouldCreateUser: false` y registro apagado en Supabase) | `sesion.js`, `docs/PORTAL.md` |
+| Claves secretas (service_role, Resend, GoatCounter) solo como secretos de la Edge Function | `supabase/functions/found/` |
+| CSP limitada al proyecto `qwmxzaeyhqdwndijquab.supabase.co`; librería de Supabase alojada en el sitio | `<meta>` de cada página |
+| Todo texto de usuario se inserta como texto (nunca HTML); en los correos se escapa | `sesion.js` → `el()`, `esc()` en la función |
+
 ## Lo que tienes que hacer tú (fuera del código)
 
-1. **Verificación en dos pasos (2FA)** en GitHub, en el correo `contacto@foundstudio.cl`, en Web3Forms y en el registrador del dominio (NIC Chile). Quien entre a cualquiera de ellos puede cambiar el sitio o leer los datos.
+1. **Verificación en dos pasos (2FA)** en GitHub, en el correo `contacto@foundstudio.cl`, en Web3Forms, Supabase, Resend y en el registrador del dominio (NIC Chile). Quien entre a cualquiera de ellos puede cambiar el sitio o leer los datos.
 2. **Mínimo privilegio:** solo las personas que lo necesitan tienen acceso de escritura al repo y al correo. Revísalo cada 6 meses.
 3. **Identifica al responsable:** si el estudio tiene razón social y RUT, agrégalos en la sección 1 de `privacidad.html`.
 4. **Plazos de conservación:** borra del correo las consultas que no terminaron en proyecto después de 12 meses, como promete la política.

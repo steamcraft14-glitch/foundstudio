@@ -13,6 +13,7 @@ exclude:
   - social
   - showreel
   - found-logo
+  - supabase
 # Las carpetas que empiezan con punto no se publican, salvo esta (security.txt).
 include:
   - .well-known

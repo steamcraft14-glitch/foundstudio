@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob: https://qwmxzaeyhqdwndijquab.supabase.co; media-src 'self'; connect-src 'self' https://qwmxzaeyhqdwndijquab.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- Portal privado de clientes: no se indexa ni va en el sitemap. Sin contador de visitas. -->
+<meta name="robots" content="noindex, nofollow">
+<title>Mi proyecto | {found} studio</title>
+<meta name="description" content="Tu proyecto con {found} studio: brief, archivos y avance.">
+<meta name="theme-color" content="#0F1528">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/sora-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css?v=8">
+<link rel="stylesheet" href="/assets/css/brief.css?v=1">
+<link rel="stylesheet" href="/assets/css/cuenta.css?v=1">
+<script defer src="/assets/js/site.js?v=6"></script>
+<script defer src="/assets/js/vendor/supabase-2.45.4.js"></script>
+<script defer src="/assets/js/sesion.js?v=1"></script>
+<script defer src="/assets/js/portal.js?v=1"></script>
+</head>
+<body>
+<a class="skip" href="#contenido">Saltar al contenido</a>
+
+<header class="bar">
+  <a class="wordmark" href="/" aria-label="{found} studio, inicio"><img src="/assets/brand/found-horizontal.svg" alt="" width="1269" height="245"></a>
+  <nav class="nav" aria-label="Cuenta">
+    <button class="btn btn-sm btn-ghost" type="button" id="p-salir" hidden>Salir</button>
+    <a class="btn btn-sm" href="https://wa.me/56942579133" data-msg="Hola {found}, tengo una duda con mi proyecto." data-track="whatsapp_click" data-where="portal" target="_blank" rel="noopener">WhatsApp</a>
+  </nav>
+</header>
+
+<main id="contenido">
+  <section class="page-head">
+    <div class="wrap">
+      <h1 id="p-titulo">Mi proyecto</h1>
+      <p id="p-sub">Tu brief, tus archivos y el avance de tu página, en un solo lugar.</p>
+    </div>
+  </section>
+
+  <div class="sec sec-tight">
+    <div class="wrap cuenta">
+      <p class="cargando" id="p-cargando" role="status">Cargando…</p>
+
+      <div class="card cuenta-aviso" id="p-off" hidden>
+        <h2>El portal todavía no está activo</h2>
+        <p>Mientras tanto, completa el brief en línea o escríbenos por WhatsApp.</p>
+        <div class="btns"><a class="btn" href="/brief/">Completar el brief</a><a class="btn btn-ghost" href="https://wa.me/56942579133" data-msg="Hola {found}, quiero ver mi proyecto." target="_blank" rel="noopener">WhatsApp</a></div>
+      </div>
+
+      <form class="card cuenta-entrada" id="p-entrada" novalidate hidden>
+        <h2>Entra a tu proyecto</h2>
+        <p>Escribe el correo con el que trabajamos contigo y te mandamos un enlace para entrar. Sin contraseña.</p>
+        <div class="field">
+          <label for="p-email">Tu correo</label>
+          <input id="p-email" type="email" autocomplete="email" inputmode="email" maxlength="120" required>
+        </div>
+        <button class="btn" type="submit">Enviarme el enlace</button>
+        <p class="status" role="status" aria-live="polite"></p>
+      </form>
+
+      <div id="p-app" hidden>
+        <div class="field proyecto-sel" id="p-sel-wrap" hidden>
+          <label for="p-sel">Proyecto</label>
+          <select id="p-sel"></select>
+        </div>
+
+        <section class="card" aria-labelledby="h-estado">
+          <h2 id="h-estado">En qué va tu página</h2>
+          <ol class="etapas" id="p-etapas"></ol>
+          <p class="publicada" id="p-url" hidden></p>
+        </section>
+
+        <section class="card" aria-labelledby="h-brief">
+          <div class="card-head">
+            <h2 id="h-brief">Brief</h2>
+            <p class="saved" id="pb-estado" aria-live="polite"></p>
+          </div>
+          <p class="soft" id="pb-intro">Completa lo que puedas; se guarda solo mientras escribes y puedes volver cuando quieras. Si algo no lo sabes, déjalo en blanco.</p>
+          <form class="brief-form brief-portal" id="pb-form" novalidate></form>
+          <div class="brief-end" id="pb-fin">
+            <button class="btn btn-navy" type="button" id="pb-enviar">Enviar brief</button>
+            <p class="hint">Cuando lo envíes, nos llega un aviso y empezamos a diseñar. Después ya no se puede editar; si necesitas cambiar algo, escríbenos.</p>
+            <div class="status" id="pb-status" role="status" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="h-archivos">
+          <h2 id="h-archivos">Logo y fotos</h2>
+          <p class="soft">Sube tu logo (PNG, SVG o PDF) y fotos de tu local, productos o trabajos, en la mejor calidad que tengas. Hasta 25 MB por archivo.</p>
+          <label class="subir" for="pa-input">
+            <input id="pa-input" type="file" multiple accept="image/*,.pdf,.svg,.ai,.eps,.zip,video/mp4,video/quicktime">
+            <span><strong>Elegir archivos</strong> o arrastrarlos aquí</span>
+          </label>
+          <p class="status" id="pa-status" role="status" aria-live="polite"></p>
+          <ul class="archivos" id="pa-lista"></ul>
+        </section>
+
+        <p class="cuenta-pie soft">¿Dudas? Escríbenos por <a href="https://wa.me/56942579133" data-msg="Hola {found}, tengo una duda con mi proyecto." target="_blank" rel="noopener">WhatsApp</a>. Tus datos se usan solo para tu proyecto (<a href="/privacidad.html">privacidad</a>).</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot-legal"><span>© 2026 {found} studio · Huechuraba, Santiago</span><span><a href="/privacidad.html">Privacidad</a></span></p>
+  </div>
+</footer>
+</body>
+</html>

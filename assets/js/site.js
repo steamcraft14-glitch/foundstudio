@@ -1,10 +1,14 @@
 /* {found} studio · foundstudio.cl
    Comportamiento compartido por todas las páginas. Sin dependencias.
-   Configuración: estos tres valores son los únicos que hay que tocar. */
+   Configuración: estos valores son los únicos que hay que tocar. */
 window.FOUND = {
   WHATSAPP: "56942579133",                 // número sin + ni espacios
   WEB3FORMS_KEY: "13ae56a6-e783-4914-9675-7bab09f9e80d",      // clave pública de Web3Forms (va en el sitio, no es secreta)
-  PRIVACIDAD_VERSION: "2026-10-14"         // súbela cuando cambie privacidad.html
+  PRIVACIDAD_VERSION: "2026-10-14",        // súbela cuando cambie privacidad.html
+  // Portal de clientes (Supabase → Project Settings → API). Ambos son públicos; la clave service_role NUNCA va aquí.
+  // Vacíos = el sitio funciona como antes y /mi-proyecto/ y /panel/ muestran «aún no está activo».
+  SUPABASE_URL: "https://qwmxzaeyhqdwndijquab.supabase.co",
+  SUPABASE_ANON_KEY: ""                    // clave "anon public"
 };
 
 (() => {
@@ -25,6 +29,17 @@ window.FOUND = {
     const a = e.target.closest("[data-track]");
     if (a) track(a.dataset.track, { donde: a.dataset.where || location.pathname });
   });
+
+  /* Guarda una fila en Supabase sin cargar la librería (cotizaciones y estimados: el visitante solo puede agregar).
+     Nunca rompe el sitio: si no está configurado o falla, no pasa nada. */
+  window.guardar = (tabla, fila) => {
+    if (!FOUND.SUPABASE_URL || !FOUND.SUPABASE_ANON_KEY) return Promise.resolve(false);
+    return fetch(`${FOUND.SUPABASE_URL}/rest/v1/${tabla}`, {
+      method: "POST", keepalive: true,
+      headers: { apikey: FOUND.SUPABASE_ANON_KEY, Authorization: `Bearer ${FOUND.SUPABASE_ANON_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" },
+      body: JSON.stringify(fila)
+    }).then(r => r.ok).catch(() => false);
+  };
 
   /* Enlaces a WhatsApp con mensaje */
   window.waLink = text => `https://wa.me/${FOUND.WHATSAPP}?text=${encodeURIComponent(text)}`;

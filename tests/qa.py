@@ -15,7 +15,7 @@ from urllib.parse import urljoin
 from playwright.sync_api import sync_playwright
 
 BASE = "http://127.0.0.1:8417"
-PAGES = ["/", "/servicios/", "/ejemplos/", "/contacto/", "/brief/", "/privacidad.html", "/404.html"]
+PAGES = ["/", "/servicios/", "/ejemplos/", "/contacto/", "/brief/", "/mi-proyecto/", "/panel/", "/privacidad.html", "/404.html"]
 results = []
 
 
@@ -68,7 +68,7 @@ with sync_playwright() as p:
             if r.status != 200:
                 broken.append(f"{u} en {path} → {r.status}")
     check(f"enlaces internos y recursos ({len(seen)})", not broken, "; ".join(broken)[:300])
-    gc = [pth for pth in PAGES if pth != "/brief/" and (page.goto(BASE + pth) and page.locator("script[data-goatcounter='https://foundstudio.goatcounter.com/count']").count() != 1)]
+    gc = [pth for pth in PAGES if pth not in ("/brief/", "/mi-proyecto/", "/panel/") and (page.goto(BASE + pth) and page.locator("script[data-goatcounter='https://foundstudio.goatcounter.com/count']").count() != 1)]
     check("visitas: GoatCounter en todas las páginas públicas", not gc, ", ".join(gc))
     wa = page.evaluate("[...document.querySelectorAll('a[href*=\"wa.me\"]')].map(a => a.href)")
     check("WhatsApp apunta al número correcto", wa and all("wa.me/56942579133" in u for u in wa))

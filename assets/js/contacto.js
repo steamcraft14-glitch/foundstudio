@@ -88,6 +88,12 @@
       if (!res.ok || json.success === false) throw new Error(json.message || "Error " + res.status);
       status.dataset.kind = "ok";
       status.textContent = `¡Gracias, ${payload.nombre.split(" ")[0]}! Recibimos tu mensaje y te respondemos en menos de 24 horas.`;
+      guardar("cotizaciones", {
+        origen: /Estimado del asistente/.test(payload.mensaje) ? "asistente" : "formulario",
+        nombre: payload.nombre.slice(0, 80), negocio: payload.negocio.slice(0, 80), rubro: payload.rubro.slice(0, 80), servicio: payload.servicio.slice(0, 80),
+        telefono: d.telefono.trim().slice(0, 30) || null, email: d.email.trim().slice(0, 120) || null,
+        mensaje: d.mensaje.trim().slice(0, 2000) || null, consentimiento: payload.consentimiento.slice(0, 200)
+      });
       form.reset(); track("form_submit_ok", { servicio: d.servicio || "sin" });
     } catch (err) {
       console.warn("[contacto]", err.message);
