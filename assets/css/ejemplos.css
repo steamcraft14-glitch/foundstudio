@@ -1,0 +1,74 @@
+/* {found} studio · /ejemplos/
+   Estilos de los seis negocios ficticios. Cada uno tiene su propia identidad dentro del celular;
+   ninguno usa la marca {found}. Tipografías del sistema para no cargar fuentes extra. */
+
+.phone-screen { --d-bg: #fff; --d-ink: #1b1b1b; --d-acc: #333; --d-alt: #f3f3f3; --d-font: Arial, sans-serif; --d-head: var(--d-font);
+  background: var(--d-bg); color: var(--d-ink); font-family: var(--d-font); font-size: 16px; line-height: 1.45; }
+.phone-screen[data-r="restaurante"] { --d-bg: #FBF6EE; --d-ink: #2B1D14; --d-acc: #A63A24; --d-alt: #F1E6D6; --d-font: Georgia, "Times New Roman", serif; }
+.phone-screen[data-r="barberia"]    { --d-bg: #141414; --d-ink: #F4F1EA; --d-acc: #E3B23C; --d-alt: #222; --d-font: "Segoe UI", Arial, sans-serif; --d-head: Impact, "Arial Black", sans-serif; }
+.phone-screen[data-r="almacen"]     { --d-bg: #FFFFFF; --d-ink: #18382A; --d-acc: #2C7A47; --d-alt: #EEF5EF; --d-font: Verdana, Geneva, sans-serif; }
+.phone-screen[data-r="botilleria"]  { --d-bg: #F4F6F9; --d-ink: #16202E; --d-acc: #0E6B5C; --d-alt: #FFFFFF; --d-font: "Segoe UI", system-ui, sans-serif; }
+.phone-screen[data-r="eventos"]     { --d-bg: #F8F2EB; --d-ink: #3A2629; --d-acc: #8A3646; --d-alt: #EFE3D6; --d-font: "Palatino Linotype", "Book Antiqua", Palatino, serif; }
+.phone-screen[data-r="construccion"]{ --d-bg: #F1F1EE; --d-ink: #1C1C1C; --d-acc: #C85A12; --d-alt: #E3E3DE; --d-font: "Arial Narrow", "Segoe UI", Arial, sans-serif; --d-head: "Arial Black", Arial, sans-serif; }
+
+.phone-screen * { box-sizing: border-box; }
+.d-head { padding: 26px 20px 20px; background: var(--d-acc); color: #fff; }
+.phone-screen[data-r="barberia"] .d-head { background: #000; color: var(--d-acc); }
+.phone-screen[data-r="botilleria"] .d-head { background: var(--d-ink); }
+.d-name { font-family: var(--d-head); font-size: 28px; line-height: 1.05; font-weight: 700; letter-spacing: -0.01em; }
+.phone-screen[data-r="barberia"] .d-name, .phone-screen[data-r="construccion"] .d-name { letter-spacing: .02em; font-size: 32px; font-weight: 400; }
+.d-meta { font-size: 15px; opacity: .9; margin-top: 6px; }
+.d-photo { padding: 0; position: relative; }
+.d-photo img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.d-photo div { padding: 16px 20px 18px; }
+.d-sec { padding: 20px; }
+.d-alt { background: var(--d-alt); }
+.d-h { font-family: var(--d-head); font-size: 19px; font-weight: 700; letter-spacing: -0.005em; line-height: 1.2; margin-bottom: 12px; text-wrap: initial; }
+.d-tabs, .d-slots { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.d-tabs button, .d-slots button, .d-list button, .d-step button, .d-btns button {
+  min-height: 44px; min-width: 44px; padding: 0 14px; border: 2px solid var(--d-acc); background: transparent; color: var(--d-ink);
+  font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; border-radius: 6px;
+  transition: background-color .15s, color .15s, transform .15s;
+}
+.d-tabs button:active, .d-slots button:active, .d-list button:active, .d-step button:active, .d-btns button:active, .d-cta:active { transform: scale(.97); }
+.d-tabs button[aria-pressed="true"], .d-slots button[aria-pressed="true"], .d-list button[aria-pressed="true"] { background: var(--d-acc); color: #fff; }
+.phone-screen[data-r="barberia"] .d-tabs button[aria-pressed="true"], .phone-screen[data-r="barberia"] .d-slots button[aria-pressed="true"], .phone-screen[data-r="barberia"] .d-list button[aria-pressed="true"] { color: #141414; }
+.d-slots button:disabled { opacity: .35; text-decoration: line-through; cursor: not-allowed; border-style: dashed; }
+.d-list { display: grid; gap: 8px; margin-bottom: 16px; }
+.d-list button { display: flex; justify-content: space-between; align-items: center; text-align: left; width: 100%; }
+.d-menu li, .d-prods li, .d-stock li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 0; }
+.d-menu li + li, .d-prods li + li, .d-stock li + li { border-top: 1px solid rgba(0,0,0,.08); }
+.d-pn { display: flex; flex-direction: column; }
+.d-pn small { font-size: 15px; opacity: .8; }
+.d-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+.d-step { display: inline-flex; align-items: center; gap: 6px; }
+.d-step output { min-width: 26px; text-align: center; font-weight: 700; }
+.d-cta {
+  width: 100%; min-height: 50px; border: 0; border-radius: 6px; background: var(--d-acc); color: #fff;
+  font: inherit; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 4px; transition: transform .15s, opacity .15s;
+}
+.phone-screen[data-r="barberia"] .d-cta { color: #141414; }
+.d-cta:disabled { opacity: .45; cursor: not-allowed; }
+.d-ok { margin-top: 12px; font-weight: 600; font-size: 16px; }
+.d-ok:empty { display: none; }
+.d-small { font-size: 15px; opacity: .85; margin: 8px 0 12px; }
+.d-meter { height: 10px; background: rgba(0,0,0,.1); border-radius: 5px; overflow: hidden; }
+.d-meter span { display: block; height: 100%; width: 0; background: var(--d-acc); transition: width .3s; }
+.d-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.d-kpis div { background: var(--d-alt); padding: 14px; border-radius: 6px; }
+.d-kpis small { display: block; font-size: 12.5px; opacity: .75; }
+.d-kpis strong { font-size: 22px; }
+.d-stock li[data-state="low"] small { color: #9A5B00; font-weight: 700; opacity: 1; }
+.d-stock li[data-state="out"] small { color: #A3261A; font-weight: 700; opacity: 1; }
+.d-btns { display: flex; gap: 6px; }
+.d-btns button:disabled { opacity: .4; cursor: not-allowed; }
+.d-lab { display: block; font-weight: 600; margin: 4px 0 6px; }
+.phone-screen input[type="range"] { width: 100%; accent-color: var(--d-acc); min-height: 44px; margin-bottom: 10px; }
+.d-checks { display: grid; gap: 4px; }
+.d-checks label { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.d-checks input { width: 22px; height: 22px; accent-color: var(--d-acc); }
+.d-checks small { margin-left: auto; opacity: .8; }
+.d-big { font-size: 24px; }
+.d-foot { padding: 16px 20px 24px; font-size: 12.5px; opacity: .7; }
+.phone-screen :focus-visible { outline: 3px solid var(--d-acc); outline-offset: 2px; }
+.phone-screen[data-r="barberia"] :focus-visible { outline-color: #fff; }

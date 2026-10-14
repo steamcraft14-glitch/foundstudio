@@ -3,39 +3,49 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; worker-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; worker-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Política de privacidad | {found} studio</title>
 <meta name="description" content="Qué datos recoge {found} studio, para qué los usa, con quién los comparte y cómo ejercer tus derechos de acceso, rectificación, supresión, oposición, portabilidad y bloqueo.">
 <link rel="canonical" href="https://foundstudio.cl/privacidad.html">
 <meta name="theme-color" content="#1F2A4A">
-<meta name="color-scheme" content="dark">
-<link rel="icon" href="found-logo/v10-final/found-icono-oscuro.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap">
-<link rel="stylesheet" href="assets/css/styles.css?v=10">
-<link rel="stylesheet" href="assets/css/legal.css?v=2">
-<script defer src="assets/js/privacidad.js?v=1"></script>
+<link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/sora-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css?v=1">
+<script defer src="/assets/js/site.js?v=1"></script>
+<script defer src="/assets/js/privacidad.js?v=2"></script>
 </head>
-<body class="legal">
+<body>
 <a class="skip" href="#contenido">Saltar al contenido</a>
 
-<header class="top">
-  <a class="brand" href="./" aria-label="{found} studio, volver al inicio">
-    <img src="assets/brand/found-horizontal.svg" alt="{found} studio" width="1269" height="245">
-  </a>
-  <a class="btn btn-line btn-sm" href="./">Volver al sitio</a>
+<header class="bar bar-solid cream">
+  <a class="wordmark" href="/" aria-label="{found} studio, inicio"><img src="/assets/brand/found-horizontal-navy.svg" alt="" width="1269" height="245"></a>
+  <nav class="nav" aria-label="Principal">
+    <div class="nav-links">
+      <a href="/ejemplos/">Ejemplos</a>
+      <a href="/precios/">Precios</a>
+      <a href="/contacto/">Contacto</a>
+    </div>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menú</button>
+    <div class="menu-panel" id="menu">
+      <a href="/ejemplos/">Ejemplos</a>
+      <a href="/precios/">Precios</a>
+      <a href="/contacto/">Contacto</a>
+    </div>
+  </nav>
 </header>
 
-<main id="contenido" class="wrap legal-main">
-  <header class="legal-head">
-    <h1>Política de privacidad</h1>
-    <p class="legal-date">Última actualización: <time datetime="2026-10-09">9 de octubre de 2026</time></p>
-    <p class="legal-lede">Pedimos pocos datos, los usamos solo para responderte y nunca los vendemos. Aquí está el detalle, de acuerdo con la Ley N° 19.628 y la Ley N° 21.719 de Protección de Datos Personales de Chile.</p>
-  </header>
+<main id="contenido">
+  <section class="page-head cream page-head-tight page-head-sm">
+    <h1>Privacidad</h1>
+    <p>Pedimos pocos datos, los usamos solo para responderte y nunca los vendemos.</p>
+    <p class="legal-law">Detalle según la Ley N° 19.628 y la Ley N° 21.719 de Protección de Datos Personales de Chile.</p>
+    <p class="legal-date">Última actualización: <time datetime="2026-10-14">14 de octubre de 2026</time></p>
+  </section>
 
+  <div class="sec cream sec-flush">
+  <div class="wrap legal-body">
   <nav class="legal-toc" aria-label="Contenido de esta página">
     <ol>
       <li><a href="#responsable">Quién es responsable</a></li>
@@ -49,9 +59,9 @@
       <li><a href="#reclamos">Reclamos y cambios</a></li>
     </ol>
   </nav>
-
+  <div class="legal-text">
   <section id="responsable" aria-labelledby="h-responsable">
-    <h2 id="h-responsable">1. Quién es responsable de tus datos</h2>
+    <h2 id="h-responsable">Quién es responsable de tus datos</h2>
     <!-- Si el estudio tiene razón social y RUT, agrégalos aquí: la ley pide identificar al responsable. -->
     <p><strong>{found} studio</strong>, estudio de diseño y desarrollo web con base en Huechuraba, Región Metropolitana, Chile.</p>
     <ul>
@@ -61,15 +71,15 @@
   </section>
 
   <section id="datos" aria-labelledby="h-datos">
-    <h2 id="h-datos">2. Qué datos recogemos</h2>
-    <p><strong>Solo los que tú nos das en el formulario de contacto:</strong> tu nombre, el nombre y rubro de tu negocio, qué servicio te interesa, tu correo, tu teléfono (opcional) y el mensaje que escribas. Junto con ellos guardamos la fecha en que aceptaste esta política.</p>
+    <h2 id="h-datos">Qué datos recogemos</h2>
+    <p><strong>Solo los que tú nos das en el formulario de contacto:</strong> tu nombre, el nombre y rubro de tu negocio, qué servicio te interesa, tu WhatsApp o teléfono, tu correo (opcional) y el mensaje que escribas. Junto con ellos guardamos la fecha y la versión de esta política que aceptaste.</p>
     <p>Si nos escribes por correo o WhatsApp, recibimos los datos que aparezcan en esa conversación.</p>
-    <p>El cuadro “Nombre de tu negocio” de la animación de inicio funciona solo dentro de tu navegador: lo que escribes ahí no se envía a ninguna parte a menos que después mandes el formulario.</p>
+    <p>El buscador de prueba del inicio (“Escribe cómo te buscarían”) y los ejemplos por rubro funcionan solo dentro de tu navegador: lo que escribes o tocas ahí no se envía a ninguna parte. El campo “Cuéntanos qué negocio tienes” abre WhatsApp con tu texto ya escrito; solo nos llega si tú lo envías desde WhatsApp.</p>
     <p>No pedimos datos sensibles (salud, religión, opiniones políticas, datos biométricos, etc.). Por favor no los incluyas en tu mensaje. Este sitio no está dirigido a menores de 14 años.</p>
   </section>
 
   <section id="finalidad" aria-labelledby="h-finalidad">
-    <h2 id="h-finalidad">3. Para qué los usamos</h2>
+    <h2 id="h-finalidad">Para qué los usamos</h2>
     <ul>
       <li>Responder tu consulta y enviarte una cotización.</li>
       <li>Si luego nos contratas, coordinar y entregar el trabajo.</li>
@@ -79,7 +89,7 @@
   </section>
 
   <section id="terceros" aria-labelledby="h-terceros">
-    <h2 id="h-terceros">4. Con quién se comparten</h2>
+    <h2 id="h-terceros">Con quién se comparten</h2>
     <p>Para que el sitio funcione usamos estos proveedores. Algunos tienen servidores fuera de Chile, por lo que puede haber <strong>transferencia internacional</strong> de datos; solo trabajamos con servicios que declaran medidas de seguridad adecuadas.</p>
     <div class="legal-table" role="region" aria-label="Proveedores" tabindex="0">
       <table>
@@ -88,8 +98,6 @@
           <tr><td>Web3Forms</td><td>Hace llegar el formulario a nuestro correo</td><td>Los datos del formulario</td></tr>
           <tr><td>Nuestro proveedor de correo</td><td>Guardar y responder tus mensajes</td><td>Los datos del formulario y la conversación</td></tr>
           <tr><td>GitHub Pages</td><td>Alojar este sitio</td><td>Tu dirección IP y datos técnicos de la visita (registros del servidor)</td></tr>
-          <tr><td>Google Fonts</td><td>Cargar las tipografías</td><td>Tu dirección IP y tu navegador</td></tr>
-          <tr><td>Cloudflare (cdnjs)</td><td>Cargar la librería de animaciones</td><td>Tu dirección IP y tu navegador</td></tr>
           <tr><td>WhatsApp (Meta)</td><td>Solo si eliges escribirnos por WhatsApp</td><td>Lo que nos envíes por ahí</td></tr>
         </tbody>
       </table>
@@ -98,7 +106,7 @@
   </section>
 
   <section id="plazo" aria-labelledby="h-plazo">
-    <h2 id="h-plazo">5. Cuánto tiempo los guardamos</h2>
+    <h2 id="h-plazo">Cuánto tiempo los guardamos</h2>
     <ul>
       <li><strong>Consultas que no terminan en un proyecto:</strong> hasta 12 meses desde el último contacto; después las eliminamos.</li>
       <li><strong>Clientes:</strong> mientras dure el trabajo y luego el tiempo que exijan las leyes (por ejemplo, tributarias).</li>
@@ -107,16 +115,16 @@
   </section>
 
   <section id="cookies" aria-labelledby="h-cookies">
-    <h2 id="h-cookies">6. Cookies</h2>
+    <h2 id="h-cookies">Cookies</h2>
     <p><strong>Este sitio no usa cookies</strong>, ni almacenamiento local, ni herramientas de analítica o publicidad que te sigan. Por eso no ves un aviso de cookies. Si algún día agregamos alguna que no sea estrictamente necesaria, te pediremos permiso antes de activarla.</p>
   </section>
 
   <section id="seguridad" aria-labelledby="h-seguridad">
-    <h2 id="h-seguridad">7. Cómo los protegemos</h2>
+    <h2 id="h-seguridad">Cómo los protegemos</h2>
     <ul>
       <li>Todo el sitio funciona con conexión cifrada (HTTPS).</li>
       <li>El sitio no tiene base de datos ni panel de administración: tus datos no quedan guardados en él.</li>
-      <li>Políticas de seguridad del navegador que bloquean código de terceros no autorizado, y verificación de integridad de las librerías externas.</li>
+      <li>Políticas de seguridad del navegador que bloquean código de terceros no autorizado. El sitio no carga tipografías ni librerías de otros servidores.</li>
       <li>Pedimos solo los datos mínimos y solo las personas del estudio que te atienden tienen acceso a ellos.</li>
       <li>Si ocurriera una filtración que afecte tus datos, te avisaremos y la informaremos a la Agencia de Protección de Datos Personales, como exige la ley.</li>
     </ul>
@@ -124,7 +132,7 @@
   </section>
 
   <section id="derechos" aria-labelledby="h-derechos">
-    <h2 id="h-derechos">8. Tus derechos (ARCO+)</h2>
+    <h2 id="h-derechos">Tus derechos (ARCO+)</h2>
     <p>En cualquier momento, sin costo, puedes pedirnos:</p>
     <dl class="rights">
       <div><dt>Acceso</dt><dd>Saber qué datos tuyos tenemos y para qué.</dd></div>
@@ -136,7 +144,7 @@
     </dl>
     <p>Usa este formulario: se abrirá tu correo con la solicitud lista para enviar a <a href="mailto:contacto@foundstudio.cl">contacto@foundstudio.cl</a>. Responderemos dentro de 30 días corridos. Para proteger tus datos, podríamos pedirte confirmar que eres tú (por ejemplo, escribiéndonos desde el mismo correo que usaste).</p>
 
-    <form class="form rights-form" id="arco" novalidate>
+    <form class="rights-form" id="arco" novalidate>
       <div class="field">
         <label for="a-nombre">Tu nombre</label>
         <input id="a-nombre" name="nombre" type="text" autocomplete="name" maxlength="80" required>
@@ -149,8 +157,7 @@
       </div>
       <div class="field field-wide">
         <label for="a-derecho">¿Qué quieres pedir?</label>
-        <div class="select">
-          <select id="a-derecho" name="derecho" required>
+                  <select id="a-derecho" name="derecho" required>
             <option value="" selected disabled>Elige una opción</option>
             <option>Acceso a mis datos</option>
             <option>Rectificación de mis datos</option>
@@ -160,31 +167,43 @@
             <option>Bloqueo temporal de mis datos</option>
             <option>Retirar mi consentimiento</option>
           </select>
-        </div>
         <p class="err" id="ea-derecho"></p>
       </div>
       <div class="field field-wide">
-        <label for="a-detalle">Detalle <span class="opt">(opcional)</span></label>
+        <label for="a-detalle">Detalle <small>(opcional)</small></label>
         <textarea id="a-detalle" name="detalle" rows="3" maxlength="1500" placeholder="Por ejemplo: qué dato hay que corregir."></textarea>
       </div>
       <div class="form-foot field-wide">
-        <button class="btn btn-cream" type="submit">Preparar solicitud</button>
+        <button class="btn btn-navy" type="submit">Preparar solicitud</button>
         <p class="status" id="a-status" role="status" aria-live="polite"></p>
       </div>
     </form>
   </section>
 
   <section id="reclamos" aria-labelledby="h-reclamos">
-    <h2 id="h-reclamos">9. Reclamos y cambios a esta política</h2>
+    <h2 id="h-reclamos">Reclamos y cambios a esta política</h2>
     <p>Si crees que no respetamos tus derechos, puedes reclamar ante la <strong>Agencia de Protección de Datos Personales</strong> de Chile (o ante el organismo que la ley indique mientras esta comienza a operar). Te pedimos escribirnos primero: casi siempre podemos resolverlo rápido.</p>
     <p>Si cambiamos esta política, publicaremos aquí la nueva versión con su fecha. Si el cambio afecta cómo usamos tus datos, te pediremos de nuevo tu consentimiento.</p>
   </section>
+  </div>
+  </div>
+  </div>
 </main>
 
-<footer class="foot legal-foot">
-  <div class="wrap foot-in">
-    <p class="foot-small">© 2026 {found} studio · <a href="./">foundstudio.cl</a></p>
+<footer class="foot navy foot-short">
+  <div class="foot-top">
+    <div class="foot-inv">
+      <p>Ctrl + found.</p>
+      <a class="btn" href="/">Volver al inicio</a>
+    </div>
+    <nav class="foot-links" aria-label="Pie de página">
+      <a href="/ejemplos/">Ejemplos</a>
+      <a href="/precios/">Precios</a>
+      <a href="/contacto/">Contacto</a>
+    </nav>
   </div>
+  <div class="foot-legal"><span>© 2026 {found} studio · Huechuraba, Santiago</span></div>
+  <div class="foot-name" aria-hidden="true"><img src="/assets/brand/found-logo.svg" alt="" width="741" height="298"></div>
 </footer>
 </body>
 </html>

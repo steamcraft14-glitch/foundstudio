@@ -1,0 +1,18 @@
+# GitHub Pages: el sitio es HTML estático. Este archivo solo decide qué NO se publica.
+# Los archivos internos del estudio quedan en el repo, pero no en foundstudio.cl.
+exclude:
+  - CLAUDE.md
+  - PRODUCT.md
+  - DESIGN.md
+  - README.md
+  - SEGURIDAD.md
+  - skills-lock.json
+  - tests
+  - docs
+  - design-system
+  - social
+  - showreel
+  - found-logo
+# Las carpetas que empiezan con punto no se publican, salvo esta (security.txt).
+include:
+  - .well-known

@@ -9,3 +9,6 @@ showreel/
 
 # Claves locales: nunca se suben
 api-key-*.txt
+
+# Herramientas de diseño (capturas y reportes locales)
+.taste-skill/

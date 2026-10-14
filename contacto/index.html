@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://api.web3forms.com; form-action 'self' https://api.web3forms.com; base-uri 'self'; object-src 'none'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Contacto y cotización | {found} studio</title>
+<meta name="description" content="Cotiza gratis tu página web, tienda online o sistema. Escríbenos por WhatsApp al +56 9 4257 9133 o deja tus datos: respondemos en menos de 24 horas.">
+<link rel="canonical" href="https://foundstudio.cl/contacto/">
+<meta name="theme-color" content="#1F2A4A">
+<link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CL">
+<meta property="og:site_name" content="{found} studio">
+<meta property="og:url" content="https://foundstudio.cl/contacto/">
+<meta property="og:title" content="Cotiza gratis | {found} studio">
+<meta property="og:description" content="Escríbenos por WhatsApp o deja tus datos. Respondemos en menos de 24 horas.">
+<meta property="og:image" content="https://foundstudio.cl/assets/img/og-found-studio.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="/assets/fonts/sora-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css?v=1">
+<script defer src="/assets/js/site.js?v=1"></script>
+<script defer src="/assets/js/contacto.js?v=1"></script>
+</head>
+<body>
+<a class="skip" href="#contenido">Saltar al contenido</a>
+
+<header class="bar bar-solid cream">
+  <a class="wordmark" href="/" aria-label="{found} studio, inicio"><img src="/assets/brand/found-horizontal-navy.svg" alt="" width="1269" height="245"></a>
+  <nav class="nav" aria-label="Principal">
+    <div class="nav-links">
+      <a href="/ejemplos/">Ejemplos</a>
+      <a href="/precios/">Precios</a>
+      <a href="/contacto/" aria-current="page">Contacto</a>
+    </div>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menú</button>
+    <div class="menu-panel" id="menu">
+      <a href="/ejemplos/">Ejemplos</a>
+      <a href="/precios/">Precios</a>
+      <a href="/contacto/" aria-current="page">Contacto</a>
+    </div>
+  </nav>
+</header>
+
+<main id="contenido">
+  <section class="page-head cream page-head-tight page-head-sm">
+    <h1 data-in>Cotiza<br>gratis.</h1>
+    <p data-in="80">Cuéntanos de tu negocio y te respondemos en menos de 24 horas con una propuesta y el valor.</p>
+  </section>
+
+  <section class="sec cream sec-flush" aria-label="Formas de contacto">
+    <div class="wrap form-wrap">
+      <aside class="wa-big" data-in aria-labelledby="h-wa">
+        <h2 id="h-wa">Lo más rápido: WhatsApp</h2>
+        <p>Escríbenos como le escribirías a un amigo. Si quieres, mándanos fotos de tu local o de tu página actual.</p>
+        <a class="btn" href="https://wa.me/56942579133" data-msg="Hola {found}, quiero cotizar una página para mi negocio." data-track="whatsapp_click" data-where="contacto" target="_blank" rel="noopener">Abrir WhatsApp</a>
+        <dl>
+          <div><dt>WhatsApp</dt><dd><a href="https://wa.me/56942579133" target="_blank" rel="noopener">+56 9 4257 9133</a></dd></div>
+          <div><dt>Correo</dt><dd><a href="mailto:contacto@foundstudio.cl">contacto@foundstudio.cl</a></dd></div>
+          <div><dt>Instagram</dt><dd><a href="https://www.instagram.com/foundstudio.cl/" target="_blank" rel="noopener">@foundstudio.cl</a></dd></div>
+          <div><dt>Dónde estamos</dt><dd>Huechuraba, Santiago. Trabajamos a distancia con todo Chile.</dd></div>
+        </dl>
+      </aside>
+
+      <form class="full" id="cotizar" action="https://api.web3forms.com/submit" method="POST" novalidate data-in="80">
+        <h2>O déjanos tus datos</h2>
+        <p class="lead">Te contactamos por el medio que prefieras.</p>
+        <input type="hidden" name="access_key" value="13ae56a6-e783-4914-9675-7bab09f9e80d">
+        <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <div class="row-2">
+          <div class="field">
+            <label for="f-nombre">Tu nombre</label>
+            <input id="f-nombre" name="nombre" type="text" autocomplete="name" required>
+            <p class="err" id="e-nombre"></p>
+          </div>
+          <div class="field">
+            <label for="f-negocio">Nombre de tu negocio</label>
+            <input id="f-negocio" name="negocio" type="text" autocomplete="organization" required>
+            <p class="err" id="e-negocio"></p>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label for="f-rubro">Rubro</label>
+            <select id="f-rubro" name="rubro">
+              <option value="">Elige tu rubro</option>
+              <option value="restaurante">Restaurante o comida</option>
+              <option value="barberia">Barbería o peluquería</option>
+              <option value="almacen">Almacén o minimarket</option>
+              <option value="botilleria">Botillería</option>
+              <option value="eventos">Banquetería o eventos</option>
+              <option value="construccion">Construcción o servicios</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-servicio">¿Qué necesitas?</label>
+            <select id="f-servicio" name="servicio">
+              <option value="">Aún no lo sé</option>
+              <option value="pagina">Página web (desde $190.000)</option>
+              <option value="tienda">Tienda online</option>
+              <option value="software">Sistema de inventario, ventas o reservas</option>
+              <option value="mantencion">Cambios a una página que ya tengo</option>
+            </select>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label for="f-tel">WhatsApp o teléfono</label>
+            <input id="f-tel" name="telefono" type="tel" autocomplete="tel" inputmode="tel" placeholder="+56 9 1234 5678">
+            <p class="err" id="e-telefono"></p>
+          </div>
+          <div class="field">
+            <label for="f-email">Correo <small>(opcional)</small></label>
+            <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email">
+            <p class="err" id="e-email"></p>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-msg">Cuéntanos más <small>(opcional)</small></label>
+          <textarea id="f-msg" name="mensaje" rows="4" placeholder="Qué vendes, en qué comuna estás, si ya tienes página o Instagram…"></textarea>
+        </div>
+        <label class="consent" for="f-consent">
+          <input id="f-consent" name="consiento" type="checkbox" required>
+          <span>Acepto que {found} studio use estos datos solo para responder mi consulta, según la <a href="/privacidad.html">política de privacidad</a>.</span>
+        </label>
+        <p class="err" id="e-consiento"></p>
+        <button class="btn btn-navy" type="submit">Enviar mensaje</button>
+        <div class="status" id="f-status" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </section>
+
+  <section class="sec paper real" aria-labelledby="h-real-co">
+    <div class="wrap real-grid">
+      <div class="real-copy">
+        <h2 id="h-real-co" data-in>Lo último que publicamos.</h2>
+        <p data-in="60">Dos negocios que ya se encuentran en internet.</p>
+      </div>
+      <a class="real-item" href="https://lasdeliciasdenubi.cl" target="_blank" rel="noopener" data-track="caso_click" data-where="nubi-co" data-in="90">
+        <img class="real-desk" src="/assets/img/casos/nubi-escritorio-720.webp" width="720" height="450" alt="Sitio de Las Delicias de Nubi en un computador" loading="lazy" decoding="async">
+        <img class="real-phone" src="/assets/img/casos/nubi-celular-390.webp" width="390" height="844" alt="Sitio de Las Delicias de Nubi en un celular" loading="lazy" decoding="async">
+        <span class="real-cap">Las Delicias de Nubi · pastelería y banquetería <span class="sr">(abre en otra pestaña)</span></span>
+      </a>
+      <a class="real-item" href="https://gracia-vida.vercel.app" target="_blank" rel="noopener" data-track="caso_click" data-where="gracia-co" data-in="140">
+        <img class="real-desk" src="/assets/img/casos/gracia-vida-escritorio-720.webp" width="720" height="450" alt="Sitio de Gracia y Vida Huechuraba en un computador" loading="lazy" decoding="async">
+        <img class="real-phone" src="/assets/img/casos/gracia-vida-celular-390.webp" width="390" height="844" alt="Sitio de Gracia y Vida Huechuraba en un celular" loading="lazy" decoding="async">
+        <span class="real-cap">Gracia &amp; Vida · iglesia en Huechuraba <span class="sr">(abre en otra pestaña)</span></span>
+      </a>
+    </div>
+  </section>
+  <figure class="band band-short" aria-labelledby="cap-verduras">
+    <img src="/assets/img/mundo/feria-verduras-1600.webp" srcset="/assets/img/mundo/feria-verduras-800.webp 800w, /assets/img/mundo/feria-verduras-1600.webp 1600w" sizes="100vw" width="1600" height="1200" alt="Puesto de feria con verduras ordenadas y dos vendedoras atendiendo" loading="lazy" decoding="async">
+    <figcaption>
+      <p id="cap-verduras">Respondemos en menos de 24 horas.</p>
+      <small>Foto: Jorge Valdés R. (Jorval), dominio público</small>
+    </figcaption>
+  </figure>
+</main>
+
+<footer class="foot navy">
+  <div class="foot-top">
+    <div class="foot-inv">
+      <p>Ctrl + found.</p>
+      <a class="btn" href="https://wa.me/56942579133" data-msg="Hola {found}, quiero cotizar una página para mi negocio." data-track="whatsapp_click" data-where="pie" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+    </div>
+    <nav class="foot-links" aria-label="Pie de página">
+      <a href="/">Inicio</a>
+      <a href="/ejemplos/">Ejemplos</a>
+      <a href="/precios/">Precios</a>
+      <a href="https://www.instagram.com/foundstudio.cl/" target="_blank" rel="noopener">Instagram <span class="sr">(abre en otra pestaña)</span></a>
+    </nav>
+  </div>
+  <div class="foot-legal">
+    <span>© 2026 {found} studio · Huechuraba, Santiago · <a href="/privacidad.html">Privacidad</a></span>
+    <span>Foto: “Feria libre”, Jorge Valdés R. (Jorval), dominio público, vía Wikimedia Commons.</span>
+  </div>
+  <div class="foot-name" aria-hidden="true"><img src="/assets/brand/found-logo.svg" alt="" width="741" height="298"></div>
+</footer>
+</body>
+</html>

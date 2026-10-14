@@ -2,36 +2,27 @@
 <html lang="es-CL">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'self'; object-src 'none'; frame-src 'none'">
-<meta name="referrer" content="strict-origin-when-cross-origin">
-<title>Página no encontrada | {found} studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'">
 <meta name="robots" content="noindex">
-<link rel="icon" href="/found-logo/v10-final/found-icono-oscuro.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&display=swap">
-<style>
-  :root { color-scheme: dark; }
-  * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100svh; display: grid; place-items: center; padding: 24px 16px; background: #1F2A4A; color: #F2ECDF; font: 400 17px/1.6 "Sora", system-ui, sans-serif; text-align: center; }
-  main { display: grid; justify-items: center; gap: 18px; max-width: 34rem; }
-  img { width: min(260px, 70vw); height: auto; }
-  h1 { margin: 0; font: 700 clamp(30px, 7vw, 46px)/1.08 "Sora", sans-serif; letter-spacing: -.03em; text-wrap: balance; }
-  .slogan { width: min(220px, 60vw); height: auto; margin-top: 8px; }
-  p { margin: 0; color: #E2DACA; }
-  a.btn { display: inline-flex; align-items: center; min-height: 52px; padding: 0 26px; border-radius: 999px; background: #F2ECDF; color: #1F2A4A; font-weight: 700; text-decoration: none; }
-  a.btn:hover { background: #fff; }
-  a:focus-visible { outline: 2px solid #F2ECDF; outline-offset: 3px; }
-</style>
+<title>404: esta página no existe | {found} studio</title>
+<meta name="theme-color" content="#1F2A4A">
+<link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/sora-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css?v=1">
+<script defer src="/assets/js/site.js?v=1"></script>
 </head>
-<body>
-<main>
-  <img src="/assets/brand/found-campana-404.svg" alt="" width="787" height="643">
-  <h1>Esta página da 404.</h1>
-  <p>Irónico, ¿no? Tranquilo: tu negocio no tiene por qué pasar por lo mismo.</p>
-  <a class="btn" href="/">Volver al inicio</a>
-  <img class="slogan" src="/assets/brand/found-slogan.svg" alt="Ctrl + found." width="1248" height="265">
+<body class="navy">
+<header class="bar">
+  <a class="wordmark" href="/" aria-label="{found} studio, inicio"><img src="/assets/brand/found-horizontal.svg" alt="" width="1269" height="245"></a>
+</header>
+<main class="nf">
+  <div>
+    <h1>404</h1>
+    <p>Esta página no existe. Justo lo que no queremos que le pase a tu negocio.</p>
+    <a class="btn" href="/">Volver al inicio</a>
+  </div>
+  <video src="/assets/video/found-animacion.mp4" poster="/assets/video/found-animacion-poster.webp" width="720" height="720" autoplay muted loop playsinline aria-label="Animación del logo de {found}: se escribe la palabra found entre llaves"></video>
 </main>
 </body>
 </html>
