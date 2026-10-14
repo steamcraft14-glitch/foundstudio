@@ -73,3 +73,13 @@
 .phone-screen :focus-visible { outline: 3px solid var(--d-acc); outline-offset: 2px; }
 .phone-screen[data-r="barberia"] :focus-visible { outline-color: #fff; }
 .d-badge { display: inline-block; margin-top: 12px; background: #fff; color: var(--d-acc); font-weight: 700; font-size: 13.5px; padding: 6px 10px; border-radius: 99px; }
+
+/* vista "pestaña web": el mismo negocio ficticio, a lo ancho como una página real */
+.webview .d-head { padding: 40px max(22px, 9%) 34px; }
+.webview .d-name { font-size: clamp(28px, 3.4vw, 40px); }
+.webview .d-meta { font-size: 16px; }
+.webview .d-sec { padding: 28px max(22px, 9%); }
+.webview .d-h { font-size: 21px; }
+.webview .d-menu, .webview .d-prods, .webview .d-stock, .webview .d-list { max-width: 760px; }
+.webview .d-cta { max-width: 360px; }
+.webview .d-kpis { max-width: 520px; }
