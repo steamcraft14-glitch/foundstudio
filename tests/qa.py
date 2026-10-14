@@ -86,7 +86,7 @@ with sync_playwright() as p:
     page = browser.new_page(viewport={"width": 390, "height": 844})
     page.goto(BASE + "/", wait_until="networkidle")
     check("brief: la carpeta apunta al PDF", page.get_attribute(".folder", "href") == "/assets/docs/brief-found-studio.pdf")
-    check("brief: dice «Lo que te solicitamos»", page.inner_text(".folder-label") == "Lo que te solicitamos")
+    check("brief: carpeta sin etiqueta repetida", page.locator(".folder-label").count() == 0)
     check("brief: no se muestra dentro de la página", page.locator(".doc-sec").count() == 0)
     r = page.request.get(BASE + "/assets/docs/brief-found-studio.pdf")
     check("brief: el PDF se descarga", r.status == 200 and r.body()[:4] == b"%PDF")
