@@ -642,6 +642,12 @@ html:not(.js) .steps h3 { color: var(--cream); }
 .select::after { content: ""; position: absolute; right: 18px; top: 50%; width: 9px; height: 9px; border-right: 2.5px solid var(--navy); border-bottom: 2.5px solid var(--navy); translate: 0 -70%; rotate: 45deg; pointer-events: none; }
 .err { min-height: 1.35em; font-size: 14px; font-weight: 700; color: var(--err-on-cream); }
 .botcheck { display: none !important; }
+/* consentimiento (Ley 21.719): casilla sin marcar por defecto */
+.consent { margin-top: 4px; }
+.field .check { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; font-weight: 600; font-size: 15px; line-height: 1.5; color: var(--ink-soft); cursor: pointer; }
+.field .check input { width: 22px; height: 22px; min-height: 0; margin: 1px 0 0; padding: 0; accent-color: var(--navy); color-scheme: light; cursor: pointer; }
+.field .check a { color: var(--navy); font-weight: 800; }
+.field .check input[aria-invalid="true"] { outline: 2px solid var(--err-on-cream); outline-offset: 2px; }
 .form-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; margin-top: 6px; }
 .contact .btn-cream { background: var(--navy); color: var(--cream); }
 .contact .btn-cream:hover { background: #283766; box-shadow: 4px 5px 0 0 #9aa3bd; }
@@ -667,6 +673,9 @@ html:not(.js) .steps h3 { color: var(--cream); }
 .foot-meta { color: var(--muted); max-width: 56ch; }
 .foot-meta a { color: var(--cream); }
 .foot-small { color: var(--muted); font: 500 14px/1 var(--f-text); margin-top: 10px; }
+.foot-legal { margin-top: 0; line-height: 1.6; }
+.foot-legal a { color: var(--muted); }
+.foot-legal a:hover { color: var(--cream); }
 
 /* WhatsApp flotante */
 .wa-fab {

@@ -236,15 +236,22 @@ async page => {
     ok(vp, "correo inválido se marca", (await page.textContent("#e-email")).includes("incompleto"));
     await page.fill("#f-email", "camila@ejemplo.cl");
     await page.fill("#f-mensaje", "Quiero vender por internet con despacho en la comuna.");
+    // consentimiento: sin marcar la casilla no se envía
     mode = "success"; lastPayload = null;
+    ok(vp, "consentimiento: la casilla viene sin marcar", !(await page.isChecked("#f-acepto")));
+    await page.click("#f-send");
+    await settle(400);
+    ok(vp, "consentimiento: sin la casilla no se envía y avisa", lastPayload === null && (await page.textContent("#e-acepto")).includes("autorización"));
+    await page.check("#f-acepto");
     await page.click("#f-send");
     await page.waitForSelector("#f-status.is-ok", { timeout: 5000 }).catch(() => {});
     const okMsg = await page.textContent("#f-status");
     ok(vp, "envío exitoso: mensaje de confirmación", okMsg === "¡Listo! Te respondemos en menos de 24 horas", okMsg);
     ok(vp, "envío: asunto “Nuevo contacto web: [negocio]”", lastPayload?.subject === "Nuevo contacto web: Panadería La Espiga", lastPayload?.subject);
+    ok(vp, "envío: registra el consentimiento con fecha", /^Aceptó la política de privacidad \(versión \d{4}-\d{2}-\d{2}\) el /.test(lastPayload?.consentimiento || ""), lastPayload?.consentimiento);
     ok(vp, "envío: incluye botcheck y todos los campos", lastPayload && lastPayload.botcheck === false && ["nombre", "negocio", "rubro", "telefono", "email", "mensaje"].every(k => k in lastPayload));
     // error del servidor
-    await page.fill("#f-nombre", "Camila Rojas"); await page.fill("#f-negocio", "La Espiga"); await page.selectOption("#f-rubro", "otro"); await page.fill("#f-email", "camila@ejemplo.cl");
+    await page.fill("#f-nombre", "Camila Rojas"); await page.fill("#f-negocio", "La Espiga"); await page.selectOption("#f-rubro", "otro"); await page.fill("#f-email", "camila@ejemplo.cl"); await page.check("#f-acepto");
     mode = "fail"; simulatedFail = true;
     await page.click("#f-send");
     await page.waitForSelector("#f-status.is-err", { timeout: 5000 }).catch(() => {});

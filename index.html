@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Seguridad (ver SEGURIDAD.md). Si cambias el script en línea de abajo, recalcula su hash sha256. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'sha256-gmjJQzO7uUnFGdn274nEhy17KnLeqSmvuUnOuKlymnA='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://api.web3forms.com; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; worker-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Páginas web y software para pymes en Huechuraba y Santiago | {found} studio</title>
 <meta name="description" content="¿Tu negocio da 404? Diseño web, tiendas online, software de inventario y ventas, marketing digital y automatización con IA para pymes en Huechuraba y Santiago. Cotiza sin costo.">
 <link rel="canonical" href="https://foundstudio.cl/">
@@ -27,12 +30,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Fuentes de marca: no bloquean el primer pintado -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" id="fuentes" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" media="print">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap"></noscript>
 
-<link rel="stylesheet" href="assets/css/styles.css?v=8">
-<script>document.documentElement.classList.add("js")</script>
-<script defer src="assets/js/main.js?v=6"></script>
+<link rel="stylesheet" href="assets/css/styles.css?v=10">
+<script>document.documentElement.classList.add("js");(function(l){if(!l)return;var on=function(){l.media="all"};if(l.sheet)on();else l.addEventListener("load",on)})(document.getElementById("fuentes"))</script>
+<script defer src="assets/js/main.js?v=7"></script>
 
 <script type="application/ld+json">
 {
@@ -540,7 +543,7 @@
       <div class="folders">
 
         <!-- CASO 1 · Para cambiar el cliente, edita href, el dominio de la hoja y los textos. -->
-        <a class="folder" href="https://lasdeliciasdenubi.cl/" target="_blank" rel="noopener" data-folder>
+        <a class="folder" href="https://lasdeliciasdenubi.cl/" target="_blank" rel="noopener noreferrer" data-folder>
           <span class="folder-back" aria-hidden="true"></span>
           <span class="folder-paper" aria-hidden="true">
             <span class="paper-chrome"><i></i><i></i><i></i><span>lasdeliciasdenubi.cl</span></span>
@@ -556,7 +559,7 @@
         </a>
 
         <!-- CASO 2 · Para cambiar el cliente, edita href, el dominio de la hoja y los textos. -->
-        <a class="folder" href="https://gracia-vida.vercel.app/" target="_blank" rel="noopener" data-folder>
+        <a class="folder" href="https://gracia-vida.vercel.app/" target="_blank" rel="noopener noreferrer" data-folder>
           <span class="folder-back" aria-hidden="true"></span>
           <span class="folder-paper" aria-hidden="true">
             <span class="paper-chrome"><i></i><i></i><i></i><span>gracia-vida.vercel.app</span></span>
@@ -669,7 +672,7 @@
         <h2 id="contacto-h">¿Quieres cotizar? Cuéntanos de tu negocio.</h2>
         <p>Te respondemos en menos de 24 horas con una propuesta y una cotización sin costo.</p>
         <div class="alt">
-          <a class="btn btn-line btn-sm" id="wa-inline" href="https://wa.me/56942579133" target="_blank" rel="noopener">
+          <a class="btn btn-line btn-sm" id="wa-inline" href="https://wa.me/56942579133" target="_blank" rel="noopener noreferrer">
             <svg class="wa-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.42.25-.69.25-1.29.18-1.41-.08-.13-.28-.2-.57-.35m-5.42 7.4h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.89 9.88m8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 0 0-3.48-8.41z"/></svg>
             ¿Prefieres WhatsApp?
           </a>
@@ -684,12 +687,12 @@
 
         <div class="field">
           <label for="f-nombre">Tu nombre</label>
-          <input id="f-nombre" name="nombre" type="text" autocomplete="name" required>
+          <input id="f-nombre" name="nombre" type="text" autocomplete="name" maxlength="80" required>
           <p class="err" id="e-nombre"></p>
         </div>
         <div class="field">
           <label for="f-negocio">Nombre del negocio</label>
-          <input id="f-negocio" name="negocio" type="text" autocomplete="organization" required>
+          <input id="f-negocio" name="negocio" type="text" autocomplete="organization" maxlength="80" required>
           <p class="err" id="e-negocio"></p>
         </div>
         <div class="field">
@@ -724,17 +727,24 @@
         </div>
         <div class="field">
           <label for="f-telefono">Teléfono <span class="opt">(opcional)</span></label>
-          <input id="f-telefono" name="telefono" type="tel" autocomplete="tel" inputmode="tel" placeholder="+56 9 1234 5678">
+          <input id="f-telefono" name="telefono" type="tel" autocomplete="tel" maxlength="20" inputmode="tel" placeholder="+56 9 1234 5678">
           <p class="err" id="e-telefono"></p>
         </div>
         <div class="field">
           <label for="f-email">Correo</label>
-          <input id="f-email" name="email" type="email" autocomplete="email" required>
+          <input id="f-email" name="email" type="email" autocomplete="email" maxlength="120" required>
           <p class="err" id="e-email"></p>
         </div>
         <div class="field field-wide">
           <label for="f-mensaje">Cuéntanos más <span class="opt">(opcional)</span></label>
-          <textarea id="f-mensaje" name="mensaje" rows="4" placeholder="Por ejemplo: quiero que mis clientes puedan ver la carta y reservar."></textarea>
+          <textarea id="f-mensaje" name="mensaje" rows="4" maxlength="2000" placeholder="Por ejemplo: quiero que mis clientes puedan ver la carta y reservar."></textarea>
+        </div>
+        <div class="field field-wide consent">
+          <label class="check" for="f-acepto">
+            <input id="f-acepto" name="acepto" type="checkbox" value="sí" required>
+            <span>Acepto que {found} studio use estos datos solo para responder mi consulta y enviarme la cotización, según la <a href="privacidad.html" target="_blank">política de privacidad</a>. Puedo retirar mi autorización cuando quiera.</span>
+          </label>
+          <p class="err" id="e-acepto"></p>
         </div>
         <div class="form-foot field-wide">
           <button class="btn btn-cream" type="submit" id="f-send">Enviar mensaje</button>
@@ -751,12 +761,13 @@
     <img src="assets/brand/found-logo.svg" alt="{found} studio" width="741" height="298" loading="lazy" class="foot-logo">
     <img src="assets/brand/found-slogan.svg" alt="Ctrl + found." width="1248" height="265" loading="lazy" class="foot-slogan">
     <p class="foot-meta">Páginas web, tiendas online, software para negocios, marketing digital y automatización con IA para pymes y emprendedores de Chile. Desde Huechuraba, para todo Santiago.</p>
-    <p class="foot-meta"><a href="mailto:contacto@foundstudio.cl">contacto@foundstudio.cl</a> · <a href="https://wa.me/56942579133" id="wa-foot" target="_blank" rel="noopener">WhatsApp +56 9 4257 9133</a></p>
+    <p class="foot-meta"><a href="mailto:contacto@foundstudio.cl">contacto@foundstudio.cl</a> · <a href="https://wa.me/56942579133" id="wa-foot" target="_blank" rel="noopener noreferrer">WhatsApp +56 9 4257 9133</a></p>
     <p class="foot-small">© <span id="year">2026</span> {found} studio · foundstudio.cl</p>
+    <p class="foot-small foot-legal"><a href="privacidad.html">Política de privacidad</a> · <a href="privacidad.html#derechos">Tus derechos sobre tus datos</a></p>
   </div>
 </footer>
 
-<a class="wa-fab" id="wa-fab" href="https://wa.me/56942579133" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+<a class="wa-fab" id="wa-fab" href="https://wa.me/56942579133" target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.42.25-.69.25-1.29.18-1.41-.08-.13-.28-.2-.57-.35m-5.42 7.4h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.89 9.88m8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 0 0-3.48-8.41z"/></svg>
 </a>
 </body>

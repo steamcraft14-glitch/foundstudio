@@ -1,0 +1,7 @@
+# {found} studio · foundstudio.cl
+# Si encontraste una vulnerabilidad en este sitio, avísanos. Gracias.
+Contact: mailto:contacto@foundstudio.cl
+Expires: 2027-10-09T00:00:00.000Z
+Preferred-Languages: es, en
+Canonical: https://foundstudio.cl/.well-known/security.txt
+Policy: https://foundstudio.cl/privacidad.html#seguridad

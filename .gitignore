@@ -3,3 +3,9 @@
 # Herramientas locales (Claude Code, skills, hooks): no se publican
 .claude/
 tests/screens/
+
+# Videos (HyperFrames): no se publican en el sitio
+showreel/
+
+# Claves locales: nunca se suben
+api-key-*.txt

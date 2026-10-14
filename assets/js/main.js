@@ -5,6 +5,8 @@
 const WEB3FORMS_KEY = "PEGAR_AQUI";
 // Número de WhatsApp de la agencia, sin + ni espacios.
 const WHATSAPP = "56942579133";
+// Fecha de la política de privacidad vigente (privacidad.html). Cámbiala si cambias la política.
+const PRIVACIDAD_VERSION = "2026-10-09";
 // ──────────────────────────────────────────────────────────
 
 (() => {
@@ -300,7 +302,8 @@ const WHATSAPP = "56942579133";
     negocio: { valueMissing: "Escribe el nombre de tu negocio." },
     rubro: { valueMissing: "Elige un rubro (o “Otro”)." },
     email: { valueMissing: "Escribe tu correo para poder responderte.", typeMismatch: "Revisa el correo: parece incompleto." },
-    telefono: { custom: "Revisa el teléfono: debe tener al menos 8 dígitos." }
+    telefono: { custom: "Revisa el teléfono: debe tener al menos 8 dígitos." },
+    acepto: { valueMissing: "Necesitamos tu autorización para usar tus datos y responderte." }
   };
   const errEl = f => $("#e-" + f.name);
   function clearError(f) {
@@ -314,6 +317,7 @@ const WHATSAPP = "56942579133";
       const digits = f.value.replace(/\D/g, "");
       if (f.value.trim() && digits.length < 8) msg = m.custom;
     } else if (f.validity.valueMissing || !f.value.trim()) {
+      // incluye la casilla de consentimiento: sin marcar, no se envía nada
       if (f.required) msg = m.valueMissing;
     } else if (f.validity.typeMismatch || (f.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.value.trim()))) {
       msg = m.typeMismatch;
@@ -347,8 +351,11 @@ const WHATSAPP = "56942579133";
 
     const data = Object.fromEntries(new FormData(form));
     delete data.botcheck;
+    delete data.acepto;
     const payload = {
       ...data,
+      // registro del consentimiento (Ley 21.719): qué aceptó y cuándo
+      consentimiento: `Aceptó la política de privacidad (versión ${PRIVACIDAD_VERSION}) el ${new Date().toLocaleString("es-CL")}`,
       access_key: WEB3FORMS_KEY,
       subject: `Nuevo contacto web: ${data.negocio.trim()}`,
       name: data.nombre,
@@ -405,16 +412,23 @@ const WHATSAPP = "56942579133";
   chrome();
 
   /* ── Carga diferida: GSAP y las fuentes de los ejemplos, después del primer pintado ── */
-  const loadScript = src => new Promise((ok, fail) => {
+  const loadScript = (src, integrity) => new Promise((ok, fail) => {
     const s = document.createElement("script");
+    if (integrity) { s.integrity = integrity; s.crossOrigin = "anonymous"; }
     s.src = src; s.onload = ok; s.onerror = fail;
     document.head.appendChild(s);
   });
   const CDN = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/";
+  // Integridad (SRI): si el CDN entregara un archivo alterado, el navegador no lo ejecuta.
+  // Si cambias la versión de GSAP, recalcula estos hashes.
+  const SRI = {
+    "gsap.min.js": "sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt",
+    "ScrollTrigger.min.js": "sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d"
+  };
   const afterPaint = new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
   afterPaint
-    .then(() => loadScript(CDN + "gsap.min.js"))
-    .then(() => loadScript(CDN + "ScrollTrigger.min.js"))
+    .then(() => loadScript(CDN + "gsap.min.js", SRI["gsap.min.js"]))
+    .then(() => loadScript(CDN + "ScrollTrigger.min.js", SRI["ScrollTrigger.min.js"]))
     .then(initStory)
     .catch(() => root.classList.remove("js")); // sin GSAP: la historia se muestra completa, una página bajo la otra
 

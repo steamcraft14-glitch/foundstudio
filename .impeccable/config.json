@@ -77,6 +77,24 @@
         "value": "condensed",
         "createdAt": "2026-10-09T17:19:43.640Z",
         "reason": "sanctioned: font of a fictional demo world inside the browser window (botillería app system-ui stack / construcción Barlow Condensed); DESIGN.md records demo worlds as contained"
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "showreel/**"
+        ],
+        "createdAt": "2026-10-09T19:21:01.027Z",
+        "reason": "video compositions follow HyperFrames house-style: accent radial glows are the video background layer; not the website"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "showreel/**"
+        ],
+        "createdAt": "2026-10-09T19:21:01.225Z",
+        "reason": "browser-window frame (6px cream bezel around the chrome and viewport) is the logo's window motif, intentional in the showreel"
       }
     ]
   }
