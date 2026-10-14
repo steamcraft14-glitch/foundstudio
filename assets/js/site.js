@@ -103,6 +103,16 @@ window.FOUND = {
     render();
   }
 
+  /* Brief: la carpeta abre el documento */
+  const brief = $("#brief");
+  if (brief && brief.showModal) {
+    let opener = null;
+    $$("[data-open-brief]").forEach(b => b.addEventListener("click", () => { opener = b; brief.showModal(); $(".doc-scroll", brief).scrollTop = 0; }));
+    $$("[data-close-brief]", brief).forEach(b => b.addEventListener("click", () => brief.close()));
+    brief.addEventListener("click", e => { if (e.target === brief) brief.close(); });   // clic fuera del documento
+    brief.addEventListener("close", () => opener && opener.focus());
+  } else $$("[data-open-brief]").forEach(b => b.addEventListener("click", () => { location.href = "/assets/docs/brief-found-studio.pdf"; }));
+
   /* Pasos: en pantallas táctiles, tocar un paso lo resalta */
   $$(".steps li").forEach(li => li.addEventListener("click", () => {
     $$(".steps li").forEach(x => x.classList.toggle("is-on", x === li && !li.classList.contains("is-on")));

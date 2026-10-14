@@ -82,6 +82,16 @@ with sync_playwright() as p:
     check("portada: sin precios fijos", "190" not in page.inner_text("body"))
     page.close()
 
+    # 3b. lo que te solicitamos: la carpeta abre el PDF y no hay brief dentro de la página
+    page = browser.new_page(viewport={"width": 390, "height": 844})
+    page.goto(BASE + "/", wait_until="networkidle")
+    check("brief: la carpeta apunta al PDF", page.get_attribute(".folder", "href") == "/assets/docs/brief-found-studio.pdf")
+    check("brief: dice «Lo que te solicitamos»", page.inner_text(".folder-label") == "Lo que te solicitamos")
+    check("brief: no se muestra dentro de la página", page.locator(".doc-sec").count() == 0)
+    r = page.request.get(BASE + "/assets/docs/brief-found-studio.pdf")
+    check("brief: el PDF se descarga", r.status == 200 and r.body()[:4] == b"%PDF")
+    page.close()
+
     # 4. ejemplos: los seis rubros se dibujan y responden
     page = browser.new_page(viewport={"width": 1440, "height": 900})
     errors = watch(page)
