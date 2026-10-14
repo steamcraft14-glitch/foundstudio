@@ -13,11 +13,12 @@ window.FOUND = {
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* Medición: lista para Plausible o GoatCounter. Si no hay ninguno instalado, no hace nada. */
+  /* Medición con GoatCounter (o Plausible). Si no hay ninguno cargado, no hace nada.
+     En GoatCounter el detalle va en la ruta, porque agrupa por ruta: evento/whatsapp_click/barra */
   window.track = (name, props = {}) => {
     try {
       if (window.plausible) window.plausible(name, { props });
-      else if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "evento/" + name, title: JSON.stringify(props), event: true });
+      else if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: ["evento", name, ...Object.values(props)].join("/"), title: name, event: true });
     } catch (_) { /* la medición nunca rompe el sitio */ }
   };
   document.addEventListener("click", e => {

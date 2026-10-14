@@ -17,7 +17,7 @@ Qué exige la ley chilena a este sitio, qué ya está hecho en el código y qué
 | Registro del consentimiento: cada envío lleva qué versión de la política se aceptó y cuándo | `main.js` → `consentimiento`, `PRIVACIDAD_VERSION` |
 | Derechos ARCO+ (acceso, rectificación, supresión, oposición, portabilidad, bloqueo y retiro del consentimiento): formulario que arma la solicitud por correo | `privacidad.html#derechos`, `assets/js/privacidad.js` |
 | Enlaces a la política y a los derechos en el pie | `index.html` |
-| Sin cookies ni analítica, así que no hace falta banner de cookies. Única excepción: el borrador del brief en `localStorage`, estrictamente necesario, solo en el dispositivo del cliente y borrado al enviar | todo el sitio, `assets/js/brief.js` |
+| Sin cookies, así que no hace falta banner de cookies. Visitas con GoatCounter (sin cookies, sin IP), script alojado en `assets/js/goatcounter.js`, datos solo a `foundstudio.goatcounter.com`; no se carga en `/brief/` porque su URL lleva el nombre del cliente. Única excepción: el borrador del brief en `localStorage`, estrictamente necesario, solo en el dispositivo del cliente y borrado al enviar | todo el sitio, `assets/js/brief.js` |
 | HTTPS obligatorio (http redirige a https) | GitHub Pages |
 | Content-Security-Policy: solo se ejecuta código propio, GSAP de cdnjs y un script en línea autorizado por hash. Bloquea `<object>`, iframes y `<base>` inyectados. Los datos solo pueden salir hacia Web3Forms | `<meta>` en `index.html`, `privacidad.html`, `404.html` |
 | Subresource Integrity: GSAP se verifica con hash. Si el CDN entrega un archivo alterado, no se ejecuta | `main.js` → `SRI` |

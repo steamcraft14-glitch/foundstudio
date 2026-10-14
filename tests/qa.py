@@ -68,6 +68,8 @@ with sync_playwright() as p:
             if r.status != 200:
                 broken.append(f"{u} en {path} → {r.status}")
     check(f"enlaces internos y recursos ({len(seen)})", not broken, "; ".join(broken)[:300])
+    gc = [pth for pth in PAGES if pth != "/brief/" and (page.goto(BASE + pth) and page.locator("script[data-goatcounter='https://foundstudio.goatcounter.com/count']").count() != 1)]
+    check("visitas: GoatCounter en todas las páginas públicas", not gc, ", ".join(gc))
     wa = page.evaluate("[...document.querySelectorAll('a[href*=\"wa.me\"]')].map(a => a.href)")
     check("WhatsApp apunta al número correcto", wa and all("wa.me/56942579133" in u for u in wa))
     page.close()
@@ -203,6 +205,7 @@ with sync_playwright() as p:
     errors = watch(page)
     page.route("https://api.web3forms.com/**", fake_ok)
     page.goto(BASE + "/brief/?negocio=Barbería%20Prueba&nombre=Juan&servicio=pagina", wait_until="networkidle")
+    check("brief: no carga el contador de visitas", page.locator("script[data-goatcounter]").count() == 0)
     check("brief: no se indexa", "noindex" in (page.get_attribute("meta[name=robots]", "content") or ""))
     check("brief: rellena negocio y nombre del enlace", page.input_value("#b-negocio") == "Barbería Prueba" and page.input_value("#b-nombre") == "Juan")
     check("brief: saluda al negocio", "Barbería Prueba" in page.inner_text("#b-hola"))

@@ -251,7 +251,7 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
       form.addEventListener("click", () => track("cta_cotizar", { donde: "asistente" }));
       btns.append(wa, form); card.append(btns);
       this.log.append(card); this.scroll();
-      track("asistente_estimado", { servicio: s.servicio, rubro: s.rubro });
+      track("asistente_estimado", { servicio: s.servicio, rubro: s.rubro, rango: `${Math.round(r[0] / 1000)}k-${Math.round(r[1] / 1000)}k` });
       this.say("¿Quieres que lo veamos juntos? Escríbenos y lo afinamos a tu medida.", 700).then(() => {
         this.clearOpts();
         const again = el("button", "opt", "Calcular otro proyecto"); again.type = "button"; again.addEventListener("click", () => this.start(true));
