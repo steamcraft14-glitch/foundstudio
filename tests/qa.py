@@ -72,12 +72,14 @@ with sync_playwright() as p:
     check("WhatsApp apunta al número correcto", wa and all("wa.me/56942579133" in u for u in wa))
     page.close()
 
-    # 3. inicio: el buscador cambia con lo que se escribe
+    # 3. inicio: pasos que responden al toque y tarjeta "próximamente"
     page = browser.new_page()
     page.goto(BASE + "/", wait_until="networkidle")
-    page.fill("#busca", "almacén en Conchalí")
-    check("buscador: cambia el dominio", page.inner_text("#r404-title") == "almacenconchali.cl", page.inner_text("#r404-title"))
-    check("buscador: detecta el rubro", "rubro=almacen" in page.get_attribute("#rok-cta", "href"))
+    page.click(".steps li:nth-child(2)")
+    check("pasos: se resaltan al tocar", "is-on" in page.get_attribute(".steps li:nth-child(2)", "class"))
+    page.click(".case-soon .btn")
+    check("próximamente: abre el asistente", page.is_visible(".chat-panel"))
+    check("portada: sin precios fijos", "190" not in page.inner_text("body"))
     page.close()
 
     # 4. ejemplos: los seis rubros se dibujan y responden
@@ -123,6 +125,11 @@ with sync_playwright() as p:
     page.click(".chat-fab")
     panel = page.locator(".chat-panel")
     check("asistente: se abre el panel", panel.is_visible())
+    panel.get_by_role("button", name="Tengo una pregunta").click()
+    panel.get_by_role("button", name="¿Incluye el dominio?").click()
+    panel.get_by_role("button", name="Otra pregunta").wait_for(timeout=5000)
+    check("asistente: responde preguntas frecuentes", "NIC Chile" in panel.locator(".chat-log").inner_text())
+    panel.get_by_role("button", name="Calcular un estimado").click()
     for label in ["Barbería o belleza", "Una página web", "Una página con lo esencial"]:
         panel.get_by_role("button", name=label, exact=True).click()
     check("asistente: sugiere reservas para barbería", panel.get_by_role("button", name="Reservas o agenda").get_attribute("aria-pressed") == "true")

@@ -47,7 +47,7 @@ window.FOUND = {
     const url = $(".win-url-text", win), status = $(".win-status", win);
     const SITE = win.dataset.site || "lasdeliciasdenubi.cl";
     const show = (st, u, code) => { win.dataset.state = st; url.textContent = u; status.textContent = code; };
-    if (reduce) show("ok", SITE, "200 OK");
+    if (reduce) show("ok", SITE, "En línea");
     else {
       const type = async (txt) => { for (let i = 1; i <= txt.length; i++) { url.textContent = txt.slice(0, i); await new Promise(r => setTimeout(r, 70)); } };
       const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -59,7 +59,7 @@ window.FOUND = {
           await type("tunegocio.cl");
           await sleep(500); status.textContent = "404";
           await sleep(2600);
-          show("ok", SITE, "200 OK");
+          show("ok", SITE, "En línea");
           await sleep(5200);
           while (!visible) await sleep(500);
         }
@@ -102,6 +102,11 @@ window.FOUND = {
     $$("[data-fill]").forEach(b => b.addEventListener("click", () => { typer.value = b.dataset.fill; render(); typer.focus(); }));
     render();
   }
+
+  /* Pasos: en pantallas táctiles, tocar un paso lo resalta */
+  $$(".steps li").forEach(li => li.addEventListener("click", () => {
+    $$(".steps li").forEach(x => x.classList.toggle("is-on", x === li && !li.classList.contains("is-on")));
+  }));
 
   /* Con movimiento reducido, los videos quedan quietos */
   if (reduce) $$("video[autoplay]").forEach(v => { v.removeAttribute("autoplay"); v.pause(); });

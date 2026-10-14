@@ -50,6 +50,18 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
   const MODULOS = [["inventario", "Inventario y stock"], ["ventas", "Ventas y caja"], ["reservas", "Reservas o agenda"], ["cotizaciones", "Cotizaciones"], ["clientes", "Clientes"]];
   const NOMBRE = Object.fromEntries([...RUBROS, ...EXTRAS, ...MODULOS]);
 
+  const PREGUNTAS = [
+    ["costo", "¿Cuánto cuesta?", "Depende de lo que necesites: no cuesta lo mismo una página simple que una tienda con cien productos. Si quieres, te calculo un rango ahora mismo, y la cotización exacta te llega gratis en menos de 24 horas."],
+    ["plazo", "¿Cuánto se demora?", "Una página simple queda lista en alrededor de una semana desde que tenemos tus textos y fotos. Una tienda online, en tres a cuatro semanas. Un sistema, entre cuatro y ocho, según lo que incluya."],
+    ["dominio", "¿Incluye el dominio?", "Sí, el .cl del primer año va incluido y queda a tu nombre. Desde el segundo año la renovación la pagas directamente en NIC Chile."],
+    ["editar", "¿Puedo editarla yo?", "No hace falta: nos escribes por WhatsApp qué quieres cambiar y lo hacemos nosotros. Los cambios después de la entrega se cotizan aparte o con un plan de mantención."],
+    ["mensual", "¿Hay mensualidades?", "No son obligatorias. Pagas el proyecto, y la mantención es opcional."],
+    ["fotos", "¿Necesito fotos profesionales?", "No. Sirven fotos del celular y te decimos cómo sacarlas. Si prefieres que las saquemos nosotros, lo coordinamos y se cotiza aparte."],
+    ["incluye", "¿Qué no está incluido?", "La renovación del dominio desde el segundo año, las comisiones de los medios de pago de una tienda (Webpay, Mercado Pago u otro) y la publicidad pagada en Google o Instagram."],
+    ["tengo", "Ya tengo página, ¿la pueden arreglar?", "Sí. Cuéntanos qué tienes y qué no te funciona: a veces basta con arreglarla, y otras conviene hacerla de nuevo."],
+    ["quien", "¿Quién está detrás?", "Un estudio pequeño con base en Huechuraba. Hablas directo con quien diseña y programa tu página, no con un call center."]
+  ];
+
   class Asistente {
     constructor(root, { onClose } = {}) {
       this.root = root; this.onClose = onClose;
@@ -57,7 +69,7 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
       root.innerHTML = "";
       const head = el("div", "chat-head");
       const av = el("div", "chat-avatar"); av.innerHTML = '<img src="/assets/brand/found-icono.svg" alt="" width="30" height="24">';
-      const who = el("div", "chat-who"); who.append(el("strong", null, "Asistente {found}"), el("span", null, "Estimado en 1 minuto"));
+      const who = el("div", "chat-who"); who.append(el("strong", null, "Asistente {found}"), el("span", null, "Estimados y preguntas"));
       const reset = el("button", "chat-icon"); reset.type = "button"; reset.setAttribute("aria-label", "Empezar de nuevo"); reset.innerHTML = ICON_RESET;
       reset.addEventListener("click", () => this.start());
       head.append(av, who, reset);
@@ -127,7 +139,38 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
       const alive = () => run === this.run;
       track("asistente_inicio");
 
-      await this.say("¡Hola! Soy el asistente de {found}. Te hago unas preguntas rápidas y te doy un estimado de cuánto costaría tu proyecto.", 500); if (!alive()) return;
+      await this.say("¡Hola! Soy el asistente de {found}. Puedo calcularte un estimado de tu proyecto o responder tus dudas.", 500); if (!alive()) return;
+      await this.menu(alive);
+    }
+
+    async menu(alive, texto = "¿En qué te ayudo?") {
+      await this.say(texto); if (!alive()) return;
+      const v = await this.choose([["estimar", "Calcular un estimado"], ["pregunta", "Tengo una pregunta"], ["wa", "Hablar por WhatsApp"]]); if (!alive()) return;
+      if (v === "estimar") return this.estimar(alive);
+      if (v === "pregunta") return this.preguntas(alive);
+      this.whatsapp(); return this.menu(alive, "¿Algo más en que te ayude?");
+    }
+
+    whatsapp() {
+      track("whatsapp_click", { donde: "asistente-menu" });
+      window.open(waLink("Hola {found}, tengo una consulta sobre una página para mi negocio."), "_blank", "noopener");
+    }
+
+    async preguntas(alive) {
+      await this.say("Claro, elige tu pregunta:"); if (!alive()) return;
+      const id = await this.choose([...PREGUNTAS.map(([i, q]) => [i, q]), ["volver", "Volver"]]); if (!alive()) return;
+      if (id === "volver") return this.menu(alive);
+      const [, , respuesta] = PREGUNTAS.find(([i]) => i === id);
+      track("asistente_pregunta", { pregunta: id });
+      await this.say(respuesta, 800); if (!alive()) return;
+      const n = await this.choose([["otra", "Otra pregunta"], ["estimar", "Calcular un estimado"], ["wa", "Hablar por WhatsApp"]]); if (!alive()) return;
+      if (n === "otra") return this.preguntas(alive);
+      if (n === "estimar") return this.estimar(alive);
+      this.whatsapp(); return this.menu(alive, "¿Algo más en que te ayude?");
+    }
+
+    async estimar(alive) {
+      const s = this.s;
       await this.say("Para partir, ¿qué tipo de negocio tienes?"); if (!alive()) return;
       s.rubro = await this.choose(RUBROS); if (!alive()) return;
       if (s.rubro === "otro") { await this.say("¡Buena! ¿A qué se dedica tu negocio?"); if (!alive()) return; s.rubroTxt = await this.ask("Ej: veterinaria, taller mecánico"); if (!alive()) return; }
@@ -228,7 +271,7 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
   /* Botón flotante + panel en todas las páginas */
   const fab = document.createElement("button");
   fab.className = "chat-fab"; fab.type = "button"; fab.setAttribute("aria-haspopup", "dialog");
-  fab.innerHTML = '<span class="fab-ic"><img src="/assets/brand/found-icono.svg" alt="" width="30" height="24"></span><span class="fab-txt">Calcula tu estimado</span>';
+  fab.innerHTML = '<span class="fab-ic"><img src="/assets/brand/found-icono.svg" alt="" width="30" height="24"></span><span class="fab-txt">Asistente</span>';
   const panel = document.createElement("div");
   panel.className = "chat-panel"; panel.hidden = true; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", "Asistente de estimado");
   const box = document.createElement("div"); panel.append(box);

@@ -20,9 +20,9 @@
 <meta property="og:image" content="https://foundstudio.cl/assets/img/og-found-studio.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="/assets/fonts/sora-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/site.css?v=2">
-<script defer src="/assets/js/site.js?v=2"></script>
-<script defer src="/assets/js/asistente.js?v=1"></script>
+<link rel="stylesheet" href="/assets/css/site.css?v=3">
+<script defer src="/assets/js/site.js?v=3"></script>
+<script defer src="/assets/js/asistente.js?v=2"></script>
 </head>
 <body>
 <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -139,7 +139,7 @@
   <section class="sec" aria-labelledby="h-casos">
     <div class="wrap">
       <div class="sec-head"><h2 id="h-casos">Lo que ya entregamos</h2><p>Dos negocios reales que ya se encuentran en internet.</p></div>
-      <div class="cases">
+      <div class="cases cases-3">
         <a class="case" href="https://lasdeliciasdenubi.cl" target="_blank" rel="noopener" data-track="caso_click" data-where="nubi">
           <div class="case-stage">
             <div class="win">
@@ -162,23 +162,45 @@
           <h3>Gracia &amp; Vida</h3>
           <p>Iglesia en Huechuraba · sitio web <span class="sr">(abre en otra pestaña)</span></p>
         </a>
+        <div class="case case-soon">
+          <div class="case-stage">
+            <div class="win">
+              <div class="win-top"><div class="win-dots"><i></i><i></i><i></i></div><div class="win-url">tunegocio.cl</div></div>
+              <div class="win-body">
+                <p class="soon-mark"><span class="b">{</span>tu negocio<span class="b">}</span></p>
+                <button class="btn btn-sm" type="button" data-open-asistente data-track="cta_asistente" data-where="proximamente">Quiero ser el próximo</button>
+              </div>
+            </div>
+          </div>
+          <h3>Próximamente: tu negocio</h3>
+          <p>Este espacio está esperando al próximo negocio que deja de dar 404.</p>
+        </div>
       </div>
     
     </div>
   </section>
 
-  <section class="sec" aria-labelledby="h-faq">
-    <div class="wrap">
-      <div class="sec-head"><h2 id="h-faq">Sobre el valor</h2></div>
+  <section class="sec" aria-labelledby="h-brief">
+    <div class="wrap brief">
+      <div class="brief-copy">
+        <h2 id="h-brief">Lo que te vamos a pedir</h2>
+        <p>Para armar tu página necesitamos un poco de información. Mientras más completa, más rápido queda lista.</p>
+        <a class="btn" href="https://wa.me/56942579133" data-msg="Hola {found}, aquí va la información para mi página:&#10;&#10;Nombre del negocio:&#10;A qué se dedica:&#10;Comuna o dirección:&#10;Horario:&#10;WhatsApp y correo de contacto:&#10;¿Tengo logo? (sí/no):&#10;Fotos (las adjunto / necesito ayuda):&#10;Servicios o productos con precios:&#10;Instagram u otras redes:&#10;Dominio que tengo o me gustaría:&#10;Páginas que me gustan:" data-track="whatsapp_click" data-where="brief" target="_blank" rel="noopener">Enviar mi información por WhatsApp</a>
+        <small>Se abre WhatsApp con la lista lista para completar. Si te falta algo, no importa: lo vemos juntos.</small>
+      </div>
       <div class="faq">
-        <details><summary>¿Por qué no publican precios fijos?</summary><p>Porque cada negocio necesita cosas distintas. Preferimos cotizarte exacto que darte un precio que después cambia. El asistente te da un rango de referencia en un minuto.</p></details>
-        <details><summary>¿Hay mensualidades?</summary><p>No son obligatorias. Pagas el proyecto; la mantención es opcional y se cotiza aparte.</p></details>
-        <details><summary>¿Qué no está incluido?</summary><p>La renovación del dominio desde el segundo año (la pagas en NIC Chile), las comisiones de los medios de pago de una tienda y la publicidad pagada en Google o Instagram.</p></details>
-        <details><summary>¿Pueden hacer solo una parte?</summary><p>Sí. Por ejemplo, la página ahora y la tienda más adelante, sobre lo mismo que ya tienes.</p></details>
-        <details><summary>¿Y si ya tengo página?</summary><p>Cuéntanos qué tienes y qué no te funciona. A veces basta con arreglarla.</p></details>
+        <details open><summary><span class="n">1</span>Datos de tu negocio</summary><ul><li>Nombre del negocio y a qué se dedica</li><li>Comuna o dirección, si atiendes público</li><li>Horario de atención</li><li>WhatsApp y correo para que te contacten</li></ul></details>
+        <details><summary><span class="n">2</span>Logo y colores</summary><ul><li>Tu logo, idealmente en buena calidad (PNG o PDF)</li><li>Los colores de tu marca, si los tienes</li><li>¿No tienes logo? Lo diseñamos (se cotiza aparte)</li></ul></details>
+        <details><summary><span class="n">3</span>Fotos</summary><ul><li>De tu local, tus productos o tus trabajos</li><li>Sirven las del celular: te decimos cómo sacarlas</li><li>¿Necesitas que saquemos las fotos? Lo coordinamos (se cotiza aparte)</li></ul></details>
+        <details><summary><span class="n">4</span>Servicios, productos y precios</summary><ul><li>La lista de lo que vendes o haces</li><li>Precios, si quieres mostrarlos</li><li>Nosotros escribimos los textos con esa información</li></ul></details>
+        <details><summary><span class="n">5</span>Redes y enlaces</summary><ul><li>Instagram, Facebook o TikTok</li><li>Tu ficha de Google Maps, si existe</li></ul></details>
+        <details><summary><span class="n">6</span>Dominio</summary><ul><li>Si ya tienes uno (por ejemplo, tunegocio.cl)</li><li>Si no, el nombre que te gustaría: revisamos que esté libre y lo registramos</li></ul></details>
+        <details><summary><span class="n">7</span>Páginas que te gusten</summary><ul><li>Dos o tres páginas de referencia, de tu rubro o no</li><li>Nos ayudan a entender tu estilo</li></ul></details>
+        <details><summary><span class="n">8</span>Si es tienda o sistema</summary><ul><li>Lista de productos con precio y stock</li><li>Medios de pago y comunas de despacho</li><li>Qué quieres controlar: inventario, ventas, reservas</li></ul></details>
       </div>
     </div>
   </section>
+
 
   <section class="sec" aria-labelledby="h-final">
     <div class="wrap final">
@@ -194,11 +216,11 @@
 
 <footer class="foot">
   <div class="wrap">
-    <div class="foot-grid">
-      <div>
-        <img class="foot-logo" src="/assets/brand/found-horizontal.svg" alt="{found} studio" width="1269" height="245">
-        <p class="foot-slogan">Ctrl + found.</p>
-      </div>
+    <div class="foot-brand">
+      <img class="foot-logo" src="/assets/brand/found-horizontal.svg" alt="{found} studio" width="1269" height="245">
+      <img class="foot-slogan-img" src="/assets/brand/found-slogan.svg" alt="Ctrl + {found}" width="1248" height="265">
+    </div>
+    <div class="foot-grid foot-grid-2">
       <nav aria-labelledby="f-sitio"><h2 id="f-sitio">Sitio</h2><ul><li><a href="/servicios/">Servicios</a></li><li><a href="/ejemplos/">Ejemplos</a></li><li><a href="/contacto/">Contacto</a></li><li><a href="/privacidad.html">Privacidad</a></li></ul></nav>
       <div><h2>Contacto</h2><ul><li><a href="https://wa.me/56942579133" target="_blank" rel="noopener">WhatsApp +56 9 4257 9133</a></li><li><a href="mailto:contacto@foundstudio.cl">contacto@foundstudio.cl</a></li><li><a href="https://www.instagram.com/foundstudio.cl/" target="_blank" rel="noopener">Instagram @foundstudio.cl</a></li></ul></div>
     </div>
