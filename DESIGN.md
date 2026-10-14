@@ -1,32 +1,29 @@
 # Sistema visual · foundstudio.cl
 
-Rediseño del 14 de octubre de 2026. Dirección de arte: «Type and nothing else» (taste-skill, semilla 587946220), con la marca v10 encima.
+Versión 2 del rediseño (14 de octubre de 2026): oscuro y vibrante, tipo app. Pedido del dueño: más llamativo, sin fotos de terceros y sin precios fijos.
 
 ## La idea
-La primera pantalla son solo palabras y color: **QUE TE ENCUENTREN.** cortado por una línea de flotación (crema arriba, navy abajo). Abajo, el problema (el 404), el lugar (Huechuraba), una cosa viva (escribe cómo te buscan y mira el 404 contra el resultado encontrado), trabajo real, el precio en grande, cómo partimos, preguntas, un solo campo que abre WhatsApp y el nombre {found} recortado en el pie.
+La portada es una ventana de navegador que escribe `tunegocio.cl`, muestra un **404** y se "arregla" con un barrido celeste hasta un sitio real de cliente (**200 OK**). Al lado flota un celular con un ejemplo. Ese es el único momento llamativo de la página; el resto es ordenado: buscador 404 contra encontrado, servicios con celulares, carrusel de rubros, trabajo real, pasos, asistente de estimado, preguntas y llamado final.
 
 ## Tokens (`assets/css/site.css`)
 | Rol | Valor |
 |---|---|
-| Navy (tinta y campos) | `#1F2A4A` · un tono: `#283558` |
-| Crema (fondo) | `#F2ECDF` · un tono: `#E7DFCD` · campos de formulario `#FFFCF5` |
-| Lila (acción y llaves) | `#C586C0` |
-| Tinta suave | `#4A5476` sobre crema, `#B9BFD0` sobre navy (solo notas secundarias) |
-| Tipografía | Sora 400–800, alojada en el sitio. Sin monoespaciada. |
-| Tamaños | 14 · 18 · 22–32 · 42–100 · 64–168 px (`--t1` a `--t5`) |
-| Márgenes | `--m` 16–32 px · entre secciones `--gap` 112–200 px |
+| Fondo "noche" | `#0F1528`, con luces lila y celeste y una trama de puntos fija detrás |
+| Superficies | navy `#1F2A4A` · elevadas `#2A3760` |
+| Texto | crema `#F2ECDF` · secundario `#B9BFD0` |
+| Acción y llaves | lila `#C586C0` (botones píldora con brillo) |
+| Encontrado / 200 OK | celeste `#9CDCFE` (color de código de la marca) |
+| Tipografía | Sora 400–800 alojada en el sitio; monoespaciada del sistema solo en direcciones y códigos |
+| Radios | 20–28 px en tarjetas, 34–44 px en celulares, píldora en botones |
 
-## Reglas de la casa
-- Titulares en dos líneas como máximo, en todo ancho.
-- Esquinas rectas; botones de un solo relleno (lila o navy).
-- Sin sombras en reposo (solo el menú del celular, que flota), sin degradados, sin etiquetas pequeñas sobre los títulos, sin numeración 01/02/03.
-- Las secciones cambian de campo de color (crema, lila, navy, tono crema) en vez de separarse con líneas.
-- Los negocios ficticios de `/ejemplos/` tienen su propia identidad (colores y tipografías del sistema) dentro del marco del celular y nunca usan la marca {found}.
+## Componentes
+- `.win`: ventana de navegador (portada y casos reales).
+- `.device` / `.phone`: marco de celular para capturas y para los ejemplos vivos.
+- `.svc`: tarjeta de servicio con dos celulares.
+- `.chat`: asistente de estimado (en línea en el inicio y en panel flotante en todas las páginas).
 
 ## Imágenes
-- Capturas reales de clientes: `assets/img/casos/` (Nubi, Gracia & Vida).
-- Fotos del mundo de las pymes, con licencia libre y crédito en el pie: `assets/img/mundo/` (Wikimedia Commons y Flickr).
-- Video: la animación de marca `assets/video/found-animacion.mp4` (inicio y 404).
+Solo propias: capturas de los ejemplos ficticios (`assets/img/ejemplos/`), capturas de clientes reales (`assets/img/casos/`) y la animación del logo (`assets/video/`).
 
 ## Movimiento
-Titular que sube desde su línea base al cargar; entradas suaves (opacidad y desplazamiento) por sección; deriva lenta de la foto de Huechuraba; respuesta al tocar en cada control. Con «reducir movimiento» todo queda quieto y visible.
+La secuencia de la portada (escribir, 404, barrido, 200 OK), el celular flotando, el glitch breve del 404 y las respuestas a cada acción (chat, botones, tarjetas). Con «reducir movimiento» la portada queda fija en el estado encontrado y nada se anima.

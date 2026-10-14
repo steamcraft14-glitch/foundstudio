@@ -16,11 +16,11 @@ Owners of small businesses (pymes) and entrepreneurs in Chile, mainly Huechuraba
 {found} studio builds websites, online stores, custom business software (inventory, sales and till, bookings — e.g. for botillerías and almacenes), digital marketing and AI automation for those businesses. This site has to make the owner feel the problem ("your business shows a 404") and then picture their own business online. Success means they send the contact form or a WhatsApp message.
 
 ## Positioning
-"Que te encuentren." The 404 idea stays as the problem ("si te buscan y no apareces, no existes") and Ctrl + found. as the brand line. The home page lets the owner type how customers would search for them and see the 404 versus the found result; /ejemplos/ has six fictional businesses they can touch (book, add to cart, sell stock, quote).
+"¿Tu negocio da 404? Te hacemos {found}." Dark, vibrant, app-like look. The hero browser window types tunegocio.cl, shows a 404 and repairs into a real client site. The home also lets the owner type how customers search for them (404 vs found), shows services with phone mockups of the examples, real client work and the estimate assistant; /ejemplos/ has six fictional businesses they can touch.
 
 ## Capabilities and Constraints
 - WhatsApp +56 9 4257 9133 is the primary channel; the Web3Forms contact form (key in `assets/js/site.js`) goes to contacto@foundstudio.cl, which the owner reads.
-- Pricing: basic page from $190.000 (one-time, suggested by the owner on 2026-10-14). Online stores, systems and maintenance are quoted free within 24 h.
+- Pricing: no fixed prices published (owner decision, 2026-10-14). A guided chat assistant (no AI) asks a few questions and shows an approximate range from `RANGOS` in `assets/js/asistente.js`, then hands the summary to WhatsApp or the contact form. Exact quotes are free, in writing, within 24 h.
 - Timelines: simple page about 1 week; online store about 3 weeks.
 - Domain: the first year of the .cl domain is included.
 - Edits: the studio makes the changes (via WhatsApp / maintenance plan). The client does not self-edit.
@@ -33,7 +33,7 @@ Owners of small businesses (pymes) and entrepreneurs in Chile, mainly Huechuraba
 - Slogan: "Ctrl + found." (always written exactly like that).
 - Concept: "¿Tu negocio da 404? Te hacemos {found}."
 - Language: Chilean Spanish, warm but professional.
-- Redesign approved 2026-10-14 (direction "type and nothing else", waterline hero). The earlier scroll-story prototype is retired.
+- 2026-10-14: the owner asked for a dark, vibrant app-like look, no third-party photos (licensing worry, they did not fit) and no fixed prices. The earlier scroll-story prototype and the light "waterline" version are retired.
 
 ## Evidence on Hand
 - Real cases: Las Delicias de Nubi (lasdeliciasdenubi.cl, pastry and catering) and Gracia & Vida (gracia-vida.vercel.app, church site in Huechuraba). Jovirepuestos is a pending client: do not show it until it is built.

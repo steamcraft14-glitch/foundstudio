@@ -6,135 +6,97 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Ejemplos de páginas web por rubro | {found} studio</title>
-<meta name="description" content="Toca ejemplos de páginas para restaurante, barbería, almacén, banquetería y construcción, y un sistema de stock para botillería. Así funcionaría la página de tu negocio.">
+<meta name="description" content="Toca ejemplos de páginas para restaurante, barbería, almacén, banquetería y construcción, y un sistema de stock para botillería.">
 <link rel="canonical" href="https://foundstudio.cl/ejemplos/">
-<meta name="theme-color" content="#1F2A4A">
+<meta name="theme-color" content="#0F1528">
+<meta name="color-scheme" content="dark">
 <link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_CL">
 <meta property="og:site_name" content="{found} studio">
-<meta property="og:url" content="https://foundstudio.cl/ejemplos/">
-<meta property="og:title" content="Ejemplos por rubro | {found} studio">
-<meta property="og:description" content="Prueba reservar, agendar o vender en ejemplos de páginas para pymes.">
+<meta property="og:title" content="Ejemplos de páginas web por rubro | {found} studio">
+<meta property="og:description" content="Toca ejemplos de páginas para restaurante, barbería, almacén, banquetería y construcción, y un sistema de stock para botillería.">
 <meta property="og:image" content="https://foundstudio.cl/assets/img/og-found-studio.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="/assets/fonts/sora-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/site.css?v=1">
-<link rel="stylesheet" href="/assets/css/ejemplos.css?v=1">
-<script defer src="/assets/js/site.js?v=1"></script>
-<script defer src="/assets/js/ejemplos.js?v=1"></script>
+<link rel="stylesheet" href="/assets/css/site.css?v=2">
+<link rel="stylesheet" href="/assets/css/ejemplos.css?v=2">
+<script defer src="/assets/js/site.js?v=2"></script>
+<script defer src="/assets/js/ejemplos.js?v=2"></script>
+<script defer src="/assets/js/asistente.js?v=1"></script>
 </head>
 <body>
 <a class="skip" href="#contenido">Saltar al contenido</a>
 
-<header class="bar bar-solid cream">
-  <a class="wordmark" href="/" aria-label="{found} studio, inicio"><img src="/assets/brand/found-horizontal-navy.svg" alt="" width="1269" height="245"></a>
+<header class="bar">
+  <a class="wordmark" href="/" aria-label="{found} studio, inicio"><img src="/assets/brand/found-horizontal.svg" alt="" width="1269" height="245"></a>
   <nav class="nav" aria-label="Principal">
     <div class="nav-links">
+      <a href="/servicios/">Servicios</a>
       <a href="/ejemplos/" aria-current="page">Ejemplos</a>
-      <a href="/precios/">Precios</a>
       <a href="/contacto/">Contacto</a>
     </div>
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menú</button>
-    <a class="btn btn-navy btn-sm" href="https://wa.me/56942579133" data-msg="Hola {found}, quiero cotizar una página para mi negocio." data-track="whatsapp_click" data-where="barra" target="_blank" rel="noopener"><span class="hide-sm">Cotizar por </span>WhatsApp</a>
+    <a class="btn btn-sm" href="https://wa.me/56942579133" data-msg="Hola {found}, quiero cotizar una página para mi negocio." data-track="whatsapp_click" data-where="barra" target="_blank" rel="noopener">WhatsApp</a>
     <div class="menu-panel" id="menu">
+      <a href="/servicios/">Servicios</a>
       <a href="/ejemplos/" aria-current="page">Ejemplos</a>
-      <a href="/precios/">Precios</a>
       <a href="/contacto/">Contacto</a>
     </div>
   </nav>
 </header>
 
 <main id="contenido">
-  <section class="sec cream ex-sec" aria-label="Ejemplos interactivos">
-    <div class="wrap ex">
-        <div class="ex-info">
-          <h1 class="ex-title">Toca un<br>ejemplo.</h1>
-          <p class="ex-intro">Seis negocios ficticios, uno por rubro. Prueba reservar, agendar o vender: así funcionaría la página de tu negocio.</p>
-          <div class="ex-tabs" role="tablist" aria-label="Elige un rubro"></div>
-          <div id="ex-panel" role="tabpanel">
-          <h2 id="ex-h">Restaurante</h2>
-          <p class="lead" id="ex-lead">Que vean la carta antes de llegar y reserven mesa sin llamar.</p>
-          <ul id="ex-list"></ul>
-          <div class="ex-actions">
-            <a class="btn btn-navy" id="ex-cot" href="/contacto/" data-track="cta_cotizar" data-where="ejemplos">Cotizar uno así</a>
-            <a class="btn" id="ex-wa" href="https://wa.me/56942579133" data-track="whatsapp_click" data-where="ejemplos" target="_blank" rel="noopener">Preguntar por WhatsApp</a>
-          </div>
-          <p class="fict">Todos los nombres, precios y horarios de estos ejemplos son ficticios. Tu página se diseña desde cero con los datos de tu negocio.</p>
-          </div>
-        </div>
-        <div class="phone" data-ui>
+  <section class="page-head page-head-center">
+    <div class="wrap">
+      <h1>Toca un ejemplo</h1>
+      <p>Elige un rubro y prueba la página en el celular: reserva, agenda, compra o vende. Los negocios son ficticios; tu página se diseña con los datos del tuyo.</p>
+    </div>
+  </section>
+
+  <section class="sec sec-tight" aria-label="Ejemplos interactivos">
+    <div class="wrap">
+      <div class="ex-tabs" role="tablist" aria-label="Elige un rubro"></div>
+      <div class="ex-stage" id="ex-panel" role="tabpanel">
+        <div class="phone">
           <div class="phone-screen">
             <p class="d-sec">Activa JavaScript para tocar los ejemplos, o escríbenos y te mostramos uno de tu rubro.</p>
           </div>
-          <p class="phone-cap"><span>Ejemplo ficticio</span><span id="phone-url">elmeson.cl</span></p>
         </div>
-    </div>
-  </section>
-
-  <section class="sec paper real" aria-labelledby="h-real-ej">
-    <div class="wrap real-grid">
-      <div class="real-copy">
-        <h2 id="h-real-ej" data-in>Y estas son reales.</h2>
-        <p data-in="60">Dos páginas que ya publicamos para negocios de verdad. Tócalas: están en línea.</p>
+        <p class="ex-note">Ejemplo ficticio · <span id="phone-url">elmeson.cl</span></p>
+        <div class="ex-actions">
+          <a class="btn" id="ex-cot" href="/contacto/" data-track="cta_cotizar" data-where="ejemplos">Quiero una así</a>
+          <button class="btn btn-ghost" type="button" data-open-asistente data-track="cta_asistente" data-where="ejemplos">Calcular estimado</button>
+        </div>
       </div>
-      <a class="real-item" href="https://lasdeliciasdenubi.cl" target="_blank" rel="noopener" data-track="caso_click" data-where="nubi-ej" data-in="90">
-        <img class="real-desk" src="/assets/img/casos/nubi-escritorio-720.webp" width="720" height="450" alt="Sitio de Las Delicias de Nubi en un computador" loading="lazy" decoding="async">
-        <img class="real-phone" src="/assets/img/casos/nubi-celular-390.webp" width="390" height="844" alt="Sitio de Las Delicias de Nubi en un celular" loading="lazy" decoding="async">
-        <span class="real-cap">Las Delicias de Nubi · pastelería y banquetería <span class="sr">(abre en otra pestaña)</span></span>
-      </a>
-      <a class="real-item" href="https://gracia-vida.vercel.app" target="_blank" rel="noopener" data-track="caso_click" data-where="gracia-ej" data-in="140">
-        <img class="real-desk" src="/assets/img/casos/gracia-vida-escritorio-720.webp" width="720" height="450" alt="Sitio de Gracia y Vida Huechuraba en un computador" loading="lazy" decoding="async">
-        <img class="real-phone" src="/assets/img/casos/gracia-vida-celular-390.webp" width="390" height="844" alt="Sitio de Gracia y Vida Huechuraba en un celular" loading="lazy" decoding="async">
-        <span class="real-cap">Gracia &amp; Vida · iglesia en Huechuraba <span class="sr">(abre en otra pestaña)</span></span>
-      </a>
     </div>
   </section>
-  <figure class="band band-short" aria-labelledby="cap-feria">
-    <img src="/assets/img/mundo/feria-padre-hurtado-1600.webp" srcset="/assets/img/mundo/feria-padre-hurtado-800.webp 800w, /assets/img/mundo/feria-padre-hurtado-1600.webp 1600w" sizes="100vw" width="1600" height="1199" alt="Feria libre con toldos azules y vecinos comprando verduras" loading="lazy" decoding="async">
-    <figcaption>
-      <p id="cap-feria">¿Tu rubro no aparece? Lo diseñamos igual.</p>
-      <small>Foto: Jorgebarrios, CC BY-SA 4.0</small>
-    </figcaption>
-  </figure>
 
-  <section class="ask cream" aria-labelledby="h-ask">
-    <div class="ask-col">
-      <h2 id="h-ask" class="ask-prompt" data-in><span class="soft">¿Qué negocio tienes?</span><br>Te mostramos uno así.</h2>
-      <form class="ask-form" data-wa data-in="60">
-        <label class="sr" for="q">Tu negocio y qué necesitas</label>
-        <input id="q" name="q" type="text" placeholder="Ej: verdulería en Recoleta" autocomplete="off">
-        <button type="submit" aria-label="Enviar por WhatsApp">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"/></svg>
-        </button>
-      </form>
-      <p class="ask-next" data-in="90">Se abre WhatsApp con tu mensaje listo. Respondemos en menos de 24 horas.</p>
+  <section class="sec" aria-labelledby="h-final">
+    <div class="wrap final">
+      <h2 id="h-final">¿Tu rubro no aparece?</h2>
+      <p>Lo diseñamos igual. Cuéntanos de tu negocio y te mostramos cómo se vería.</p>
+      <div class="hero-cta">
+        <a class="btn" href="https://wa.me/56942579133" data-msg="Hola {found}, quiero cotizar una página para mi negocio." data-track="whatsapp_click" data-where="final" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+        <button class="btn btn-ghost" type="button" data-open-asistente data-track="cta_asistente" data-where="final">Calcular mi estimado</button>
+      </div>
     </div>
   </section>
 </main>
 
-<footer class="foot navy">
-  <div class="foot-top">
-    <div class="foot-inv">
-      <p>Ctrl + found.</p>
-      <a class="btn" href="https://wa.me/56942579133" data-msg="Hola {found}, quiero cotizar una página para mi negocio." data-track="whatsapp_click" data-where="pie" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="foot-logo" src="/assets/brand/found-horizontal.svg" alt="{found} studio" width="1269" height="245">
+        <p class="foot-slogan">Ctrl + found.</p>
+      </div>
+      <nav aria-labelledby="f-sitio"><h2 id="f-sitio">Sitio</h2><ul><li><a href="/servicios/">Servicios</a></li><li><a href="/ejemplos/">Ejemplos</a></li><li><a href="/contacto/">Contacto</a></li><li><a href="/privacidad.html">Privacidad</a></li></ul></nav>
+      <div><h2>Contacto</h2><ul><li><a href="https://wa.me/56942579133" target="_blank" rel="noopener">WhatsApp +56 9 4257 9133</a></li><li><a href="mailto:contacto@foundstudio.cl">contacto@foundstudio.cl</a></li><li><a href="https://www.instagram.com/foundstudio.cl/" target="_blank" rel="noopener">Instagram @foundstudio.cl</a></li></ul></div>
     </div>
-    <nav class="foot-links" aria-label="Pie de página">
-      <a href="/">Inicio</a>
-      <a href="/precios/">Precios</a>
-      <a href="/contacto/">Contacto</a>
-      <a href="https://www.instagram.com/foundstudio.cl/" target="_blank" rel="noopener">Instagram <span class="sr">(abre en otra pestaña)</span></a>
-    </nav>
+    <p class="foot-legal"><span>© 2026 {found} studio · Huechuraba, Santiago</span><span>Los ejemplos por rubro son ficticios.</span></p>
   </div>
-  <div class="foot-legal">
-    <span>© 2026 {found} studio · Huechuraba, Santiago · <a href="/privacidad.html">Privacidad</a></span>
-    <details>
-      <summary>Créditos de fotos</summary>
-      <p>“Feria libre Padre Hurtado - Maipú”, Jorgebarrios, CC BY-SA 4.0. “Feria libre”, Jorge Valdés R. (Jorval), dominio público. Vía Wikimedia Commons.</p>
-    </details>
-  </div>
-  <div class="foot-name" aria-hidden="true"><img src="/assets/brand/found-logo.svg" alt="" width="741" height="298"></div>
 </footer>
 </body>
 </html>

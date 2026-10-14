@@ -3,9 +3,10 @@
 Sitio estático (HTML, CSS y JS, sin backend ni librerías externas) publicado con GitHub Pages en https://foundstudio.cl.
 
 ## Páginas
-- `index.html` inicio · `ejemplos/` seis negocios ficticios interactivos · `precios/` · `contacto/` formulario · `privacidad.html` · `404.html`.
-- Estilos: `assets/css/site.css` (todo el sitio) y `assets/css/ejemplos.css` (solo los negocios ficticios).
-- Scripts: `assets/js/site.js` (común), `ejemplos.js`, `contacto.js`, `privacidad.js`.
+- `index.html` inicio · `servicios/` · `ejemplos/` seis negocios ficticios interactivos · `contacto/` formulario · `privacidad.html` · `404.html`.
+- Estilos: `assets/css/site.css` (todo el sitio, tema oscuro) y `assets/css/ejemplos.css` (solo los negocios ficticios).
+- Scripts: `assets/js/site.js` (común), `asistente.js` (chat de estimado, en todas las páginas), `ejemplos.js`, `contacto.js`, `privacidad.js`.
+- Rangos de precio del asistente: objeto `RANGOS` al inicio de `assets/js/asistente.js`. El sitio no publica precios fijos en ninguna otra parte.
 
 ## Reglas
 - No borrar ni cambiar `CNAME`: mantiene el dominio personalizado.
@@ -15,7 +16,7 @@ Sitio estático (HTML, CSS y JS, sin backend ni librerías externas) publicado c
 - Sin estilos ni scripts en línea: la CSP de cada página los bloquearía.
 - `_config.yml` define qué NO se publica (CLAUDE.md, PRODUCT.md, tests, docs, found-logo, etc.). No agregar `.nojekyll`: anularía esa exclusión.
 - Todo ejemplo de rubro va rotulado como ficticio. No inventar testimonios, métricas ni clientes.
-- Fotos de terceros: siempre con crédito en la página (pie, «Créditos de fotos»).
+- Sin fotos de terceros: solo capturas propias (ejemplos en `assets/img/ejemplos/`) y de clientes (`assets/img/casos/`).
 
 ## Pruebas
 Con un servidor local (`python -m http.server 8417 --bind 127.0.0.1`), correr `python tests/qa.py`. El formulario no se envía de verdad durante las pruebas.

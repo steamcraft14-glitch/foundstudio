@@ -5,7 +5,6 @@
   const $ = (s, el = document) => el.querySelector(s);
   const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const clp = n => "$" + Math.round(n).toLocaleString("es-CL");
-  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
   const RUBROS = {
     restaurante: {
@@ -116,7 +115,7 @@
       const prods = [["Pan amasado (1 kg)", 2200], ["Leche entera (1 L)", 1090], ["Huevos (12 un.)", 3800], ["Paltas (1 kg)", 4500], ["Bebida (3 L)", 2990], ["Queso gauda (250 g)", 3200]];
       const cant = prods.map(() => 0); const META = 15000;
       root.innerHTML = `
-        <header class="d-head d-photo"><img src="/assets/img/mundo/feria-verduras-800.webp" width="800" height="600" alt="Puesto de verduras y frutas en una feria libre"><div><p class="d-name">Almacén La Vecina</p><p class="d-meta">Despacho en tu comuna hoy mismo</p></div></header>
+        <header class="d-head"><p class="d-name">Almacén La Vecina</p><p class="d-meta">Despacho en tu comuna hoy mismo</p><p class="d-badge">Despacho gratis sobre $15.000</p></header>
         <section class="d-sec"><h3 class="d-h">Lo más pedido</h3>
           <ul class="d-prods">${prods.map(([n, p], i) => `<li><span class="d-pn">${n}<small>${clp(p)}</small></span><span class="d-step"><button type="button" data-i="${i}" data-d="-1" aria-label="Quitar ${n}">−</button><output data-o="${i}">0</output><button type="button" data-i="${i}" data-d="1" aria-label="Agregar ${n}">+</button></span></li>`).join("")}</ul>
         </section>
@@ -224,7 +223,7 @@
 
   /* ---------- la página ---------- */
   const tabs = $(".ex-tabs"), screen = $(".phone-screen"), url = $("#phone-url");
-  const info = { h: $("#ex-h"), lead: $("#ex-lead"), list: $("#ex-list"), cot: $("#ex-cot"), wa: $("#ex-wa") };
+  const cot = $("#ex-cot");
   if (!tabs || !screen) return;
   const ids = Object.keys(RUBROS);
   tabs.innerHTML = ids.map(id => `<button type="button" role="tab" id="tab-${id}" aria-controls="ex-panel" aria-selected="false" tabindex="-1" data-r="${id}">${RUBROS[id].tab}</button>`).join("");
@@ -233,12 +232,8 @@
     const r = RUBROS[id] || RUBROS.restaurante; id = RUBROS[id] ? id : "restaurante";
     $$("[role=tab]", tabs).forEach(t => { const on = t.dataset.r === id; t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1; if (on && focus) t.focus(); });
     $("#ex-panel").setAttribute("aria-labelledby", "tab-" + id);
-    info.h.textContent = r.titulo;
-    info.lead.textContent = r.lead;
-    info.list.innerHTML = r.incluye.map(x => `<li>${esc(x)}</li>`).join("");
-    info.cot.href = `/contacto/?rubro=${id}&servicio=${r.servicio}`;
-    info.wa.href = waLink(`Hola {found}, vi el ejemplo de ${r.tab.toLowerCase()} en su página y quiero uno así para mi negocio.`);
-    info.wa.dataset.where = "ejemplo-" + id;
+    cot.href = `/contacto/?rubro=${id}&servicio=${r.servicio === "software" ? "software" : r.servicio}`;
+    cot.dataset.where = "ejemplo-" + id;
     url.textContent = r.url;
     const fresh = current.cloneNode(false); current.replaceWith(fresh); // sin oyentes viejos
     fresh.dataset.r = id; fresh.setAttribute("aria-label", `Ejemplo ficticio: ${r.tab.toLowerCase()}`);

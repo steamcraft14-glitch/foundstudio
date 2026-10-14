@@ -13,6 +13,7 @@
   const qs = new URLSearchParams(location.search);
   ["rubro", "servicio"].forEach(k => { const v = qs.get(k), el = form.elements[k]; if (v && el && [...el.options].some(o => o.value === v)) el.value = v; });
   if (qs.get("negocio")) form.elements.negocio.value = qs.get("negocio").slice(0, 80);
+  if (qs.get("resumen")) form.elements.mensaje.value = qs.get("resumen").slice(0, 900); // viene del asistente de estimado
 
   const MSG = {
     nombre: "Escribe tu nombre.",

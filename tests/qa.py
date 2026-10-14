@@ -15,7 +15,7 @@ from urllib.parse import urljoin
 from playwright.sync_api import sync_playwright
 
 BASE = "http://127.0.0.1:8417"
-PAGES = ["/", "/ejemplos/", "/precios/", "/contacto/", "/privacidad.html", "/404.html"]
+PAGES = ["/", "/servicios/", "/ejemplos/", "/contacto/", "/privacidad.html", "/404.html"]
 results = []
 
 
@@ -109,11 +109,34 @@ with sync_playwright() as p:
 
     # 5. menú en celular
     page = browser.new_page(viewport={"width": 390, "height": 844})
-    page.goto(BASE + "/precios/", wait_until="networkidle")
+    page.goto(BASE + "/servicios/", wait_until="networkidle")
     page.click(".menu-btn")
     check("menú celular: se abre", page.is_visible("#menu a[href='/ejemplos/']"))
     page.keyboard.press("Escape")
     check("menú celular: se cierra con Escape", not page.is_visible("#menu a[href='/ejemplos/']"))
+    page.close()
+
+    # 6b. asistente de estimado: una conversación completa
+    page = browser.new_page(viewport={"width": 1440, "height": 900}, reduced_motion="reduce")
+    errors = watch(page)
+    page.goto(BASE + "/servicios/", wait_until="networkidle")
+    page.click(".chat-fab")
+    panel = page.locator(".chat-panel")
+    check("asistente: se abre el panel", panel.is_visible())
+    for label in ["Barbería o belleza", "Una página web", "Una página con lo esencial"]:
+        panel.get_by_role("button", name=label, exact=True).click()
+    check("asistente: sugiere reservas para barbería", panel.get_by_role("button", name="Reservas o agenda").get_attribute("aria-pressed") == "true")
+    panel.get_by_role("button", name="Listo").click()
+    panel.get_by_role("button", name="Sí, ya tengo").click()
+    panel.get_by_role("button", name="Sin apuro").click()
+    panel.locator(".estimate").wait_for(timeout=5000)
+    check("asistente: calcula el rango (150-230 + 60-120)", panel.locator(".estimate .range").inner_text() == "$210.000 a $350.000", panel.locator(".estimate .range").inner_text())
+    wa = panel.get_by_role("link", name="Enviar por WhatsApp").get_attribute("href")
+    check("asistente: el WhatsApp lleva el resumen", "wa.me/56942579133" in wa and "Estimado" in wa)
+    cot = panel.get_by_role("link", name="Pedir cotización formal").get_attribute("href")
+    page.goto(BASE + cot, wait_until="networkidle")
+    check("asistente: el resumen llega al formulario", "Página web para barbería" in page.input_value("#f-msg") and page.input_value("#f-rubro") == "barberia")
+    check("asistente: sin errores", not errors, "; ".join(errors)[:200])
     page.close()
 
     # 6. formulario: validación, envío simulado y plan B por WhatsApp
