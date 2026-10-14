@@ -2,7 +2,7 @@
 
 Qué exige la ley chilena a este sitio, qué ya está hecho en el código y qué depende de ti fuera del código.
 
-**Qué tipo de sitio es:** empresa privada, sitio estático (GitHub Pages), sin base de datos, sin pagos, sin cuentas de usuario. Recoge datos personales solo en el formulario de contacto (llegan al correo vía Web3Forms).
+**Qué tipo de sitio es:** empresa privada, sitio estático (GitHub Pages), sin base de datos, sin pagos, sin cuentas de usuario. Recoge datos personales en el formulario de contacto y en el brief en línea (`/brief/`, incluye RUT opcional); ambos llegan al correo vía Web3Forms.
 
 - **Ley 21.719 (datos personales):** sí aplica, porque el formulario recoge datos de personas. Entra en vigencia el 1 de diciembre de 2026.
 - **Ley 21.663 (Ley Marco de Ciberseguridad):** no aplica directamente. Rige a servicios esenciales y operadores de importancia vital. Las buenas prácticas igual se aplican abajo.
@@ -17,7 +17,7 @@ Qué exige la ley chilena a este sitio, qué ya está hecho en el código y qué
 | Registro del consentimiento: cada envío lleva qué versión de la política se aceptó y cuándo | `main.js` → `consentimiento`, `PRIVACIDAD_VERSION` |
 | Derechos ARCO+ (acceso, rectificación, supresión, oposición, portabilidad, bloqueo y retiro del consentimiento): formulario que arma la solicitud por correo | `privacidad.html#derechos`, `assets/js/privacidad.js` |
 | Enlaces a la política y a los derechos en el pie | `index.html` |
-| Sin cookies, sin `localStorage` ni analítica, así que no hace falta banner de cookies | todo el sitio |
+| Sin cookies ni analítica, así que no hace falta banner de cookies. Única excepción: el borrador del brief en `localStorage`, estrictamente necesario, solo en el dispositivo del cliente y borrado al enviar | todo el sitio, `assets/js/brief.js` |
 | HTTPS obligatorio (http redirige a https) | GitHub Pages |
 | Content-Security-Policy: solo se ejecuta código propio, GSAP de cdnjs y un script en línea autorizado por hash. Bloquea `<object>`, iframes y `<base>` inyectados. Los datos solo pueden salir hacia Web3Forms | `<meta>` en `index.html`, `privacidad.html`, `404.html` |
 | Subresource Integrity: GSAP se verifica con hash. Si el CDN entrega un archivo alterado, no se ejecuta | `main.js` → `SRI` |

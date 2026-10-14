@@ -1,0 +1,59 @@
+/* {found} studio · /brief/
+   El brief en línea: secciones numeradas, opciones en píldora e índice que marca lo completado.
+   Usa los tokens y los campos de site.css. */
+
+.brief-body { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); align-items: start; counter-reset: bsec; }
+.brief-form { max-width: 860px; }
+
+/* índice: numerado igual que las secciones; se marca cuando la sección tiene respuestas */
+.brief-toc { position: sticky; top: 100px; font-size: 15px; }
+.brief-toc ol { counter-reset: toc; display: grid; gap: 4px; }
+.brief-toc li { counter-increment: toc; }
+.brief-toc li[hidden] { display: none; }
+.brief-toc a { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 12px; text-decoration: none; color: var(--crema-2); font-weight: 600; transition: background-color .2s, color .2s; }
+.brief-toc a::before { content: counter(toc); width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; border: 1.5px solid var(--line-2); font-size: 12.5px; font-weight: 700; transition: background-color .2s, border-color .2s, color .2s; }
+.brief-toc a:hover { color: var(--crema); background: rgba(242, 236, 223, .05); }
+.brief-toc li[data-done] a { color: var(--crema); }
+.brief-toc li[data-done] a::before { content: "✓"; background: var(--lila); border-color: var(--lila); color: var(--noche); }
+
+/* secciones */
+.bsec { border: 0; margin: 0; padding: 0; min-width: 0; counter-increment: bsec; }
+.bsec + .bsec, .bsec + .brief-end { margin-top: 30px; padding-top: 30px; border-top: 1px solid var(--line); }
+.bsec[hidden] { display: none; }
+.bsec > legend { display: flex; align-items: center; gap: 12px; padding: 0; margin-bottom: 18px; font-size: var(--t-h3); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; float: left; width: 100%; }
+.bsec > legend + * { clear: both; }
+.bsec > legend::before { content: counter(bsec); flex: none; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--lila); color: var(--noche); font-size: 15px; font-weight: 800; letter-spacing: 0; }
+.bsec > legend small { font-size: 15px; font-weight: 400; color: var(--crema-2); letter-spacing: 0; }
+.bsec .hint, .field .hint { color: var(--crema-2); font-size: 15px; margin: -6px 0 18px; }
+.field .hint { margin: 8px 0 0; }
+.hint a { color: var(--crema); font-weight: 600; }
+
+/* opciones en píldora (casillas y radios) */
+.choices { border: 0; margin: 0 0 18px; padding: 0; min-width: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.choices legend { padding: 0; margin-bottom: 10px; font-weight: 700; font-size: 15px; width: 100%; float: left; }
+.choices legend small { font-weight: 400; color: var(--crema-2); }
+.chip { position: relative; display: inline-flex; cursor: pointer; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip span { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1.5px solid #4A5680; background: rgba(15, 21, 40, .7); font-size: 15.5px; font-weight: 600; color: var(--crema-2); transition: background-color .2s, border-color .2s, color .2s; }
+.chip span small { font-weight: 400; }
+.chip span::before { content: ""; flex: none; width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid currentColor; transition: background-color .2s, border-color .2s; }
+.chip input[type="radio"] + span::before { border-radius: 50%; }
+.chip:hover span { border-color: var(--crema-2); color: var(--crema); }
+.chip input:checked + span { background: rgba(197, 134, 192, .16); border-color: var(--lila); color: var(--crema); }
+.chip input:checked + span::before { background: var(--lila); border-color: var(--lila); box-shadow: inset 0 0 0 3px var(--noche); }
+.chip input:focus-visible + span { outline: 3px solid var(--lila-2); outline-offset: 3px; }
+
+/* borrador recuperado */
+.draft-note { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-bottom: 26px; padding: 14px 16px; border-radius: 14px; background: rgba(156, 220, 254, .08); border: 1px solid rgba(156, 220, 254, .35); font-size: 15px; font-weight: 600; }
+.draft-note[hidden] { display: none; }
+
+.brief-end .saved { margin-top: 12px; font-size: var(--t-sm); color: var(--crema-2); }
+.brief-end .saved:empty { display: none; }
+.status .btn { margin-top: 12px; }
+
+@media (max-width: 900px) {
+  .brief-body { grid-template-columns: 1fr; }
+  .brief-toc { display: none; }
+  .brief-form .btn-navy { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .brief-toc a, .brief-toc a::before, .chip span, .chip span::before { transition: none; } }

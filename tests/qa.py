@@ -15,7 +15,7 @@ from urllib.parse import urljoin
 from playwright.sync_api import sync_playwright
 
 BASE = "http://127.0.0.1:8417"
-PAGES = ["/", "/servicios/", "/ejemplos/", "/contacto/", "/privacidad.html", "/404.html"]
+PAGES = ["/", "/servicios/", "/ejemplos/", "/contacto/", "/brief/", "/privacidad.html", "/404.html"]
 results = []
 
 
@@ -195,6 +195,57 @@ with sync_playwright() as p:
     page.wait_for_selector("#f-status[data-kind='error'] a", timeout=4000)
     check("formulario: si falla ofrece WhatsApp con los datos",
           "Almac" in page.get_attribute("#f-status a", "href"))
+    page.close()
+
+    # 7. brief en línea: enlace personalizado, secciones según el proyecto, borrador y envío simulado
+    sent = []
+    page = browser.new_page(viewport={"width": 390, "height": 844})
+    errors = watch(page)
+    page.route("https://api.web3forms.com/**", fake_ok)
+    page.goto(BASE + "/brief/?negocio=Barbería%20Prueba&nombre=Juan&servicio=pagina", wait_until="networkidle")
+    check("brief: no se indexa", "noindex" in (page.get_attribute("meta[name=robots]", "content") or ""))
+    check("brief: rellena negocio y nombre del enlace", page.input_value("#b-negocio") == "Barbería Prueba" and page.input_value("#b-nombre") == "Juan")
+    check("brief: saluda al negocio", "Barbería Prueba" in page.inner_text("#b-hola"))
+    check("brief: página web oculta tienda y sistema", page.is_hidden("#s-tienda") and page.is_hidden("#s-sistema"))
+    page.select_option("#b-tipo", "tienda")
+    check("brief: tienda muestra su sección", page.is_visible("#s-tienda") and page.is_hidden("#s-sistema"))
+    page.fill("#b-servicios", "Corte clásico · $8.000")
+    page.click("text=Comprar en línea")
+    page.fill("#b-despacho", "Retiro en el local")
+    page.wait_for_timeout(800)
+    page.reload(wait_until="networkidle")
+    check("brief: el borrador sobrevive a recargar",
+          page.input_value("#b-servicios") == "Corte clásico · $8.000" and page.is_checked("input[value='Comprar en línea']") and page.is_visible("#b-draft"))
+    page.select_option("#b-tipo", "pagina")
+    page.click("#brief-form button[type=submit]")
+    check("brief: sin contacto ni aceptación no se envía", not sent)
+    check("brief: enfoca el primer error", page.evaluate("document.activeElement.id") == "b-tel")
+    page.fill("#b-tel", "+56 9 1111 2222")
+    page.check("#b-consent")
+    page.click("#brief-form button[type=submit]")
+    page.wait_for_selector("#b-status[data-kind='ok']", timeout=4000)
+    body = sent[0] if sent else {}
+    check("brief: llega con asunto, respuestas y consentimiento",
+          body.get("subject") == "Brief: Barbería Prueba" and body.get("Servicios o productos") == "Corte clásico · $8.000"
+          and body.get("Acción buscada") == "Comprar en línea" and "versión" in body.get("consentimiento", ""))
+    check("brief: no envía la sección oculta", "Tienda: despacho" not in body)
+    check("brief: ofrece mandar fotos por WhatsApp", "wa.me/56942579133" in (page.get_attribute("#b-status a", "href") or ""))
+    check("brief: borra el borrador al enviar", page.evaluate("localStorage.getItem('found-brief-v1')") is None)
+    check("brief: sin errores", not errors, "; ".join(errors)[:200])
+    page.close()
+
+    page = browser.new_page()
+    page.route("https://api.web3forms.com/**", lambda r: r.fulfill(status=500, body="{}"))
+    page.goto(BASE + "/brief/", wait_until="networkidle")
+    page.fill("#b-nombre", "Camila")
+    page.fill("#b-negocio", "Almacén de prueba")
+    page.fill("#b-email", "camila@ejemplo.cl")
+    page.check("#b-consent")
+    page.wait_for_timeout(800)
+    page.click("#brief-form button[type=submit]")
+    page.wait_for_selector("#b-status[data-kind='error'] a", timeout=4000)
+    check("brief: si falla, conserva el borrador y ofrece WhatsApp",
+          page.evaluate("localStorage.getItem('found-brief-v1')") is not None and "Almac" in page.get_attribute("#b-status a", "href"))
     page.close()
 
     browser.close()

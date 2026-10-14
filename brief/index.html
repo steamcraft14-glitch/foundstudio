@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; media-src 'self'; connect-src 'self' https://api.web3forms.com; form-action 'self' https://api.web3forms.com; base-uri 'self'; object-src 'none'; frame-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- Página para clientes que ya aceptaron la propuesta: no se indexa ni va en el sitemap -->
+<meta name="robots" content="noindex, nofollow">
+<title>Brief de tu proyecto | {found} studio</title>
+<meta name="description" content="Cuéntanos lo que necesitamos para hacer tu página. Se guarda mientras escribes.">
+<meta name="theme-color" content="#0F1528">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/sora-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css?v=8">
+<link rel="stylesheet" href="/assets/css/brief.css?v=1">
+<script defer src="/assets/js/site.js?v=4"></script>
+<script defer src="/assets/js/brief.js?v=1"></script>
+</head>
+<body>
+<a class="skip" href="#contenido">Saltar al contenido</a>
+
+<header class="bar">
+  <a class="wordmark" href="/" aria-label="{found} studio, inicio"><img src="/assets/brand/found-horizontal.svg" alt="" width="1269" height="245"></a>
+  <nav class="nav" aria-label="Principal">
+    <div class="nav-links">
+      <a href="/servicios/">Servicios</a>
+      <a href="/ejemplos/">Ejemplos</a>
+      <a href="/contacto/">Contacto</a>
+    </div>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menú</button>
+    <a class="btn btn-sm" href="https://wa.me/56942579133" data-msg="Hola {found}, tengo una duda con el brief." data-track="whatsapp_click" data-where="brief-barra" target="_blank" rel="noopener">WhatsApp</a>
+    <div class="menu-panel" id="menu">
+      <a href="/servicios/">Servicios</a>
+      <a href="/ejemplos/">Ejemplos</a>
+      <a href="/contacto/">Contacto</a>
+    </div>
+  </nav>
+</header>
+
+<main id="contenido">
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Brief de tu proyecto</h1>
+      <p id="b-hola">Completa lo que puedas. Si algo no lo sabes, déjalo en blanco: lo vemos juntos. Lo que escribes se guarda en este dispositivo hasta que lo envíes.</p>
+    </div>
+  </section>
+
+  <div class="sec sec-tight">
+    <div class="wrap brief-body">
+      <nav class="brief-toc" aria-label="Secciones del brief">
+        <ol>
+          <li><a href="#s-datos">Tus datos</a></li>
+          <li><a href="#s-negocio">Tu negocio</a></li>
+          <li><a href="#s-objetivo">Lo que debe lograr</a></li>
+          <li><a href="#s-contenido">Contenido</a></li>
+          <li><a href="#s-marca">Marca</a></li>
+          <li><a href="#s-fotos">Fotos y video</a></li>
+          <li><a href="#s-redes">Contacto y redes</a></li>
+          <li><a href="#s-dominio">Dominio y correo</a></li>
+          <li><a href="#s-funciones">Funciones</a></li>
+          <li data-solo="tienda"><a href="#s-tienda">Tienda online</a></li>
+          <li data-solo="software"><a href="#s-sistema">Sistema</a></li>
+          <li><a href="#s-plazos">Plazos y presupuesto</a></li>
+          <li><a href="#s-boleta">Boleta o factura</a></li>
+        </ol>
+      </nav>
+
+      <form class="full brief-form" id="brief-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
+        <input type="hidden" name="access_key" value="13ae56a6-e783-4914-9675-7bab09f9e80d">
+        <input type="checkbox" name="botcheck" class="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="draft-note" id="b-draft" hidden>
+          <p>Recuperamos lo que habías escrito en este dispositivo.</p>
+          <button class="btn btn-ghost btn-sm" type="button" id="b-reset">Empezar de cero</button>
+        </div>
+
+        <fieldset class="bsec" id="s-datos">
+          <legend>Tus datos</legend>
+          <p class="hint">Lo único obligatorio: para saber quién nos escribe y cómo responderte.</p>
+          <div class="row-2">
+            <div class="field">
+              <label for="b-nombre">Tu nombre</label>
+              <input id="b-nombre" name="Nombre" type="text" autocomplete="name" maxlength="80" required>
+              <p class="err" id="e-b-nombre"></p>
+            </div>
+            <div class="field">
+              <label for="b-negocio">Nombre del negocio</label>
+              <input id="b-negocio" name="Negocio" type="text" autocomplete="organization" maxlength="80" required>
+              <p class="err" id="e-b-negocio"></p>
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="b-tel">WhatsApp</label>
+              <input id="b-tel" name="WhatsApp" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="+56 9 1234 5678">
+              <p class="err" id="e-b-tel"></p>
+            </div>
+            <div class="field">
+              <label for="b-email">Correo <small>(opcional)</small></label>
+              <input id="b-email" name="Correo" type="email" autocomplete="email" inputmode="email" maxlength="120">
+              <p class="err" id="e-b-email"></p>
+            </div>
+          </div>
+          <div class="field">
+            <label for="b-tipo">¿Qué vamos a hacer?</label>
+            <select id="b-tipo" name="Proyecto">
+              <option value="">Aún no está claro</option>
+              <option value="pagina">Página web</option>
+              <option value="tienda">Tienda online</option>
+              <option value="software">Sistema de inventario, ventas o reservas</option>
+              <option value="varios">Más de una de estas</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-negocio">
+          <legend>Tu negocio</legend>
+          <div class="field">
+            <label for="b-hace">¿Qué haces? Cuéntalo en una frase</label>
+            <input id="b-hace" name="Qué hace" type="text" maxlength="200">
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="b-rubro">Rubro</label>
+              <input id="b-rubro" name="Rubro" type="text" maxlength="80">
+            </div>
+            <div class="field">
+              <label for="b-dir">Comuna o dirección <small>(si atiendes público)</small></label>
+              <input id="b-dir" name="Dirección" type="text" autocomplete="street-address" maxlength="160">
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="b-horario">Horario de atención</label>
+              <input id="b-horario" name="Horario" type="text" maxlength="160" placeholder="Lun a vie 9:00 a 19:00">
+            </div>
+            <div class="field">
+              <label for="b-zonas">Comunas o zonas que atiendes</label>
+              <input id="b-zonas" name="Zonas" type="text" maxlength="200">
+            </div>
+          </div>
+          <div class="field">
+            <label for="b-clientes">¿Quiénes son tus clientes?</label>
+            <textarea id="b-clientes" name="Clientes" rows="3" maxlength="1500"></textarea>
+          </div>
+          <div class="field">
+            <label for="b-dif">¿Qué te diferencia de la competencia?</label>
+            <textarea id="b-dif" name="Diferencia" rows="3" maxlength="1500"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-objetivo">
+          <legend>Lo que debe lograr tu página</legend>
+          <fieldset class="choices">
+            <legend>¿Qué quieres que haga quien entra?</legend>
+            <label class="chip"><input type="checkbox" name="Acción buscada" value="Escribir por WhatsApp"><span>Escribirte por WhatsApp</span></label>
+            <label class="chip"><input type="checkbox" name="Acción buscada" value="Reservar o agendar"><span>Reservar o agendar</span></label>
+            <label class="chip"><input type="checkbox" name="Acción buscada" value="Comprar en línea"><span>Comprar en línea</span></label>
+            <label class="chip"><input type="checkbox" name="Acción buscada" value="Pedir una cotización"><span>Pedir una cotización</span></label>
+            <label class="chip"><input type="checkbox" name="Acción buscada" value="Llamar"><span>Llamarte</span></label>
+            <label class="chip"><input type="checkbox" name="Acción buscada" value="Llegar al local"><span>Llegar a tu local</span></label>
+          </fieldset>
+          <div class="field">
+            <label for="b-hoy">¿Cómo te encuentran hoy tus clientes?</label>
+            <input id="b-hoy" name="Cómo lo encuentran hoy" type="text" maxlength="200" placeholder="Instagram, recomendación, pasan por fuera…">
+          </div>
+          <div class="field">
+            <label for="b-gustan">Páginas que te gusten o de tu competencia <small>(con enlace)</small></label>
+            <textarea id="b-gustan" name="Páginas que le gustan" rows="3" maxlength="1500"></textarea>
+          </div>
+          <div class="field">
+            <label for="b-nogustan">Lo que no te gusta de otras páginas</label>
+            <textarea id="b-nogustan" name="Lo que no le gusta" rows="2" maxlength="1000"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-contenido">
+          <legend>Contenido</legend>
+          <p class="hint">Nosotros escribimos los textos; necesitamos la información.</p>
+          <div class="field">
+            <label for="b-servicios">Servicios o productos: nombre, descripción corta y precio</label>
+            <textarea id="b-servicios" name="Servicios o productos" rows="6" maxlength="4000" placeholder="Corte de pelo · clásico o degradado · $8.000"></textarea>
+          </div>
+          <div class="field">
+            <label for="b-faq">Preguntas que siempre te hacen tus clientes</label>
+            <textarea id="b-faq" name="Preguntas frecuentes" rows="3" maxlength="2000"></textarea>
+          </div>
+          <div class="field">
+            <label for="b-promos">Promociones o paquetes</label>
+            <textarea id="b-promos" name="Promociones" rows="2" maxlength="1500"></textarea>
+          </div>
+          <div class="field">
+            <label for="b-historia">Tu historia o «quiénes somos» <small>(opcional)</small></label>
+            <textarea id="b-historia" name="Historia" rows="3" maxlength="2000"></textarea>
+          </div>
+          <div class="field">
+            <label for="b-testimonios">Comentarios reales de clientes, con su permiso <small>(opcional)</small></label>
+            <textarea id="b-testimonios" name="Comentarios de clientes" rows="3" maxlength="2000"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-marca">
+          <legend>Marca</legend>
+          <fieldset class="choices">
+            <legend>¿Tienes logo?</legend>
+            <label class="chip"><input type="radio" name="Logo" value="Sí, lo envía"><span>Sí, lo envío en PNG, SVG o PDF</span></label>
+            <label class="chip"><input type="radio" name="Logo" value="No, necesita uno"><span>No, necesito uno <small>(se cotiza aparte)</small></span></label>
+          </fieldset>
+          <div class="field">
+            <label for="b-colores">Colores de tu marca</label>
+            <input id="b-colores" name="Colores" type="text" maxlength="160">
+          </div>
+          <fieldset class="choices">
+            <legend>¿Cómo quieres que se sienta tu página?</legend>
+            <label class="chip"><input type="checkbox" name="Estilo" value="Cercana"><span>Cercana</span></label>
+            <label class="chip"><input type="checkbox" name="Estilo" value="Profesional"><span>Profesional</span></label>
+            <label class="chip"><input type="checkbox" name="Estilo" value="Elegante"><span>Elegante</span></label>
+            <label class="chip"><input type="checkbox" name="Estilo" value="Juvenil"><span>Juvenil</span></label>
+          </fieldset>
+          <div class="field">
+            <label for="b-estilo-otro">¿Otra? Descríbela <small>(opcional)</small></label>
+            <input id="b-estilo-otro" name="Estilo, otra" type="text" maxlength="160">
+          </div>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-fotos">
+          <legend>Fotos y video</legend>
+          <fieldset class="choices">
+            <legend>Fotos de tu local, productos o trabajos</legend>
+            <label class="chip"><input type="radio" name="Fotos" value="Las tiene y las envía"><span>Las tengo y las envío</span></label>
+            <label class="chip"><input type="radio" name="Fotos" value="Necesita ayuda para sacarlas"><span>Necesito ayuda para sacarlas</span></label>
+            <label class="chip"><input type="radio" name="Fotos" value="Quiere sesión de fotos"><span>Quiero una sesión de fotos <small>(se cotiza aparte)</small></span></label>
+          </fieldset>
+          <div class="field">
+            <label for="b-enlace">Enlace a tus fotos y logo <small>(Google Drive, Dropbox o WeTransfer)</small></label>
+            <input id="b-enlace" name="Enlace a fotos y logo" type="text" inputmode="url" maxlength="400" placeholder="https://drive.google.com/…">
+            <p class="hint">¿No tienes un enlace? Mándalas por <a href="https://wa.me/56942579133" data-msg="Hola {found}, te mando las fotos y el logo para mi página." data-track="whatsapp_click" data-where="brief-fotos" target="_blank" rel="noopener">WhatsApp</a>, en calidad original si se puede.</p>
+          </div>
+          <div class="field">
+            <label for="b-videos">¿Tienes videos o reels que quieras mostrar?</label>
+            <input id="b-videos" name="Videos o reels" type="text" maxlength="400">
+          </div>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-redes">
+          <legend>Contacto y redes</legend>
+          <p class="hint">Lo que va a aparecer en tu página.</p>
+          <div class="row-2">
+            <div class="field">
+              <label for="b-wa-pub">WhatsApp del negocio <small>(si es otro)</small></label>
+              <input id="b-wa-pub" name="WhatsApp del negocio" type="tel" inputmode="tel" maxlength="30">
+            </div>
+            <div class="field">
+              <label for="b-tel-pub">Teléfono y correo del negocio</label>
+              <input id="b-tel-pub" name="Teléfono y correo del negocio" type="text" maxlength="160">
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="b-redes">Instagram, Facebook o TikTok</label>
+              <input id="b-redes" name="Redes sociales" type="text" maxlength="300" placeholder="@tunegocio">
+            </div>
+            <div class="field">
+              <label for="b-maps">Ficha de Google Maps <small>(el enlace, si tienes)</small></label>
+              <input id="b-maps" name="Google Maps" type="text" inputmode="url" maxlength="400">
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-dominio">
+          <legend>Dominio y correo</legend>
+          <div class="field">
+            <label for="b-dominio">¿Ya tienes dominio? ¿Cuál?</label>
+            <input id="b-dominio" name="Dominio actual" type="text" maxlength="120" placeholder="tunegocio.cl">
+          </div>
+          <div class="field">
+            <label for="b-dominio-ideas">Si no tienes: tres nombres que te gustarían</label>
+            <input id="b-dominio-ideas" name="Ideas de dominio" type="text" maxlength="200">
+          </div>
+          <fieldset class="choices">
+            <legend>¿Quieres un correo con tu dominio? <small>(por ejemplo, contacto@tunegocio.cl)</small></legend>
+            <label class="chip"><input type="radio" name="Correo con dominio" value="Sí"><span>Sí</span></label>
+            <label class="chip"><input type="radio" name="Correo con dominio" value="No"><span>No</span></label>
+            <label class="chip"><input type="radio" name="Correo con dominio" value="No lo sabe"><span>No lo sé</span></label>
+          </fieldset>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-funciones">
+          <legend>Funciones</legend>
+          <fieldset class="choices">
+            <legend>Marca las que necesitas</legend>
+            <label class="chip"><input type="checkbox" name="Funciones" value="Reservas o agenda"><span>Reservas o agenda</span></label>
+            <label class="chip"><input type="checkbox" name="Funciones" value="Carta o catálogo"><span>Carta o catálogo</span></label>
+            <label class="chip"><input type="checkbox" name="Funciones" value="Cotizador"><span>Cotizador</span></label>
+            <label class="chip"><input type="checkbox" name="Funciones" value="Galería de trabajos"><span>Galería de trabajos</span></label>
+            <label class="chip"><input type="checkbox" name="Funciones" value="Formulario de contacto"><span>Formulario de contacto</span></label>
+            <label class="chip"><input type="checkbox" name="Funciones" value="Tienda online"><span>Tienda online</span></label>
+            <label class="chip"><input type="checkbox" name="Funciones" value="Blog o noticias"><span>Blog o noticias</span></label>
+          </fieldset>
+          <div class="field">
+            <label for="b-func-otra">¿Otra? <small>(opcional)</small></label>
+            <input id="b-func-otra" name="Funciones, otra" type="text" maxlength="200">
+          </div>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-tienda" data-solo="tienda">
+          <legend>Si es tienda online</legend>
+          <div class="field">
+            <label for="b-productos">¿Cuántos productos, más o menos? ¿Tienes una planilla con productos, precios y stock?</label>
+            <input id="b-productos" name="Tienda: productos" type="text" maxlength="200">
+          </div>
+          <fieldset class="choices">
+            <legend>Medios de pago</legend>
+            <label class="chip"><input type="checkbox" name="Tienda: pagos" value="Tarjeta"><span>Tarjeta</span></label>
+            <label class="chip"><input type="checkbox" name="Tienda: pagos" value="Transferencia"><span>Transferencia</span></label>
+            <label class="chip"><input type="checkbox" name="Tienda: pagos" value="Efectivo al retirar"><span>Efectivo al retirar</span></label>
+          </fieldset>
+          <div class="field">
+            <label for="b-despacho">Despacho: comunas y costo, o retiro en el local</label>
+            <textarea id="b-despacho" name="Tienda: despacho" rows="3" maxlength="1500"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-sistema" data-solo="software">
+          <legend>Si es un sistema</legend>
+          <fieldset class="choices">
+            <legend>¿Qué quieres controlar?</legend>
+            <label class="chip"><input type="checkbox" name="Sistema: controlar" value="Inventario"><span>Inventario</span></label>
+            <label class="chip"><input type="checkbox" name="Sistema: controlar" value="Ventas y caja"><span>Ventas y caja</span></label>
+            <label class="chip"><input type="checkbox" name="Sistema: controlar" value="Reservas"><span>Reservas</span></label>
+            <label class="chip"><input type="checkbox" name="Sistema: controlar" value="Cotizaciones"><span>Cotizaciones</span></label>
+            <label class="chip"><input type="checkbox" name="Sistema: controlar" value="Clientes"><span>Clientes</span></label>
+          </fieldset>
+          <div class="field">
+            <label for="b-usuarios">¿Cuántas personas lo usarán? ¿Desde computador, celular o ambos?</label>
+            <input id="b-usuarios" name="Sistema: usuarios" type="text" maxlength="200">
+          </div>
+          <div class="field">
+            <label for="b-hoy-sis">¿Cómo lo llevas hoy? <small>(cuaderno, planilla, otro sistema)</small></label>
+            <input id="b-hoy-sis" name="Sistema: cómo lo lleva hoy" type="text" maxlength="300">
+          </div>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-plazos">
+          <legend>Plazos y presupuesto</legend>
+          <div class="row-2">
+            <div class="field">
+              <label for="b-cuando">¿Para cuándo lo necesitas?</label>
+              <input id="b-cuando" name="Para cuándo" type="text" maxlength="120">
+            </div>
+            <div class="field">
+              <label for="b-presupuesto">Presupuesto aproximado <small>(opcional)</small></label>
+              <input id="b-presupuesto" name="Presupuesto" type="text" maxlength="120">
+            </div>
+          </div>
+          <div class="field">
+            <label for="b-aprueba">¿Quién aprueba el diseño?</label>
+            <input id="b-aprueba" name="Quién aprueba" type="text" maxlength="120">
+          </div>
+        </fieldset>
+
+        <fieldset class="bsec" id="s-boleta">
+          <legend>Datos para boleta o factura <small>(opcional)</small></legend>
+          <div class="field">
+            <label for="b-rut">Nombre o razón social y RUT</label>
+            <input id="b-rut" name="Razón social y RUT" type="text" maxlength="160">
+          </div>
+        </fieldset>
+
+        <div class="brief-end">
+          <label class="consent" for="b-consent">
+            <input id="b-consent" name="consiento" type="checkbox" required>
+            <span>Acepto que {found} studio use estos datos solo para hacer mi proyecto, según la <a href="/privacidad.html">política de privacidad</a>.</span>
+          </label>
+          <p class="err" id="e-b-consent"></p>
+          <button class="btn btn-navy" type="submit">Enviar brief</button>
+          <p class="saved" id="b-saved" aria-live="polite"></p>
+          <div class="status" id="b-status" role="status" aria-live="polite"></div>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-brand">
+      <img class="foot-logo" src="/assets/brand/found-horizontal.svg" alt="{found} studio" width="1269" height="245">
+      <img class="foot-slogan-img" src="/assets/brand/found-slogan.svg" alt="Ctrl + {found}" width="1248" height="265">
+    </div>
+    <div class="foot-grid foot-grid-2">
+      <nav aria-labelledby="f-sitio"><h2 id="f-sitio">Sitio</h2><ul><li><a href="/servicios/">Servicios</a></li><li><a href="/ejemplos/">Ejemplos</a></li><li><a href="/contacto/">Contacto</a></li><li><a href="/privacidad.html">Privacidad</a></li></ul></nav>
+      <div><h2>Contacto</h2><ul><li><a href="https://wa.me/56942579133" target="_blank" rel="noopener">WhatsApp +56 9 4257 9133</a></li><li><a href="mailto:contacto@foundstudio.cl">contacto@foundstudio.cl</a></li><li><a href="https://www.instagram.com/foundstudio.cl/" target="_blank" rel="noopener">Instagram @foundstudio.cl</a></li></ul></div>
+    </div>
+    <p class="foot-legal"><span>© 2026 {found} studio · Huechuraba, Santiago</span><span>Los ejemplos por rubro son ficticios.</span></p>
+  </div>
+</footer>
+</body>
+</html>

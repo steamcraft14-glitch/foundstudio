@@ -3,9 +3,9 @@
 Sitio estático (HTML, CSS y JS, sin backend ni librerías externas) publicado con GitHub Pages en https://foundstudio.cl.
 
 ## Páginas
-- `index.html` inicio · `servicios/` · `ejemplos/` seis negocios ficticios interactivos · `contacto/` formulario · `privacidad.html` · `404.html`.
+- `index.html` inicio · `servicios/` · `ejemplos/` seis negocios ficticios interactivos · `contacto/` formulario · `brief/` brief en línea para clientes que aceptaron la propuesta (no se indexa ni va en el sitemap) · `privacidad.html` · `404.html`.
 - Estilos: `assets/css/site.css` (todo el sitio, tema oscuro) y `assets/css/ejemplos.css` (solo los negocios ficticios).
-- Scripts: `assets/js/site.js` (común), `asistente.js` (chat de estimado, en todas las páginas), `ejemplos.js`, `contacto.js`, `privacidad.js`.
+- Scripts: `assets/js/site.js` (común), `asistente.js` (chat de estimado, en todas las páginas), `ejemplos.js`, `contacto.js`, `brief.js` (con `assets/css/brief.css`), `privacidad.js`.
 - Rangos de precio del asistente: objeto `RANGOS` al inicio de `assets/js/asistente.js`. El sitio no publica precios fijos en ninguna otra parte.
 
 ## Reglas
@@ -17,6 +17,9 @@ Sitio estático (HTML, CSS y JS, sin backend ni librerías externas) publicado c
 - `_config.yml` define qué NO se publica (CLAUDE.md, PRODUCT.md, tests, docs, found-logo, etc.). No agregar `.nojekyll`: anularía esa exclusión.
 - Todo ejemplo de rubro va rotulado como ficticio. No inventar testimonios, métricas ni clientes.
 - Sin fotos de terceros: solo capturas propias (ejemplos en `assets/img/ejemplos/`) y de clientes (`assets/img/casos/`).
+
+## Brief en línea
+Cuando un cliente acepta, mándale `https://foundstudio.cl/brief/?negocio=Nombre%20del%20negocio&nombre=Juan&servicio=tienda` (`servicio`: `pagina`, `tienda`, `software` o `varios`; decide qué secciones aparecen). Llega a contacto@foundstudio.cl con asunto «Brief: …». Web3Forms gratis no recibe archivos: las fotos y el logo llegan por un enlace de Drive o por WhatsApp. El borrador vive en el `localStorage` del cliente y se borra al enviar (declarado en `privacidad.html#cookies`).
 
 ## Pruebas
 Con un servidor local (`python -m http.server 8417 --bind 127.0.0.1`), correr `python tests/qa.py`. El formulario no se envía de verdad durante las pruebas.
