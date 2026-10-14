@@ -25,7 +25,7 @@ Qué exige la ley chilena a este sitio, qué ya está hecho en el código y qué
 | Límite de largo en los campos (`maxlength`) y trampa anti-spam (`botcheck`) | formulario |
 | Mensajes de estado con texto fijo (sin insertar lo que escribe el usuario como HTML) | `main.js`, `privacidad.js` |
 | `security.txt` para reportar vulnerabilidades | `.well-known/security.txt` (vence 2027-10-09: renuévalo) |
-| `.nojekyll` para que GitHub Pages publique `.well-known/` | raíz |
+| `.well-known/` se publica con `include` en `_config.yml`. No usar `.nojekyll`: anularía las exclusiones de `_config.yml` | `_config.yml` |
 
 ### Al editar, ojo con esto
 - Si cambias el `<script>` en línea del `<head>` de `index.html`, recalcula su hash y actualízalo en la CSP:
