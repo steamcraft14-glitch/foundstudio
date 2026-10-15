@@ -241,3 +241,11 @@ code { font-family: var(--mono); font-size: .9em; background: rgba(242, 236, 223
 .form-resp summary { cursor: pointer; font-size: 15px; font-weight: 600; padding: 6px 0; width: fit-content; }
 .form-resp[open] summary { margin-bottom: 12px; }
 .form-resp .form-consent { font-size: 13px; margin-top: 12px; }
+
+/* acceso sin correo: enlace o contraseña temporal para mandar por WhatsApp */
+.acceso-cont:empty { display: none; }
+.acceso { margin-top: 16px; padding: 16px; border-radius: 16px; border: 1px solid rgba(156, 220, 254, .45); background: rgba(156, 220, 254, .06); display: grid; gap: 10px; }
+.acceso-tit { font-weight: 700; font-size: 15px; color: #9CDCFE; }
+.acceso input { width: 100%; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line-2); background: var(--noche); color: var(--crema); font-family: var(--mono); font-size: 14px; }
+.acceso .status { margin: 0; }
+.aceptar .consent { margin: 4px 0 14px; }

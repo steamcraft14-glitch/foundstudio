@@ -2,11 +2,17 @@
 // Es lo único que usa claves secretas; el sitio solo tiene la clave pública (anon).
 //
 // Acciones (POST con { accion, ... } y la sesión del usuario):
-//   invitar        admin: crea el proyecto desde una cotización aceptada y le manda al cliente el enlace de acceso
-//   enlace         admin: reenvía el enlace de acceso a un cliente
-//   estado         admin: cambia el estado del proyecto y, si se pide, avisa al cliente por correo
-//   brief-enviado  cliente: cierra su brief, pasa el proyecto a Diseño y te avisa por correo
-//   visitas        admin: resumen de GoatCounter de los últimos 30 días
+//   invitar            admin: crea el proyecto desde una cotización aceptada y le da al cliente el enlace de acceso
+//                      (por correo, o con enviar:false lo devuelve para mandarlo por WhatsApp sin gastar correos)
+//   enlace             admin: enlace de acceso nuevo (por correo, o con enviar:false solo lo devuelve)
+//   clave              admin: pone una contraseña temporal al cliente y la devuelve (para mandarla por WhatsApp)
+//   cambiar-correo     admin: cambia el correo de acceso del cliente (cuenta y proyectos)
+//   mensaje            admin: le escribe al cliente un correo con la plantilla del estudio
+//   eliminar-proyecto  admin: borra el proyecto, su brief, su historial y todos sus archivos;
+//                      con borrar_cuenta:true también la cuenta del cliente si no le quedan proyectos
+//   estado             admin: cambia el estado del proyecto y, si se pide, avisa al cliente por correo
+//   brief-enviado      cliente: cierra su brief, pasa el proyecto a Diseño y te avisa por correo
+//   visitas            admin: resumen de GoatCounter de los últimos 30 días
 //
 // Secretos (Supabase → Edge Functions → Secrets):
 //   RESEND_API_KEY     clave de Resend (secreta)
@@ -43,6 +49,8 @@ const cors = (req: Request) => {
   };
 };
 
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const texto = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
@@ -93,11 +101,41 @@ const correoAcceso = (nombre: string, negocio: string, link: string, nuevo: bool
     nuevo
       ? "Gracias por confiar en nosotros. Preparamos un espacio para tu proyecto: ahí completas el brief (se guarda solo mientras escribes), subes tu logo y tus fotos y ves en qué etapa va tu página."
       : "Aquí tienes un enlace nuevo para entrar a tu proyecto.",
-    "Entras sin contraseña, con este botón. Si el enlace venció, entra a " +
-      `<a href="${SITE}/mi-proyecto/">foundstudio.cl/mi-proyecto</a> y pide uno nuevo con tu correo.`,
+    "Entras con este botón, sin contraseña. Ya dentro, crea una contraseña en «Contraseña» (al final de la página) y la próxima vez entras directo con tu correo y esa contraseña.",
+    `Si el enlace venció (dura 1 hora), entra a <a href="${SITE}/mi-proyecto/">foundstudio.cl/mi-proyecto</a> y pide uno nuevo con tu correo.`,
   ],
   { texto: "Entrar a mi proyecto", url: link },
 );
+
+// proyecto por id, con la llave de servicio (solo se usa en acciones de admin)
+async function proyectoDe(c: Ctx) {
+  const id = String(c.body.proyecto_id ?? "");
+  if (!UUID.test(id)) throw new Falla(400, "Falta el proyecto.");
+  const { data: p } = await c.admin.from("proyectos").select("id, cliente_id, cliente_email, cliente_nombre, negocio").eq("id", id).single();
+  if (!p) throw new Falla(404, "No encontramos el proyecto.");
+  return p;
+}
+
+// contraseña temporal fácil de dictar: sin 0/O ni 1/l/I
+function claveTemporal() {
+  const abc = "abcdefghijkmnpqrstuvwxyz23456789";
+  const s = [...crypto.getRandomValues(new Uint8Array(10))].map(n => abc[n % abc.length]).join("");
+  return `${s.slice(0, 5)}-${s.slice(5)}`;
+}
+
+// borra todo lo que hay en la carpeta del proyecto en el bucket (de a 100)
+async function borrarArchivos(admin: SupabaseClient, carpeta: string) {
+  let total = 0;
+  for (;;) {
+    const { data, error } = await admin.storage.from("archivos").list(carpeta, { limit: 100 });
+    if (error) throw new Falla(500, "No se pudieron listar los archivos: " + error.message);
+    const rutas = (data ?? []).filter(f => f.id).map(f => `${carpeta}/${f.name}`);
+    if (!rutas.length) return total;
+    const { error: e2 } = await admin.storage.from("archivos").remove(rutas);
+    if (e2) throw new Falla(500, "No se pudieron borrar los archivos: " + e2.message);
+    total += rutas.length;
+  }
+}
 
 /* ---------- acciones ---------- */
 type Ctx = { user: { id: string; email?: string }; db: SupabaseClient; admin: SupabaseClient; esAdmin: boolean; body: Record<string, unknown> };
@@ -111,8 +149,15 @@ const acciones: Record<string, (c: Ctx) => Promise<unknown>> = {
     const nombre = texto(c.body.nombre, 80), negocio = texto(c.body.negocio, 80);
     const servicio = SERVICIOS.includes(c.body.servicio as string) ? c.body.servicio as string : "pagina";
     const cotizacion_id = Number(c.body.cotizacion_id) || null;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) throw new Falla(400, "El correo del cliente no es válido.");
+    if (!EMAIL.test(email)) throw new Falla(400, "El correo del cliente no es válido.");
     if (!nombre || !negocio) throw new Falla(400, "Faltan el nombre o el negocio.");
+    const enviar = c.body.enviar !== false;
+
+    // si ya se creó desde esta cotización (doble clic o reintento), no se duplica
+    if (cotizacion_id) {
+      const { data: ya } = await c.admin.from("proyectos").select("id").eq("cotizacion_id", cotizacion_id).maybeSingle();
+      if (ya) throw new Falla(409, "Esta cotización ya tiene proyecto. Ábrelo desde «Proyectos».");
+    }
 
     const { userId, link } = await enlaceDeAcceso(c.admin, email, nombre);
     const { data: p, error } = await c.admin.from("proyectos").insert({
@@ -123,17 +168,74 @@ const acciones: Record<string, (c: Ctx) => Promise<unknown>> = {
     await c.admin.from("briefs").insert({ proyecto_id: p.id, respuestas: { Nombre: nombre, Negocio: negocio, Correo: email, WhatsApp: texto(c.body.telefono, 30), Proyecto: servicio } });
     if (cotizacion_id) await c.admin.from("cotizaciones").update({ estado: "aceptada" }).eq("id", cotizacion_id);
 
-    await enviarCorreo(email, `Tu proyecto con {found} studio: ${negocio}`, correoAcceso(nombre, negocio, link, true), env("ADMIN_EMAIL") || undefined);
+    if (!enviar) return { proyecto_id: p.id, link };
+    try {
+      await enviarCorreo(email, `Tu proyecto con {found} studio: ${negocio}`, correoAcceso(nombre, negocio, link, true), env("ADMIN_EMAIL") || undefined);
+    } catch (e) {
+      // el proyecto ya existe: se devuelve el enlace para mandarlo por WhatsApp en vez de fallar
+      return { proyecto_id: p.id, link, aviso: `Proyecto creado, pero el correo no salió (${e instanceof Error ? e.message : "error"}). Manda el enlace por WhatsApp.` };
+    }
     return { proyecto_id: p.id };
   },
 
   async enlace(c) {
     soloAdmin(c);
-    const { data: p } = await c.admin.from("proyectos").select("cliente_email, cliente_nombre, negocio").eq("id", c.body.proyecto_id).single();
-    if (!p) throw new Falla(404, "No encontramos el proyecto.");
+    const p = await proyectoDe(c);
     const { link } = await enlaceDeAcceso(c.admin, p.cliente_email, p.cliente_nombre);
+    if (c.body.enviar === false) return { link };
     await enviarCorreo(p.cliente_email, `Tu acceso a ${p.negocio}`, correoAcceso(p.cliente_nombre, p.negocio, link, false), env("ADMIN_EMAIL") || undefined);
     return { ok: true };
+  },
+
+  async clave(c) {
+    soloAdmin(c);
+    const p = await proyectoDe(c);
+    const pedida = texto(c.body.clave, 72);
+    if (pedida && pedida.length < 8) throw new Falla(400, "La contraseña necesita al menos 8 caracteres.");
+    const clave = pedida || claveTemporal();
+    const { error } = await c.admin.auth.admin.updateUserById(p.cliente_id, { password: clave });
+    if (error) throw new Falla(400, error.message);
+    return { clave, email: p.cliente_email };
+  },
+
+  async "cambiar-correo"(c) {
+    soloAdmin(c);
+    const p = await proyectoDe(c);
+    const email = texto(c.body.email, 120).toLowerCase();
+    if (!EMAIL.test(email)) throw new Falla(400, "El correo nuevo no es válido.");
+    if (email === p.cliente_email) return { ok: true, email };
+    const { error } = await c.admin.auth.admin.updateUserById(p.cliente_id, { email, email_confirm: true });
+    if (error) throw new Falla(400, /already|registered|exists/i.test(error.message) ? "Ese correo ya tiene una cuenta con nosotros." : error.message);
+    // todos los proyectos de esa cuenta quedan con el correo nuevo
+    await c.admin.from("proyectos").update({ cliente_email: email }).eq("cliente_id", p.cliente_id);
+    return { ok: true, email };
+  },
+
+  async mensaje(c) {
+    soloAdmin(c);
+    const p = await proyectoDe(c);
+    const asunto = texto(c.body.asunto, 120) || `${p.negocio}: novedades de tu proyecto`;
+    const cuerpo = texto(c.body.texto, 4000);
+    if (!cuerpo) throw new Falla(400, "Escribe el mensaje.");
+    const parrafos = cuerpo.split(/\n{2,}/).map(x => esc(x).replace(/\n/g, "<br>"));
+    await enviarCorreo(p.cliente_email, asunto, plantilla(asunto, [`Hola ${esc(p.cliente_nombre.split(" ")[0])},`, ...parrafos],
+      { texto: "Ver mi proyecto", url: `${SITE}/mi-proyecto/` }), env("ADMIN_EMAIL") || undefined);
+    return { ok: true };
+  },
+
+  async "eliminar-proyecto"(c) {
+    soloAdmin(c);
+    const p = await proyectoDe(c);
+    const archivos = await borrarArchivos(c.admin, p.id);
+    const { error } = await c.admin.from("proyectos").delete().eq("id", p.id);   // brief e historial se borran en cascada
+    if (error) throw new Falla(400, error.message);
+    let cuenta = false;
+    if (c.body.borrar_cuenta === true) {
+      // solo si no le quedan proyectos y no es la cuenta de quien borra (el esquema private no está en la API)
+      const { count } = await c.admin.from("proyectos").select("id", { count: "exact", head: true }).eq("cliente_id", p.cliente_id);
+      if (!count && p.cliente_id !== c.user.id) cuenta = !(await c.admin.auth.admin.deleteUser(p.cliente_id)).error;
+    }
+    return { ok: true, archivos, cuenta };
   },
 
   async estado(c) {

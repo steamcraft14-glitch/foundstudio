@@ -17,6 +17,7 @@
   let db, proyectos = [], cotizaciones = [], estimados = [], formularios = [], filtroF = "nuevo";
   let filtroP = "activos", filtroC = "abiertas", buscaP = "", buscaC = "";
   const elegidas = new Set();   // cotizaciones marcadas para acciones en grupo
+  const accesos = {};            // proyecto_id → { tipo: "enlace" | "clave", valor, aviso }: lo último generado sin correo
 
   async function iniciar() {
     if (!sesion.activo()) return mostrar("#a-off");
@@ -175,25 +176,39 @@
       guardar.disabled = false;
     } }, "Guardar estado");
 
-    const reenviar = el("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: async () => {
-      reenviar.disabled = true; estado(st, null, "Enviando enlace…");
-      try { await sesion.funcion("enlace", { proyecto_id: id }); estado(st, "ok", `Enlace de acceso enviado a ${p.cliente_email}.`); }
-      catch (e) { estado(st, "error", e.message); }
-      reenviar.disabled = false;
-    } }, "Reenviar acceso");
-
-    const copiarPortal = el("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: async () => {
-      try { await navigator.clipboard.writeText(`${location.origin}/mi-proyecto/?email=${encodeURIComponent(p.cliente_email)}`); avisar("Enlace al portal copiado. El cliente pide ahí su acceso con su correo."); }
-      catch (_) { avisar("No se pudo copiar.", "error"); }
-    } }, "Copiar enlace al portal");
-
     const waUrl = wa(p.cliente_telefono || b?.respuestas?.WhatsApp);
+    const accesoCont = el("div", { class: "acceso-cont" });
+    const pintarAcceso = () => accesoCont.replaceChildren(accesos[id] ? cajaAcceso(p, accesos[id], waUrl) : "");
+    pintarAcceso();
+    // botón que llama a la función del servidor con su propio estado de «cargando»
+    const accion = (texto, cargando, alHacer, clase = "btn btn-sm btn-ghost") => {
+      const btn = el("button", { class: clase, type: "button", onclick: async () => {
+        btn.disabled = true; const t = btn.textContent; btn.textContent = cargando;
+        try { await alHacer(); } catch (e) { avisar(e.message, "error"); }
+        btn.disabled = false; btn.textContent = t;
+      } }, texto);
+      return btn;
+    };
+    const reenviar = accion("Reenviar acceso por correo", "Enviando…", async () => {
+      await sesion.funcion("enlace", { proyecto_id: id });
+      avisar(`Enlace de acceso enviado a ${p.cliente_email}.`);
+    });
+    const enlaceWA = accion("Enlace sin correo", "Generando…", async () => {
+      const r = await sesion.funcion("enlace", { proyecto_id: id, enviar: false });
+      accesos[id] = { tipo: "enlace", valor: r.link }; pintarAcceso();
+    });
+    const claveTmp = accion("Contraseña temporal", "Generando…", async () => {
+      if (!await confirmar({ titulo: "¿Crear una contraseña temporal?", texto: `Reemplaza la contraseña actual de ${p.cliente_email}. Se la mandas por WhatsApp y el cliente la cambia al entrar.`, boton: "Crear contraseña" })) return;
+      const r = await sesion.funcion("clave", { proyecto_id: id });
+      accesos[id] = { tipo: "clave", valor: r.clave }; pintarAcceso();
+    });
     const cabeza = el("div", { class: "d-head" },
       el("h2", {}, p.negocio),
       el("p", { class: "soft" }, `${p.cliente_nombre} · `, el("a", { href: `mailto:${p.cliente_email}` }, p.cliente_email), ` · ${SERVICIOS[p.servicio] || p.servicio} · desde ${fecha(p.created_at)}`),
       el("div", { class: "btns" },
         waUrl ? el("a", { class: "btn btn-sm", href: waUrl + "?text=" + encodeURIComponent(`Hola ${p.cliente_nombre.split(" ")[0]}, te escribo de {found} studio por ${p.negocio}.`), target: "_blank", rel: "noopener" }, "WhatsApp") : null,
-        reenviar, copiarPortal));
+        enlaceWA, claveTmp, reenviar),
+      accesoCont);
 
     const bloqueEstado = el("div", { class: "d-bloque" }, el("h3", {}, "Estado"),
       el("div", { class: "row-2" },
@@ -207,7 +222,7 @@
       el("ol", { class: "historial" }, hist.map(h => el("li", {}, el("span", {}, NOMBRE_ESTADO[h.estado] || h.estado), el("time", { datetime: h.created_at }, fecha(h.created_at, true))))))
       : null;
 
-    // datos del cliente (el correo no se cambia aquí: es la cuenta con la que entra al portal)
+    // datos del cliente (el correo es la cuenta del portal: se cambia en la función del servidor)
     const uid = "dd" + id.slice(0, 8);
     const fDatos = el("form", { class: "d-datos", novalidate: true },
       el("div", { class: "row-2" },
@@ -216,19 +231,42 @@
       el("div", { class: "row-2" },
         el("div", { class: "field" }, el("label", { for: uid + "t" }, "WhatsApp"), el("input", { id: uid + "t", name: "cliente_telefono", type: "tel", maxlength: "30", value: p.cliente_telefono || "" })),
         el("div", { class: "field" }, el("label", { for: uid + "s" }, "Proyecto"), el("select", { id: uid + "s", name: "servicio" }, Object.entries(SERVICIOS).map(([k, t]) => el("option", { value: k, selected: k === p.servicio }, t))))),
-      el("p", { class: "soft d-nota" }, `Correo de acceso: ${p.cliente_email} (no se cambia desde aquí).`),
+      el("div", { class: "field" }, el("label", { for: uid + "e" }, "Correo de acceso ", el("small", {}, "(con el que entra al portal)")), el("input", { id: uid + "e", name: "cliente_email", type: "email", maxlength: "120", required: true, value: p.cliente_email })),
       el("button", { class: "btn btn-sm btn-ghost", type: "submit" }, "Guardar datos"),
       el("p", { class: "status", role: "status", "aria-live": "polite" }));
     fDatos.addEventListener("submit", async e => {
       e.preventDefault();
       const s = fDatos.querySelector(".status"), v = Object.fromEntries(new FormData(fDatos));
       if (!v.cliente_nombre.trim() || !v.negocio.trim()) return estado(s, "error", "Faltan el nombre y el negocio.");
+      const email = v.cliente_email.trim().toLowerCase();
+      if (email !== p.cliente_email) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return estado(s, "error", "Revisa el correo: parece incompleto.");
+        try { await sesion.funcion("cambiar-correo", { proyecto_id: id, email }); }
+        catch (err) { return estado(s, "error", err.message); }
+      }
       const { error } = await db.from("proyectos").update({ cliente_nombre: v.cliente_nombre.trim(), negocio: v.negocio.trim(), cliente_telefono: v.cliente_telefono.trim() || null, servicio: v.servicio }).eq("id", id);
       if (error) return estado(s, "error", error.message);
       avisar("Datos del proyecto guardados.");
       await cargarProyectos(); abrirProyecto(id);
     });
     const datos = el("details", { class: "d-bloque d-plegable" }, el("summary", {}, el("h3", {}, "Datos del cliente")), fDatos);
+
+    const fMsg = el("form", { novalidate: true },
+      el("div", { class: "field" }, el("label", { for: uid + "a" }, "Asunto"), el("input", { id: uid + "a", name: "asunto", maxlength: "120", placeholder: `${p.negocio}: novedades de tu proyecto` })),
+      el("div", { class: "field" }, el("label", { for: uid + "m" }, "Mensaje"), el("textarea", { id: uid + "m", name: "texto", rows: "5", maxlength: "4000", required: true, placeholder: "Hola, para avanzar nos falta tu logo en buena calidad…" })),
+      el("p", { class: "soft d-nota" }, "Sale con la plantilla del estudio y un botón a su portal. Gasta un correo de Resend; para algo rápido usa WhatsApp."),
+      el("button", { class: "btn btn-sm", type: "submit" }, "Enviar correo"),
+      el("p", { class: "status", role: "status", "aria-live": "polite" }));
+    fMsg.addEventListener("submit", async e => {
+      e.preventDefault();
+      const s = fMsg.querySelector(".status"), v = Object.fromEntries(new FormData(fMsg)), btn = fMsg.querySelector("[type=submit]");
+      if (!v.texto.trim()) return estado(s, "error", "Escribe el mensaje.");
+      btn.disabled = true; estado(s, null, "Enviando…");
+      try { await sesion.funcion("mensaje", { proyecto_id: id, asunto: v.asunto, texto: v.texto }); fMsg.reset(); estado(s, "ok", `Correo enviado a ${p.cliente_email}.`); }
+      catch (err) { estado(s, "error", err.message); }
+      btn.disabled = false;
+    });
+    const escribir = el("details", { class: "d-bloque d-plegable" }, el("summary", {}, el("h3", {}, "Escribir al cliente por correo")), fMsg);
 
     // brief
     const r = b?.respuestas || {};
@@ -273,14 +311,40 @@
     // zona de peligro
     const borrar = el("div", { class: "d-bloque d-peligro" }, el("h3", {}, "Eliminar proyecto"),
       el("p", { class: "soft" }, "Borra el proyecto, su brief, su historial y sus archivos. La cotización de origen se mantiene."),
-      el("button", { class: "btn btn-sm btn-peligro", type: "button", onclick: () => eliminarProyecto(p) }, "Eliminar proyecto"));
+      el("label", { class: "consent", for: uid + "bc" }, el("input", { id: uid + "bc", type: "checkbox" }), el("span", {}, "Borrar también la cuenta del cliente (si no tiene otros proyectos)")),
+      el("button", { class: "btn btn-sm btn-peligro", type: "button", onclick: () => eliminarProyecto(p, $("#" + uid + "bc").checked) }, "Eliminar proyecto"));
 
-    d.replaceChildren(cabeza, bloqueEstado, historial, datos, brief, arch, borrar);
+    d.replaceChildren(cabeza, bloqueEstado, historial, datos, escribir, brief, arch, borrar);
     if (matchMedia("(max-width: 900px)").matches) d.scrollIntoView({ block: "start" });
   }
 
-  async function eliminarProyecto(p) {
-    if (!await confirmar({ titulo: `¿Eliminar «${p.negocio}»?`, texto: "Se borran el proyecto, su brief, su historial y todos sus archivos. El cliente ya no lo verá en su portal. No se puede deshacer.", boton: "Eliminar proyecto" })) return;
+  // caja con el enlace o la contraseña recién generados, para copiar o mandar por WhatsApp
+  function cajaAcceso(p, a, waUrl) {
+    const nombre = p.cliente_nombre.split(" ")[0];
+    const msg = a.tipo === "enlace"
+      ? `Hola ${nombre}, este es tu enlace para entrar a tu proyecto en {found} studio (sirve una vez y dura 1 hora):\n${a.valor}\n\nYa dentro, crea tu contraseña al final de la página y después entras cuando quieras.`
+      : `Hola ${nombre}, para entrar a tu proyecto en {found} studio:\n${location.origin}/mi-proyecto/\nCorreo: ${p.cliente_email}\nContraseña: ${a.valor}\n\nAl entrar, cámbiala en «Contraseña», al final de la página.`;
+    const campo = el("input", { type: "text", readonly: true, value: a.valor, "aria-label": a.tipo === "enlace" ? "Enlace de acceso" : "Contraseña temporal", onfocus: e => e.target.select() });
+    const copiar = async (t, ok) => { try { await navigator.clipboard.writeText(t); avisar(ok); } catch (_) { campo.select(); avisar("No se pudo copiar: cópialo a mano.", "error"); } };
+    return el("div", { class: "acceso" },
+      a.aviso ? el("p", { class: "status", "data-kind": "error" }, a.aviso) : null,
+      el("p", { class: "acceso-tit" }, a.tipo === "enlace" ? "Enlace de acceso (no gastó correo · dura 1 hora)" : `Contraseña temporal de ${p.cliente_email}`),
+      campo,
+      el("div", { class: "btns" },
+        waUrl ? el("a", { class: "btn btn-sm", href: waUrl + "?text=" + encodeURIComponent(msg), target: "_blank", rel: "noopener" }, "Mandar por WhatsApp") : null,
+        el("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: () => copiar(msg, "Mensaje copiado.") }, "Copiar mensaje"),
+        el("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: () => copiar(a.valor, a.tipo === "enlace" ? "Enlace copiado." : "Contraseña copiada.") }, a.tipo === "enlace" ? "Copiar enlace" : "Copiar contraseña")));
+  }
+
+  async function eliminarProyecto(p, borrarCuenta = false) {
+    if (!await confirmar({ titulo: `¿Eliminar «${p.negocio}»?`, texto: "Se borran el proyecto, su brief, su historial y todos sus archivos" + (borrarCuenta ? ", y la cuenta del cliente si no tiene otros proyectos" : "") + ". El cliente ya no lo verá en su portal. No se puede deshacer.", boton: "Eliminar proyecto" })) return;
+    try {
+      const r = await sesion.funcion("eliminar-proyecto", { proyecto_id: p.id, borrar_cuenta: borrarCuenta });
+      return listoEliminar(p, r.cuenta ? " y la cuenta del cliente" : "");
+    } catch (e) {
+      if (!/desconocida/i.test(e.message)) return avisar(e.message, "error");
+      // la función del servidor aún no tiene esta acción: se borra con la sesión del administrador
+    }
     const { data: files } = await db.storage.from("archivos").list(p.id, { limit: 1000 });
     const rutas = (files || []).filter(f => f.id).map(f => `${p.id}/${f.name}`);
     if (rutas.length) {
@@ -289,9 +353,14 @@
     }
     const { data, error } = await db.from("proyectos").delete().eq("id", p.id).select("id");
     if (error || !data?.length) return avisar(error ? error.message : "No se pudo eliminar el proyecto.", "error");
+    listoEliminar(p, "");
+  }
+
+  async function listoEliminar(p, extra) {
+    delete accesos[p.id];
     history.replaceState(null, "", location.pathname);
     vacíoDetalle();
-    avisar(`Proyecto «${p.negocio}» eliminado.`);
+    avisar(`Proyecto «${p.negocio}» eliminado${extra}.`);
     await cargarProyectos();
   }
 
@@ -436,6 +505,8 @@
       el("div", { class: "row-2" },
         el("div", { class: "field" }, el("label", { for: uid + "n" }, "Nombre"), el("input", { id: uid + "n", name: "nombre", maxlength: "80", value: c.nombre })),
         el("div", { class: "field" }, el("label", { for: uid + "g" }, "Negocio"), el("input", { id: uid + "g", name: "negocio", maxlength: "80", value: c.negocio }))),
+      el("label", { class: "consent", for: uid + "c" }, el("input", { id: uid + "c", name: "por_correo", type: "checkbox", checked: true }),
+        el("span", {}, "Mandar el acceso por correo (si lo desmarcas, te damos el enlace para mandarlo por WhatsApp y no gastas correo)")),
       el("div", { class: "btns" }, el("button", { class: "btn btn-sm", type: "submit" }, "Crear proyecto y enviar acceso"),
         el("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: () => { f.hidden = true; } }, "Cancelar")),
       st);
@@ -445,7 +516,9 @@
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email.trim())) return estado(st, "error", "Falta el correo del cliente: sin correo no puede entrar al portal.");
       const btn = f.querySelector("[type=submit]"); btn.disabled = true; estado(st, null, "Creando…");
       try {
-        const r = await sesion.funcion("invitar", { cotizacion_id: c.id, telefono: c.telefono, ...d });
+        const porCorreo = d.por_correo === "on"; delete d.por_correo;
+        const r = await sesion.funcion("invitar", { cotizacion_id: c.id, telefono: c.telefono, ...d, enviar: porCorreo });
+        if (r.link) accesos[r.proyecto_id] = { tipo: "enlace", valor: r.link, aviso: r.aviso };
         const fo = formularios.find(x => x.cotizacion_id === c.id);   // si completó el formulario, el cliente parte con su brief lleno
         if (fo) await db.from("briefs").update({ respuestas: { ...fo.respuestas, Nombre: d.nombre.trim(), Negocio: d.negocio.trim(), Correo: d.email.trim(), ...(c.telefono ? { WhatsApp: c.telefono } : {}), Proyecto: d.servicio } }).eq("proyecto_id", r.proyecto_id);
         await Promise.all([cargarCotizaciones(), cargarProyectos()]);

@@ -140,6 +140,15 @@ class FalsoSupabase:
                 self.proyecto["estado"] = "diseno"
             if accion == "invitar":
                 return js({"proyecto_id": PID})
+            if accion == "enlace" and json.loads(body).get("enviar") is False:
+                return js({"link": "https://qwmxzaeyhqdwndijquab.supabase.co/auth/v1/verify?token=abc&type=magiclink"})
+            if accion == "clave":
+                return js({"clave": "k7mpa-x3qre", "email": self.proyecto["cliente_email"]})
+            if accion == "cambiar-correo":
+                self.proyecto["cliente_email"] = json.loads(body)["email"]
+                return js({"ok": True, "email": self.proyecto["cliente_email"]})
+            if accion == "eliminar-proyecto":
+                return js({"ok": True, "archivos": 0, "cuenta": False})
             if accion == "visitas":
                 return js({"configurado": True, "total": 321, "eventos": 45,
                            "origenes": [{"nombre": "l.instagram.com", "visitas": 120}, {"nombre": "(directo)", "visitas": 80}, {"nombre": "Google", "visitas": 40}],
@@ -273,6 +282,27 @@ with sync_playwright() as p:
     page.wait_for_selector("#d-proyecto .status[data-kind='ok']", timeout=4000)
     est = falso.hubo("POST", "/functions/v1/found", '"estado"')
     check("panel: cambia el estado y avisa", est and '"revision"' in est[0] and '"avisar":true' in est[0], est[:1])
+    page.click("#d-proyecto >> text=Enlace sin correo")
+    page.wait_for_selector("#d-proyecto .acceso", timeout=4000)
+    sin_correo = falso.hubo("POST", "/functions/v1/found", '"enlace"')
+    wa_href = page.get_attribute("#d-proyecto .acceso a", "href") or ""
+    check("panel: enlace de acceso sin gastar correo", sin_correo and '"enviar":false' in sin_correo[0] and "verify%3Ftoken%3Dabc" in wa_href, sin_correo[:1])
+    page.click("#d-proyecto >> text=Contraseña temporal")
+    page.click("#a-confirmar [value=si]")
+    page.wait_for_function("() => document.querySelector('#d-proyecto .acceso input')?.value === 'k7mpa-x3qre'", timeout=4000)
+    check("panel: contraseña temporal para WhatsApp", "k7mpa-x3qre" in (page.get_attribute("#d-proyecto .acceso a", "href") or "").replace("%2D", "-"))
+    page.click("#d-proyecto >> text=Escribir al cliente por correo")
+    page.fill("#d-proyecto textarea[name=texto]", "Nos falta tu logo.")
+    page.click("#d-proyecto >> text=Enviar correo")
+    page.wait_for_timeout(400)
+    msg = falso.hubo("POST", "/functions/v1/found", '"mensaje"')
+    check("panel: escribe al cliente por correo", msg and "Nos falta tu logo." in msg[0], msg[:1])
+    page.click("#d-proyecto >> text=Datos del cliente")
+    page.fill("#d-proyecto input[name=cliente_email]", "ana.nueva@ejemplo.cl")
+    page.click("#d-proyecto >> text=Guardar datos")
+    page.wait_for_timeout(500)
+    cc = falso.hubo("POST", "/functions/v1/found", "cambiar-correo")
+    check("panel: cambia el correo de acceso", cc and "ana.nueva@ejemplo.cl" in cc[0], cc[:1])
     page.click("#t-cotizaciones")
     check("panel: lista cotizaciones nuevas", "Quiero vender tortas" in page.inner_text("#l-cotizaciones"))
     page.click("#l-cotizaciones >> text=Aceptada")
@@ -280,7 +310,7 @@ with sync_playwright() as p:
     page.wait_for_selector("#t-proyectos[aria-selected='true']", timeout=5000)
     inv = falso.hubo("POST", "/functions/v1/found", "invitar")
     check("panel: «Aceptada» crea el proyecto e invita al cliente",
-          inv and '"email":"ana@ejemplo.cl"' in inv[0] and '"servicio":"tienda"' in inv[0] and '"cotizacion_id":7' in inv[0], inv[:1])
+          inv and '"email":"ana@ejemplo.cl"' in inv[0] and '"enviar":true' in inv[0] and '"servicio":"tienda"' in inv[0] and '"cotizacion_id":7' in inv[0], inv[:1])
     pre = falso.hubo("PATCH", "/rest/v1/briefs", "Lun a sáb 8:00 a 20:00")
     check("panel: al aceptar, el formulario llena el brief del proyecto", pre and '"Correo":"ana@ejemplo.cl"' in pre[0], falso.hubo("PATCH", "/rest/v1/briefs")[:1])
     # formularios de «Lo que te solicitamos»
