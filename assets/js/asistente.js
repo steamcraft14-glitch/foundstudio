@@ -78,6 +78,11 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
       this.opts = el("div", "chat-opts");
       root.append(head, this.log, this.opts);
       this.started = false;
+      /* Pegado al final mientras la persona no suba a leer. Si el área cambia de alto
+         (aparecen o se van las opciones), se vuelve a acomodar. */
+      this.stick = true;
+      this.log.addEventListener("scroll", () => { if (!this.auto) this.stick = this.atEnd(); }, { passive: true });
+      if ("ResizeObserver" in window) new ResizeObserver(() => { if (this.stick) this.scroll(); }).observe(this.log);
     }
 
     async say(text, delay = 650) {
@@ -87,8 +92,18 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
       t.remove();
       const m = el("p", "msg msg-bot", text); this.log.append(m); this.scroll();
     }
-    me(text) { this.log.append(el("p", "msg msg-me", text)); this.scroll(); }
-    scroll() { this.log.scrollTop = this.log.scrollHeight; }
+    me(text) { this.stick = true; this.log.append(el("p", "msg msg-me", text)); this.scroll(); }
+    /* Hasta dónde bajar: el final, salvo que haya un ancla (el estimado), cuyo inicio no se esconde. */
+    target() {
+      const L = this.log, end = L.scrollHeight - L.clientHeight;
+      return this.anchor && this.anchor.isConnected ? Math.min(end, this.anchor.offsetTop - 12) : end;
+    }
+    atEnd() { return this.log.scrollTop >= this.target() - 24; }
+    scroll() {
+      if (!this.stick) return;
+      this.auto = true; this.log.scrollTop = this.target();
+      requestAnimationFrame(() => { this.auto = false; });
+    }
     clearOpts() { this.opts.innerHTML = ""; }
     focusOpts() { const b = this.opts.querySelector("button, input"); if (b && this.root.isConnected && this.wantsFocus) b.focus({ preventScroll: true }); }
 
@@ -135,6 +150,7 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
       this.wantsFocus = focus || this.wantsFocus;
       this.run = (this.run || 0) + 1; const run = this.run;
       this.log.innerHTML = ""; this.clearOpts(); this.started = true;
+      this.anchor = null; this.stick = true;
       const s = this.s = { extras: [], modulos: [] };
       const alive = () => run === this.run;
       track("asistente_inicio");
@@ -206,7 +222,7 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
       s.plazo = await this.choose([["normal", "Sin apuro"], ["pronto", "En las próximas semanas"], ["urgente", "Es urgente"]]); if (!alive()) return;
 
       await this.say("Listo, estoy calculando…", 900); if (!alive()) return;
-      this.result();
+      this.result(alive);
     }
 
     calc() {
@@ -230,7 +246,7 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
       return { r, incluye, plazo };
     }
 
-    result() {
+    result(alive) {
       const s = this.s, { r, incluye, plazo } = this.calc();
       const rubro = s.rubro === "otro" ? s.rubroTxt : NOMBRE[s.rubro];
       const servicio = { pagina: "Página web", tienda: "Tienda online", sistema: "Sistema a medida" }[s.servicio];
@@ -250,10 +266,11 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
       form.href = `/contacto/?rubro=${rubroForm}&servicio=${s.servicio === "sistema" ? "software" : s.servicio}&resumen=${encodeURIComponent(resumen)}`;
       form.addEventListener("click", () => track("cta_cotizar", { donde: "asistente" }));
       btns.append(wa, form); card.append(btns);
-      this.log.append(card); this.scroll();
+      this.log.append(card); this.anchor = card; this.scroll();
       guardar("estimados", { servicio: s.servicio, rubro: s.rubro, rango_min: Math.round(r[0]), rango_max: Math.round(r[1]), detalle: { incluye, plazo: s.plazo } });
       track("asistente_estimado", { servicio: s.servicio, rubro: s.rubro, rango: `${Math.round(r[0] / 1000)}k-${Math.round(r[1] / 1000)}k` });
       this.say("¿Quieres que lo veamos juntos? Escríbenos y lo afinamos a tu medida.", 700).then(() => {
+        if (!alive()) return;
         this.clearOpts();
         const again = el("button", "opt", "Calcular otro proyecto"); again.type = "button"; again.addEventListener("click", () => this.start(true));
         this.opts.append(again);
@@ -280,11 +297,12 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
   let a = null;
   const open = () => {
     panel.hidden = false; fab.hidden = true;
+    document.documentElement.classList.add("chat-abierto");
     if (!a) a = new Asistente(box, { onClose: close });
     a.wantsFocus = true;
     if (!a.started) a.start(true); else (a.opts.querySelector("button, input") || box.querySelector(".chat-icon")).focus();
   };
-  const close = () => { panel.hidden = true; fab.hidden = false; fab.focus(); };
+  const close = () => { panel.hidden = true; fab.hidden = false; document.documentElement.classList.remove("chat-abierto"); fab.focus(); };
   fab.addEventListener("click", open);
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) close(); });
   document.querySelectorAll("[data-open-asistente]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); open(); }));

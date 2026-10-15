@@ -16,11 +16,11 @@
 <link rel="preload" href="/assets/fonts/sora-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css?v=10">
 <link rel="stylesheet" href="/assets/css/brief.css?v=1">
-<link rel="stylesheet" href="/assets/css/cuenta.css?v=1">
-<script defer src="/assets/js/site.js?v=7"></script>
+<link rel="stylesheet" href="/assets/css/cuenta.css?v=3">
+<script defer src="/assets/js/site.js?v=8"></script>
 <script defer src="/assets/js/vendor/supabase-2.45.4.js"></script>
-<script defer src="/assets/js/sesion.js?v=1"></script>
-<script defer src="/assets/js/portal.js?v=1"></script>
+<script defer src="/assets/js/sesion.js?v=2"></script>
+<script defer src="/assets/js/portal.js?v=2"></script>
 </head>
 <body>
 <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -53,12 +53,16 @@
 
       <form class="card cuenta-entrada" id="p-entrada" novalidate hidden>
         <h2>Entra a tu proyecto</h2>
-        <p>Escribe el correo con el que trabajamos contigo y te mandamos un enlace para entrar. Sin contraseña.</p>
+        <p>Escribe el correo con el que trabajamos contigo. Si ya creaste una contraseña, entra con ella; si no, te mandamos un enlace al correo.</p>
         <div class="field">
           <label for="p-email">Tu correo</label>
-          <input id="p-email" type="email" autocomplete="email" inputmode="email" maxlength="120" required>
+          <input id="p-email" type="email" autocomplete="username" inputmode="email" maxlength="120" required>
         </div>
-        <button class="btn" type="submit">Enviarme el enlace</button>
+        <div class="field">
+          <label for="p-clave">Contraseña <small>(si ya la creaste)</small></label>
+          <input id="p-clave" type="password" autocomplete="current-password" maxlength="72">
+        </div>
+        <div class="btns"><button class="btn" type="submit">Entrar</button><button class="btn btn-ghost" type="button" data-enlace>Enviarme un enlace al correo</button></div>
         <p class="status" role="status" aria-live="polite"></p>
       </form>
 
@@ -98,6 +102,19 @@
           <p class="status" id="pa-status" role="status" aria-live="polite"></p>
           <ul class="archivos" id="pa-lista"></ul>
         </section>
+
+        <details class="card cuenta-clave">
+          <summary><h2>Contraseña</h2><span class="soft">Créala para entrar sin esperar un correo</span></summary>
+          <form id="p-clave-form" novalidate>
+            <input type="email" autocomplete="username" hidden id="p-clave-user">
+            <div class="row-2">
+              <div class="field"><label for="p-clave1">Contraseña nueva</label><input id="p-clave1" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></div>
+              <div class="field"><label for="p-clave2">Repítela</label><input id="p-clave2" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></div>
+            </div>
+            <button class="btn btn-sm" type="submit">Guardar contraseña</button>
+            <p class="status" role="status" aria-live="polite"></p>
+          </form>
+        </details>
 
         <p class="cuenta-pie soft">¿Dudas? Escríbenos por <a href="https://wa.me/56942579133" data-msg="Hola {found}, tengo una duda con mi proyecto." target="_blank" rel="noopener">WhatsApp</a>. Tus datos se usan solo para tu proyecto (<a href="/privacidad.html">privacidad</a>).</p>
       </div>

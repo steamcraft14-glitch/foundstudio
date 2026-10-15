@@ -1,5 +1,6 @@
 /* {found} studio · /brief/
-   Brief en línea para clientes que aceptaron la propuesta. Llega al correo con Web3Forms.
+   Formulario en línea «Lo que te solicitamos». Se guarda en Supabase (pestaña «Formularios» del panel)
+   y llega una copia al correo con Web3Forms; basta con que llegue a uno de los dos.
    Enlace personalizado: /brief/?negocio=Barbería%20Rucahue&nombre=Juan&servicio=tienda
    El borrador se guarda en el navegador del cliente (localStorage) y se borra al enviar.
    Sin JavaScript, el formulario se envía igual a Web3Forms (action + campo access_key). */
@@ -122,8 +123,8 @@
     const bad = validate();
     if (bad.length) { bad[0].focus(); status.removeAttribute("data-kind"); status.textContent = ""; return; }
 
-    const data = read(false);   // sin las secciones ocultas
-    data.Proyecto = tipo.value ? tipo.selectedOptions[0].textContent : "Aún no está claro";
+    const respuestas = read(false);   // sin las secciones ocultas; Proyecto queda como clave (pagina, tienda…)
+    const data = { ...respuestas, Proyecto: tipo.value ? tipo.selectedOptions[0].textContent : "Aún no está claro" };
     const negocio = data.Negocio.trim();
     const payload = {
       access_key: WEB3FORMS_KEY,
@@ -139,13 +140,18 @@
     const btn = form.querySelector("button[type=submit]");
     btn.disabled = true; btn.textContent = "Enviando…";
     status.removeAttribute("data-kind"); status.textContent = "";
-    try {
-      if (!WEB3FORMS_KEY || WEB3FORMS_KEY.startsWith("__")) throw new Error("Falta la clave de Web3Forms.");
-      const res = await fetch("https://api.web3forms.com/submit", {
+    const fila = {
+      nombre: data.Nombre.trim().slice(0, 80), negocio: negocio.slice(0, 80),
+      telefono: (data.WhatsApp || "").trim().slice(0, 30) || null, email: (data.Correo || "").trim().slice(0, 120) || null,
+      proyecto: tipo.value || null, respuestas, consentimiento: payload.consentimiento.slice(0, 200)
+    };
+    const porCorreo = () => !WEB3FORMS_KEY || WEB3FORMS_KEY.startsWith("__") ? Promise.resolve(false)
+      : fetch("https://api.web3forms.com/submit", {
         method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(payload)
-      });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || json.success === false) throw new Error(json.message || "Error " + res.status);
+      }).then(async res => { const json = await res.json().catch(() => ({})); return res.ok && json.success !== false; }).catch(() => false);
+    try {
+      const [enPanel, enCorreo] = await Promise.all([guardar("formularios", fila), porCorreo()]);
+      if (!enPanel && !enCorreo) throw new Error("No llegó al panel ni al correo.");
       store.clear(); clearTimeout(t);
       status.dataset.kind = "ok";
       status.textContent = `¡Listo, ${data.Nombre.trim().split(" ")[0]}! Recibimos el brief de ${negocio}. Te escribimos para mostrarte el primer diseño.`;

@@ -183,10 +183,27 @@ const acciones: Record<string, (c: Ctx) => Promise<unknown>> = {
     soloAdmin(c);
     const token = env("GOATCOUNTER_TOKEN");
     if (!token) return { configurado: false };
-    const fin = new Date(), inicio = new Date(Date.now() - 30 * 864e5);
+    // fin = mañana (UTC): GoatCounter toma la fecha de término como medianoche, y así entran las visitas de hoy
+    const fin = new Date(Date.now() + 864e5), inicio = new Date(Date.now() - 30 * 864e5);
     const q = `start=${inicio.toISOString().slice(0, 10)}&end=${fin.toISOString().slice(0, 10)}`;
-    const gc = (ruta: string) => fetch(`https://foundstudio.goatcounter.com/api/v0/${ruta}`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.ok ? r.json() : Promise.reject(new Falla(502, `GoatCounter respondió ${r.status}`)));
+    // GoatCounter a veces corta la conexión ("Connection reset by peer"): se reintenta hasta 4 veces.
+    const gc = async (ruta: string) => {
+      for (let intento = 1; ; intento++) {
+        let r: Response;
+        try {
+          r = await fetch(`https://foundstudio.goatcounter.com/api/v0/${ruta}`, { headers: { Authorization: `Bearer ${token}` } });
+        } catch {
+          if (intento >= 4) throw new Falla(502, "GoatCounter no respondió. Intenta de nuevo en un rato.");
+          await new Promise(ok => setTimeout(ok, 400 * intento));
+          continue;
+        }
+        if (r.ok) return r.json();
+        if ((r.status === 429 || r.status >= 500) && intento < 4) { await new Promise(ok => setTimeout(ok, 800 * intento)); continue; }
+        throw new Falla(502, r.status === 401 || r.status === 403
+          ? "GoatCounter rechazó el token: revisa que GOATCOUNTER_TOKEN tenga permiso «Read statistics»."
+          : `GoatCounter respondió ${r.status}`);
+      }
+    };
     const [total, refs, hits] = await Promise.all([gc(`stats/total?${q}`), gc(`stats/toprefs?${q}`), gc(`stats/hits?${q}&limit=50`)]);
     return {
       configurado: true,

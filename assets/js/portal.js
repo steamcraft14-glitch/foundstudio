@@ -14,6 +14,8 @@
     if (!user) { sesion.montarEntrada($("#p-entrada")); return mostrar("#p-entrada"); }
     $("#p-salir").hidden = false;
     $("#p-salir").addEventListener("click", () => sesion.salir());
+    $("#p-clave-user").value = user.email;
+    sesion.montarClave($("#p-clave-form"));
 
     const { data: proyectos, error } = await db.from("proyectos").select("*").order("created_at", { ascending: false });
     if (error) return falla("No pudimos cargar tu proyecto. Recarga la página en un rato.");

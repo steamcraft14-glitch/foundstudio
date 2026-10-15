@@ -119,7 +119,7 @@ window.FOUND = {
     render();
   }
 
-  /* Brief: la carpeta abre el documento */
+  /* Brief: la carpeta abre el formulario en línea */
   const brief = $("#brief");
   if (brief && brief.showModal) {
     let opener = null;
@@ -127,7 +127,7 @@ window.FOUND = {
     $$("[data-close-brief]", brief).forEach(b => b.addEventListener("click", () => brief.close()));
     brief.addEventListener("click", e => { if (e.target === brief) brief.close(); });   // clic fuera del documento
     brief.addEventListener("close", () => opener && opener.focus());
-  } else $$("[data-open-brief]").forEach(b => b.addEventListener("click", () => { location.href = "/assets/docs/brief-found-studio.pdf"; }));
+  } else $$("[data-open-brief]").forEach(b => b.addEventListener("click", () => { location.href = "/brief/"; }));
 
   /* Pasos: en pantallas táctiles, tocar un paso lo resalta */
   $$(".steps li").forEach(li => li.addEventListener("click", () => {

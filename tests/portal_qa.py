@@ -8,6 +8,7 @@ con una sesión falsa guardada en el navegador. Los permisos reales de la base d
 (tests/rls.mjs, ver docs/PORTAL.md).
 """
 import json
+import os
 import re
 import sys
 import time
@@ -61,13 +62,22 @@ class FalsoSupabase:
                               "negocio": "Panadería Ana", "rubro": "Restaurante o comida", "servicio": "Tienda online",
                               "telefono": "+56 9 1111 2222", "email": "ana@ejemplo.cl", "mensaje": "Quiero vender tortas",
                               "estado": "nueva", "notas": None}]
+        # formularios de /brief/: uno ya pasado a la cotización 7 y uno nuevo sin cotización
+        self.formularios = [
+            {"id": 2, "created_at": "2026-10-14T18:00:00Z", "nombre": "Luis Soto", "negocio": "Ferretería Luis", "telefono": "+56 9 3333 4444",
+             "email": None, "proyecto": "software", "respuestas": {"Nombre": "Luis Soto", "Negocio": "Ferretería Luis", "Rubro": "Ferretería",
+             "Qué hace": "Vende herramientas", "Sistema: controlar": ["Inventario", "Ventas y caja"], "Proyecto": "software"},
+             "consentimiento": "Aceptó la política de privacidad (versión 2026-10-14)", "estado": "nuevo", "cotizacion_id": None},
+            {"id": 1, "created_at": "2026-10-09T14:00:00Z", "nombre": "Ana Pérez", "negocio": "Panadería Ana", "telefono": "+56 9 1111 2222",
+             "email": "ana@ejemplo.cl", "proyecto": "tienda", "respuestas": {"Nombre": "Ana Pérez", "Horario": "Lun a sáb 8:00 a 20:00", "Proyecto": "tienda"},
+             "consentimiento": "Aceptó la política de privacidad (versión 2026-10-14)", "estado": "revisado", "cotizacion_id": 7}]
 
     def responder(self, route):
         req = route.request
         u = urlparse(req.url)
         path, q = u.path, parse_qs(u.query)
         body = req.post_data or ""
-        self.llamadas.append((req.method, path, body))
+        self.llamadas.append((req.method, path, body if req.method != "DELETE" else u.query))
         js = lambda data, status=200: route.fulfill(status=status, content_type="application/json", body=json.dumps(data),
                                                     headers={"Access-Control-Allow-Origin": "*"})
         uno = "vnd.pgrst.object" in (req.headers.get("accept") or "")
@@ -86,13 +96,30 @@ class FalsoSupabase:
                 self.brief.update(cambio)
                 return route.fulfill(status=204, headers={"Access-Control-Allow-Origin": "*"})
             return js(self.brief if uno else [self.brief])
+        if req.method == "DELETE" and path in ("/rest/v1/cotizaciones", "/rest/v1/estimados", "/rest/v1/proyectos"):
+            ids = re.findall(r"[0-9a-f-]{36}|\d+", q.get("id", [""])[0])
+            if path == "/rest/v1/cotizaciones":
+                self.cotizaciones = [c for c in self.cotizaciones if str(c["id"]) not in ids]
+            return js([{"id": int(i) if i.isdigit() else i} for i in ids])
+        if path == "/auth/v1/user" and req.method == "PUT":
+            return js(json.loads(sesion_falsa("contacto@foundstudio.cl"))["user"])
         if path == "/rest/v1/cotizaciones":
             if req.method == "PATCH":
                 self.cotizaciones[0].update(json.loads(body))
                 return route.fulfill(status=204, headers={"Access-Control-Allow-Origin": "*"})
             if req.method == "POST":
+                if "return=representation" in (req.headers.get("prefer") or ""):
+                    return js({"id": 8} if uno else [{"id": 8}], 201)
                 return route.fulfill(status=201, headers={"Access-Control-Allow-Origin": "*"})
             return js(self.cotizaciones)
+        if path == "/rest/v1/formularios":
+            if req.method == "PATCH":
+                fid = int(q.get("id", ["eq.0"])[0].split(".")[1])
+                next(f for f in self.formularios if f["id"] == fid).update(json.loads(body))
+                return route.fulfill(status=204, headers={"Access-Control-Allow-Origin": "*"})
+            if req.method == "POST":
+                return route.fulfill(status=201, headers={"Access-Control-Allow-Origin": "*"})
+            return js(self.formularios)
         if path == "/rest/v1/estimados":
             if req.method == "POST":
                 return route.fulfill(status=201, headers={"Access-Control-Allow-Origin": "*"})
@@ -115,8 +142,12 @@ class FalsoSupabase:
                 return js({"proyecto_id": PID})
             if accion == "visitas":
                 return js({"configurado": True, "total": 321, "eventos": 45,
-                           "origenes": [{"nombre": "instagram", "visitas": 120}, {"nombre": "(directo)", "visitas": 80}],
-                           "paginas": [{"ruta": "/", "visitas": 200, "evento": False}, {"ruta": "evento/whatsapp_click/barra", "visitas": 30, "evento": True}]})
+                           "origenes": [{"nombre": "l.instagram.com", "visitas": 120}, {"nombre": "(directo)", "visitas": 80}, {"nombre": "Google", "visitas": 40}],
+                           "paginas": [{"ruta": "/", "visitas": 200, "evento": False}, {"ruta": "/contacto", "visitas": 30, "evento": False},
+                                       {"ruta": "/contacto/", "visitas": 6, "evento": False}, {"ruta": "evento/asistente_inicio", "visitas": 25, "evento": True},
+                                       {"ruta": "evento/asistente_estimado/pagina/barberia/350k-650k", "visitas": 9, "evento": True},
+                                       {"ruta": "evento/whatsapp_click/barra", "visitas": 7, "evento": True},
+                                       {"ruta": "evento/whatsapp_click/asistente/pagina", "visitas": 4, "evento": True}]})
             return js({"ok": True})
         return js({"message": "ruta no simulada: " + path}, 404)
 
@@ -171,7 +202,15 @@ with sync_playwright() as p:
     page.wait_for_selector("#p-entrada .status[data-kind='ok']", timeout=4000)
     otp = falso.hubo("POST", "/auth/v1/otp")
     check("entrada: pide el enlace sin crear cuenta", otp and '"create_user":false' in otp[0] and "ana@ejemplo.cl" in otp[0], otp[:1])
-    check("entrada: sin errores", not errores, "; ".join(errores)[:200])
+    antes = len(errores)   # la contraseña mala responde 400 a propósito
+    ctx.route(SB + "/auth/v1/token*", lambda r: (falso.llamadas.append(("POST", "/auth/v1/token", r.request.post_data)), r.fulfill(status=400, content_type="application/json", body='{"code":"invalid_credentials","message":"Invalid login credentials"}', headers={"Access-Control-Allow-Origin": "*"})))
+    page.fill("#p-clave", "malaclave1")
+    page.click("#p-entrada button[type=submit]")
+    page.wait_for_selector("#p-entrada .status[data-kind='error']", timeout=4000)
+    clave = falso.hubo("POST", "/auth/v1/token")
+    check("entrada: con contraseña entra sin mandar correo", clave and "malaclave1" in clave[0] and len(falso.hubo("POST", "/auth/v1/otp")) == 1, clave[:1])
+    check("entrada: contraseña mala se explica", "incorrectos" in page.inner_text("#p-entrada .status"))
+    check("entrada: sin errores", not errores[:antes] and all("400" in e for e in errores[antes:]), "; ".join(errores)[:200])
     ctx.close()
 
     # 2. cliente con sesión: etapas, brief que se guarda solo, archivos y envío
@@ -242,6 +281,24 @@ with sync_playwright() as p:
     inv = falso.hubo("POST", "/functions/v1/found", "invitar")
     check("panel: «Aceptada» crea el proyecto e invita al cliente",
           inv and '"email":"ana@ejemplo.cl"' in inv[0] and '"servicio":"tienda"' in inv[0] and '"cotizacion_id":7' in inv[0], inv[:1])
+    pre = falso.hubo("PATCH", "/rest/v1/briefs", "Lun a sáb 8:00 a 20:00")
+    check("panel: al aceptar, el formulario llena el brief del proyecto", pre and '"Correo":"ana@ejemplo.cl"' in pre[0], falso.hubo("PATCH", "/rest/v1/briefs")[:1])
+    # formularios de «Lo que te solicitamos»
+    check("panel: cuenta los formularios nuevos", page.inner_text("#n-formularios").strip() == "1")
+    page.click("#t-formularios")
+    check("panel: muestra las respuestas del formulario",
+          "Ferretería Luis" in page.inner_text("#l-formularios") and "Inventario, Ventas y caja" in page.inner_text("#l-formularios .respuestas")
+          and "Sistema" in page.inner_text("#l-formularios"))
+    page.click("#l-formularios >> text=Crear cotización")
+    page.wait_for_selector("#t-cotizaciones[aria-selected='true']", timeout=5000)
+    cf = falso.hubo("POST", "/rest/v1/cotizaciones", "Ferretería Luis")
+    ff = falso.hubo("PATCH", "/rest/v1/formularios", '"cotizacion_id":8')
+    check("panel: el formulario pasa a cotización", cf and '"origen":"formulario"' in cf[0] and '"rubro":"Ferretería"' in cf[0] and ff and '"revisado"' in ff[0], (cf[:1], ff[:1]))
+    page.click("#t-formularios")
+    page.click("#f-form >> text=Todos")
+    page.click("#l-formularios li:first-child >> text=Archivar")
+    page.wait_for_timeout(300)
+    check("panel: archiva un formulario", falso.hubo("PATCH", "/rest/v1/formularios", '"archivado"'))
     page.click("#t-cotizaciones")
     page.click("#c-nueva")
     page.fill("#c-nombre", "Pedro")
@@ -255,9 +312,48 @@ with sync_playwright() as p:
     check("panel: muestra los estimados", "$210.000 a $350.000" in page.inner_text("#e-filas"))
     page.click("#t-visitas")
     page.wait_for_selector(".vi-grid", timeout=4000)
-    check("panel: muestra visitas y origen", "instagram" in page.inner_text("#v-visitas") and "321" in page.inner_text("#v-visitas"))
+    vi = page.inner_text("#v-visitas")
+    check("panel: visitas en lenguaje claro", all(t in vi for t in ("Instagram", "276", "Inicio", "Contacto", "Abrieron WhatsApp", "barra superior (7)", "Te contactaron")), vi[:300])
+    check("panel: junta /contacto y /contacto/", "36" in page.inner_text(".vi-grid"))
+    check("panel: barras con ancho", page.eval_on_selector(".vi-barra i", "e => getComputedStyle(e).width") not in ("0px", "auto"))
+    if os.environ.get("QA_CAPTURAS"):
+        page.set_viewport_size({"width": 1280, "height": 900})
+        page.screenshot(path=os.path.join(os.environ["QA_CAPTURAS"], "panel-visitas.png"), full_page=True)
+        page.set_viewport_size({"width": 390, "height": 844})
+        page.screenshot(path=os.path.join(os.environ["QA_CAPTURAS"], "panel-visitas-movil.png"), full_page=True)
     page.keyboard.press("ArrowLeft")
     check("panel: pestañas con flechas", page.get_attribute("#t-estimados", "aria-selected") == "true")
+    page.click("#t-cotizaciones")
+    page.click("#f-cot >> text=Todas")
+    page.fill("#c-buscar", "no-existe-xyz")
+    check("panel: busca cotizaciones", page.locator("#l-cotizaciones .cot").count() == 0)
+    page.fill("#c-buscar", "")
+    page.locator("#l-cotizaciones .cot").first.get_by_role("button", name="Editar").click()
+    page.fill("#ed7x", "Propuesta de $300.000")
+    page.click("text=Guardar cambios")
+    page.wait_for_timeout(400)
+    notas = falso.hubo("PATCH", "/rest/v1/cotizaciones", "300.000")
+    check("panel: guarda notas internas", notas and "Propuesta de $300.000" in page.inner_text("#l-cotizaciones"), notas[:1])
+    page.locator("#l-cotizaciones .cot").first.get_by_role("button", name="Eliminar", exact=True).click()
+    page.wait_for_selector("#a-confirmar[open]", timeout=3000)
+    page.click("#a-confirmar [value=no]")
+    check("panel: cancelar no elimina", not falso.hubo("DELETE", "/rest/v1/cotizaciones"))
+    page.check("#c-todas")
+    page.click("#c-g-eliminar")
+    page.click("#a-confirmar [value=si]")
+    page.wait_for_function("() => /eliminad/.test(document.querySelector('#a-aviso').textContent)", timeout=3000)
+    borr = falso.hubo("DELETE", "/rest/v1/cotizaciones")
+    check("panel: elimina cotizaciones seleccionadas", borr and "7" in borr[0] and not page.locator("#l-cotizaciones .cot").count(), borr[:1])
+    page.click("#t-estimados")
+    page.click("#e-filas .btn-x")
+    page.wait_for_timeout(400)
+    check("panel: elimina un estimado", falso.hubo("DELETE", "/rest/v1/estimados"))
+    page.click("#a-app .cuenta-clave summary")
+    page.fill("#a-clave1", "clave-segura-1")
+    page.fill("#a-clave2", "clave-segura-1")
+    page.click("#a-clave-form button")
+    page.wait_for_selector("#a-clave-form .status[data-kind='ok']", timeout=4000)
+    check("panel: crea la contraseña", falso.hubo("PUT", "/auth/v1/user", "clave-segura-1"))
     check("panel: sin errores", not errores, "; ".join(errores)[:200])
     page.click("#t-proyectos")
     page.screenshot(path="tests/screens/panel.png", full_page=True)

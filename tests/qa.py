@@ -84,15 +84,15 @@ with sync_playwright() as p:
     check("portada: sin precios fijos", "190" not in page.inner_text("body"))
     page.close()
 
-    # 3b. lo que te solicitamos: la carpeta abre el PDF y no hay brief dentro de la página
-    page = browser.new_page(viewport={"width": 390, "height": 844})
-    page.goto(BASE + "/", wait_until="networkidle")
-    check("brief: la carpeta apunta al PDF", page.get_attribute(".folder", "href") == "/assets/docs/brief-found-studio.pdf")
-    check("brief: carpeta sin etiqueta repetida", page.locator(".folder-label").count() == 0)
-    check("brief: no se muestra dentro de la página", page.locator(".doc-sec").count() == 0)
-    r = page.request.get(BASE + "/assets/docs/brief-found-studio.pdf")
-    check("brief: el PDF se descarga", r.status == 200 and r.body()[:4] == b"%PDF")
-    page.close()
+    # 3b. lo que te solicitamos: la carpeta y el botón abren el formulario en línea, no un PDF
+    for pth in ("/", "/servicios/"):
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        page.goto(BASE + pth, wait_until="networkidle")
+        check(f"brief {pth}: la carpeta abre el formulario", page.get_attribute(".folder", "href") == "/brief/")
+        check(f"brief {pth}: el botón abre el formulario", page.get_attribute(".brief-actions .btn", "href") == "/brief/")
+        check(f"brief {pth}: sin enlaces al PDF", page.locator("a[href$='.pdf']").count() == 0)
+        check(f"brief {pth}: carpeta sin etiqueta repetida", page.locator(".folder-label").count() == 0)
+        page.close()
 
     # 4. ejemplos: los seis rubros se dibujan y responden
     page = browser.new_page(viewport={"width": 1440, "height": 900})
@@ -200,10 +200,19 @@ with sync_playwright() as p:
     page.close()
 
     # 7. brief en línea: enlace personalizado, secciones según el proyecto, borrador y envío simulado
+    #    (Supabase se intercepta: el formulario nunca llega a la base de datos real)
+    SB = "https://qwmxzaeyhqdwndijquab.supabase.co/**"
+    filas = []
+
+    def fake_sb(route):
+        filas.append((route.request.url, json.loads(route.request.post_data or "{}")))
+        route.fulfill(status=201, headers={"Access-Control-Allow-Origin": "*"})
+
     sent = []
     page = browser.new_page(viewport={"width": 390, "height": 844})
     errors = watch(page)
     page.route("https://api.web3forms.com/**", fake_ok)
+    page.route(SB, fake_sb)
     page.goto(BASE + "/brief/?negocio=Barbería%20Prueba&nombre=Juan&servicio=pagina", wait_until="networkidle")
     check("brief: no carga el contador de visitas", page.locator("script[data-goatcounter]").count() == 0)
     check("brief: no se indexa", "noindex" in (page.get_attribute("meta[name=robots]", "content") or ""))
@@ -232,13 +241,36 @@ with sync_playwright() as p:
           body.get("subject") == "Brief: Barbería Prueba" and body.get("Servicios o productos") == "Corte clásico · $8.000"
           and body.get("Acción buscada") == "Comprar en línea" and "versión" in body.get("consentimiento", ""))
     check("brief: no envía la sección oculta", "Tienda: despacho" not in body)
+    url, fila = filas[0] if filas else ("", {})
+    resp = fila.get("respuestas", {})
+    check("brief: se guarda para el panel (tabla formularios)",
+          url.endswith("/rest/v1/formularios") and fila.get("negocio") == "Barbería Prueba" and fila.get("telefono") == "+56 9 1111 2222"
+          and fila.get("proyecto") == "pagina" and resp.get("Servicios o productos") == "Corte clásico · $8.000"
+          and resp.get("Acción buscada") == ["Comprar en línea"] and "versión" in fila.get("consentimiento", ""), fila)
+    check("brief: el panel no recibe la sección oculta", "Tienda: despacho" not in resp)
     check("brief: ofrece mandar fotos por WhatsApp", "wa.me/56942579133" in (page.get_attribute("#b-status a", "href") or ""))
     check("brief: borra el borrador al enviar", page.evaluate("localStorage.getItem('found-brief-v1')") is None)
     check("brief: sin errores", not errors, "; ".join(errors)[:200])
     page.close()
 
+    # si el correo falla pero el panel lo recibe, se da por enviado
+    filas.clear()
     page = browser.new_page()
     page.route("https://api.web3forms.com/**", lambda r: r.fulfill(status=500, body="{}"))
+    page.route(SB, fake_sb)
+    page.goto(BASE + "/brief/", wait_until="networkidle")
+    page.fill("#b-nombre", "Camila")
+    page.fill("#b-negocio", "Almacén de prueba")
+    page.fill("#b-email", "camila@ejemplo.cl")
+    page.check("#b-consent")
+    page.click("#brief-form button[type=submit]")
+    page.wait_for_selector("#b-status[data-kind]", timeout=4000)
+    check("brief: sin correo pero en el panel, cuenta como enviado", page.get_attribute("#b-status", "data-kind") == "ok" and len(filas) == 1)
+    page.close()
+
+    page = browser.new_page()
+    page.route("https://api.web3forms.com/**", lambda r: r.fulfill(status=500, body="{}"))
+    page.route(SB, lambda r: r.fulfill(status=500, body="{}", headers={"Access-Control-Allow-Origin": "*"}))
     page.goto(BASE + "/brief/", wait_until="networkidle")
     page.fill("#b-nombre", "Camila")
     page.fill("#b-negocio", "Almacén de prueba")

@@ -12,11 +12,11 @@
 <link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="/assets/fonts/sora-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css?v=10">
-<link rel="stylesheet" href="/assets/css/cuenta.css?v=1">
-<script defer src="/assets/js/site.js?v=7"></script>
+<link rel="stylesheet" href="/assets/css/cuenta.css?v=3">
+<script defer src="/assets/js/site.js?v=8"></script>
 <script defer src="/assets/js/vendor/supabase-2.45.4.js"></script>
-<script defer src="/assets/js/sesion.js?v=1"></script>
-<script defer src="/assets/js/panel.js?v=1"></script>
+<script defer src="/assets/js/sesion.js?v=2"></script>
+<script defer src="/assets/js/panel.js?v=3"></script>
 </head>
 <body class="panel">
 <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -24,6 +24,7 @@
 <header class="bar">
   <a class="wordmark" href="/" aria-label="{found} studio, inicio"><img src="/assets/brand/found-horizontal.svg" alt="" width="1269" height="245"></a>
   <nav class="nav" aria-label="Cuenta">
+    <a class="soft panel-sitio" href="/">Ver sitio</a>
     <span class="soft panel-quien" id="a-quien"></span>
     <button class="btn btn-sm btn-ghost" type="button" id="a-salir" hidden>Salir</button>
   </nav>
@@ -32,7 +33,10 @@
 <main id="contenido">
   <div class="sec sec-tight">
     <div class="wrap">
-      <h1 class="panel-h1">Panel</h1>
+      <div class="panel-top">
+        <h1 class="panel-h1">Panel</h1>
+        <button class="btn btn-sm btn-ghost" type="button" id="a-actualizar">Actualizar</button>
+      </div>
       <p class="cargando" id="a-cargando" role="status">Cargando…</p>
 
       <div class="card cuenta-aviso" id="a-off" hidden>
@@ -42,12 +46,16 @@
 
       <form class="card cuenta-entrada" id="a-entrada" novalidate hidden>
         <h2>Entrar al panel</h2>
-        <p>Te mandamos un enlace a tu correo de administrador.</p>
+        <p>Entra con tu contraseña. Si todavía no la creas, pide un enlace al correo y créala en «Contraseña», al final del panel.</p>
         <div class="field">
           <label for="a-email">Correo</label>
-          <input id="a-email" type="email" autocomplete="email" inputmode="email" maxlength="120" required>
+          <input id="a-email" type="email" autocomplete="username" inputmode="email" maxlength="120" required>
         </div>
-        <button class="btn" type="submit">Enviarme el enlace</button>
+        <div class="field">
+          <label for="a-clave">Contraseña</label>
+          <input id="a-clave" type="password" autocomplete="current-password" maxlength="72">
+        </div>
+        <div class="btns"><button class="btn" type="submit">Entrar</button><button class="btn btn-ghost" type="button" data-enlace>Enviarme un enlace</button></div>
         <p class="status" role="status" aria-live="polite"></p>
       </form>
 
@@ -57,9 +65,11 @@
       </div>
 
       <div id="a-app" hidden>
+        <div class="kpis resumen" id="a-resumen" aria-label="Resumen"></div>
         <div class="tabs" role="tablist" aria-label="Secciones del panel">
           <button role="tab" id="t-proyectos" aria-controls="v-proyectos" aria-selected="true">Proyectos <span class="cuenta-n" id="n-proyectos"></span></button>
           <button role="tab" id="t-cotizaciones" aria-controls="v-cotizaciones" aria-selected="false" tabindex="-1">Cotizaciones <span class="cuenta-n" id="n-cotizaciones"></span></button>
+          <button role="tab" id="t-formularios" aria-controls="v-formularios" aria-selected="false" tabindex="-1">Formularios <span class="cuenta-n" id="n-formularios"></span></button>
           <button role="tab" id="t-estimados" aria-controls="v-estimados" aria-selected="false" tabindex="-1">Estimados</button>
           <button role="tab" id="t-visitas" aria-controls="v-visitas" aria-selected="false" tabindex="-1">Visitas</button>
         </div>
@@ -67,6 +77,7 @@
         <section role="tabpanel" id="v-proyectos" aria-labelledby="t-proyectos">
           <div class="dos-col">
             <div>
+              <div class="field buscar"><label class="sr" for="p-buscar">Buscar proyecto</label><input id="p-buscar" type="search" placeholder="Buscar por negocio, cliente o correo" maxlength="80" autocomplete="off"></div>
               <div class="filtro" role="group" aria-label="Filtrar por estado" id="f-estado"></div>
               <ul class="lista" id="l-proyectos"></ul>
             </div>
@@ -76,8 +87,18 @@
 
         <section role="tabpanel" id="v-cotizaciones" aria-labelledby="t-cotizaciones" hidden>
           <div class="barra-acciones">
-            <div class="filtro" role="group" aria-label="Filtrar cotizaciones" id="f-cot"></div>
-            <button class="btn btn-sm" type="button" id="c-nueva">Agregar cotización</button>
+            <div class="field buscar"><label class="sr" for="c-buscar">Buscar cotización</label><input id="c-buscar" type="search" placeholder="Buscar por nombre, negocio, teléfono, notas…" maxlength="80" autocomplete="off"></div>
+            <div class="btns"><button class="btn btn-sm btn-ghost" type="button" id="c-csv">Exportar CSV</button><button class="btn btn-sm" type="button" id="c-nueva">Agregar cotización</button></div>
+          </div>
+          <div class="filtro" role="group" aria-label="Filtrar cotizaciones" id="f-cot"></div>
+          <div class="grupo">
+            <label class="grupo-todas"><input type="checkbox" id="c-todas"> <span>Seleccionar todas las visibles</span></label>
+            <div class="grupo-acciones" id="c-grupo" hidden>
+              <span id="c-grupo-n"></span>
+              <button class="btn btn-sm btn-ghost" type="button" id="c-g-descartar">Descartar</button>
+              <button class="btn btn-sm btn-ghost btn-peligro" type="button" id="c-g-eliminar">Eliminar</button>
+              <button class="btn btn-sm btn-ghost" type="button" id="c-g-limpiar">Quitar selección</button>
+            </div>
           </div>
           <form class="card form-inline" id="c-form" hidden novalidate>
             <h2>Cotización de WhatsApp u otro medio</h2>
@@ -100,10 +121,19 @@
           <ul class="lista lista-cot" id="l-cotizaciones"></ul>
         </section>
 
+        <section role="tabpanel" id="v-formularios" aria-labelledby="t-formularios" hidden>
+          <div class="barra-acciones">
+            <div class="filtro" role="group" aria-label="Filtrar formularios" id="f-form"></div>
+            <a class="btn btn-sm btn-ghost" href="/brief/" target="_blank" rel="noopener">Ver el formulario</a>
+          </div>
+          <ul class="lista lista-cot" id="l-formularios"></ul>
+        </section>
+
         <section role="tabpanel" id="v-estimados" aria-labelledby="t-estimados" hidden>
           <div class="kpis" id="e-kpis"></div>
+          <div class="btns e-acciones"><button class="btn btn-sm btn-ghost" type="button" id="e-csv">Exportar CSV</button><button class="btn btn-sm btn-ghost btn-peligro" type="button" id="e-viejos" hidden></button></div>
           <div class="tabla" role="region" aria-label="Estimados calculados" tabindex="0">
-            <table><thead><tr><th scope="col">Fecha</th><th scope="col">Servicio</th><th scope="col">Rubro</th><th scope="col">Rango</th><th scope="col">Incluye</th></tr></thead><tbody id="e-filas"></tbody></table>
+            <table><thead><tr><th scope="col">Fecha</th><th scope="col">Servicio</th><th scope="col">Rubro</th><th scope="col">Rango</th><th scope="col">Incluye</th><th scope="col"><span class="sr">Eliminar</span></th></tr></thead><tbody id="e-filas"></tbody></table>
           </div>
         </section>
 
@@ -111,9 +141,31 @@
           <div id="vi-cont"><p class="soft">Cargando visitas…</p></div>
           <p class="soft vi-link">Detalle completo en <a href="https://foundstudio.goatcounter.com" target="_blank" rel="noopener">foundstudio.goatcounter.com</a>.</p>
         </section>
+
+        <details class="card cuenta-clave">
+          <summary><h2>Contraseña</h2><span class="soft">Para entrar sin gastar correos</span></summary>
+          <form id="a-clave-form" novalidate>
+            <input type="email" autocomplete="username" hidden id="a-clave-user">
+            <div class="row-2">
+              <div class="field"><label for="a-clave1">Contraseña nueva</label><input id="a-clave1" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></div>
+              <div class="field"><label for="a-clave2">Repítela</label><input id="a-clave2" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></div>
+            </div>
+            <button class="btn btn-sm" type="submit">Guardar contraseña</button>
+            <p class="status" role="status" aria-live="polite"></p>
+          </form>
+        </details>
       </div>
     </div>
   </div>
 </main>
+
+<dialog class="confirmar" id="a-confirmar" aria-labelledby="a-confirmar-t">
+  <form method="dialog">
+    <h2 id="a-confirmar-t"></h2>
+    <p></p>
+    <div class="btns"><button class="btn btn-sm btn-ghost" value="no">Cancelar</button><button class="btn btn-sm btn-peligro-lleno" value="si">Eliminar</button></div>
+  </form>
+</dialog>
+<p class="aviso" id="a-aviso" role="status" aria-live="polite" hidden></p>
 </body>
 </html>
