@@ -115,7 +115,7 @@
   };
 
   /* 4. Envío: una línea por pregunta respondida, en el orden del brief */
-  const toText = data => Object.entries(data).map(([k, v]) => `${k}: ${[].concat(v).join(", ")}`).join("\n");
+  const toText = data => waCampos(Object.entries(data));
 
   form.addEventListener("submit", async e => {
     e.preventDefault();
@@ -158,7 +158,7 @@
       if (!data["Enlace a fotos y logo"]) {
         const a = document.createElement("a");
         a.className = "btn"; a.target = "_blank"; a.rel = "noopener";
-        a.href = waLink(`Hola {found}, soy ${data.Nombre.trim()} de ${negocio}. Ya envié el brief; te mando el logo y las fotos.`);
+        a.href = waLink(`¡Hola {found}! 👋\n\nSoy ${data.Nombre.trim()} de *${negocio}*. Ya envié el brief ✅\n\nLes mando por aquí el logo y las fotos.`);
         a.textContent = "Mandar logo y fotos por WhatsApp";
         status.append(document.createElement("br"), a);
       }
@@ -173,12 +173,15 @@
       const copy = document.createElement("button");
       copy.type = "button"; copy.className = "btn btn-ghost"; copy.textContent = "Copiar mis respuestas";
       copy.addEventListener("click", async () => {
-        try { await navigator.clipboard.writeText(`Brief de ${negocio}\n\n${toText(data)}`); copy.textContent = "Copiado"; }
+        try { await navigator.clipboard.writeText(`📋 *Brief de ${negocio}*\n\n${toText(data)}`); copy.textContent = "Copiado"; }
         catch (_) { copy.textContent = "No se pudo copiar"; }
       });
       const a = document.createElement("a");
       a.className = "btn"; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Abrir WhatsApp";
-      a.href = waLink(`Hola {found}, soy ${data.Nombre.trim()} de ${negocio}. No pude enviar el brief desde la página; te lo pego aquí:`);
+      // el brief completo va en el mensaje si cabe; si es muy largo, el cliente lo pega con «Copiar mis respuestas»
+      const intro = `¡Hola {found}! 👋\n\nSoy ${data.Nombre.trim()} de *${negocio}*. Intenté enviar el brief desde la página pero no se pudo, así que les dejo mis respuestas por aquí:`;
+      const completo = `${intro}\n\n📋 *Brief de ${negocio}*\n\n${toText(data)}\n\n¡Gracias!`;
+      a.href = waLink(completo.length <= 1800 ? completo : `${intro}\n\n`);
       status.append(p, document.createElement("br"), copy, document.createTextNode(" "), a);
       track("brief_error", { motivo: err.message.slice(0, 60) });
     } finally {

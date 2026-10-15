@@ -44,6 +44,8 @@ window.FOUND = {
   /* Enlaces a WhatsApp con mensaje */
   window.waLink = text => `https://wa.me/${FOUND.WHATSAPP}?text=${encodeURIComponent(text)}`;
   $$("a[data-msg]").forEach(a => { a.href = waLink(a.dataset.msg); });
+  // líneas «*Campo:* valor» con el formato de WhatsApp; se salta las vacías
+  window.waCampos = pares => pares.filter(([, v]) => v && v !== "—").map(([k, v]) => `*${k}:* ${[].concat(v).join(", ")}`).join("\n");
 
   /* Menú en celular */
   const menuBtn = $(".menu-btn"), panel = $(".menu-panel");

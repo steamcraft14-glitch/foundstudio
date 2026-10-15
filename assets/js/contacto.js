@@ -47,7 +47,13 @@
   let started = false;
   form.addEventListener("focusin", () => { if (!started) { started = true; track("form_start"); } });
 
-  const waFallback = d => waLink(`Hola {found}, soy ${d.nombre} de ${d.negocio}${d.rubro ? " (" + d.rubro + ")" : ""}. Quiero cotizar${d.servicio ? " " + d.servicio : ""}. ${d.mensaje || ""}`.trim());
+  const waFallback = d => waLink([
+    "¡Hola {found}! 👋",
+    `Soy ${d.nombre} y me gustaría cotizar. Intenté mandar el formulario de la página pero no se pudo, así que les dejo mis datos por aquí:`,
+    "📋 *Mi cotización*\n" + waCampos([["Negocio", d.negocio], ["Rubro", d.rubro], ["Necesito", d.servicio], ["WhatsApp", d.telefono], ["Correo", d.email]]),
+    d.mensaje ? `💬 *Mensaje:*\n${d.mensaje}` : "",
+    "¡Gracias!"
+  ].filter(Boolean).join("\n\n"));
 
   form.addEventListener("submit", async e => {
     e.preventDefault();

@@ -107,14 +107,22 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
     clearOpts() { this.opts.innerHTML = ""; }
     focusOpts() { const b = this.opts.querySelector("button, input"); if (b && this.root.isConnected && this.wantsFocus) b.focus({ preventScroll: true }); }
 
-    choose(options) {
+    // visibles: cuántas opciones mostrar de partida; el resto queda tras «Más preguntas» (la última, «Volver», siempre se ve)
+    choose(options, visibles = Infinity) {
       return new Promise(res => {
         this.clearOpts();
-        options.forEach(([v, label]) => {
-          const b = el("button", "opt", label); b.type = "button";
+        const ocultas = [];
+        options.forEach(([v, label], i) => {
+          const b = el("button", v === "volver" ? "opt opt-quiet" : "opt", label); b.type = "button";
           b.addEventListener("click", () => { this.clearOpts(); this.me(label); res(v); });
+          if (i >= visibles && i < options.length - 1) { b.hidden = true; ocultas.push(b); }
           this.opts.append(b);
         });
+        if (ocultas.length) {
+          const mas = el("button", "opt opt-mas", `Más preguntas (${ocultas.length})`); mas.type = "button";
+          mas.addEventListener("click", () => { ocultas.forEach(b => { b.hidden = false; }); mas.remove(); ocultas[0].focus({ preventScroll: true }); });
+          ocultas[0].before(mas);
+        }
         this.focusOpts();
       });
     }
@@ -169,12 +177,12 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
 
     whatsapp() {
       track("whatsapp_click", { donde: "asistente-menu" });
-      window.open(waLink("Hola {found}, tengo una consulta sobre una página para mi negocio."), "_blank", "noopener");
+      window.open(waLink("¡Hola {found}! 👋 Tengo una consulta sobre una página para mi negocio."), "_blank", "noopener");
     }
 
     async preguntas(alive) {
       await this.say("Claro, elige tu pregunta:"); if (!alive()) return;
-      const id = await this.choose([...PREGUNTAS.map(([i, q]) => [i, q]), ["volver", "Volver"]]); if (!alive()) return;
+      const id = await this.choose([...PREGUNTAS.map(([i, q]) => [i, q]), ["volver", "Volver"]], 4); if (!alive()) return;
       if (id === "volver") return this.menu(alive);
       const [, , respuesta] = PREGUNTAS.find(([i]) => i === id);
       track("asistente_pregunta", { pregunta: id });
@@ -259,7 +267,14 @@ const PLAZOS = { simple: "alrededor de 1 semana", varias: "2 a 3 semanas", tiend
       const ul = el("ul"); incluye.forEach(i => ul.append(el("li", null, i))); card.append(ul);
       card.append(el("p", "fine", "Es un rango de referencia. Te enviamos la cotización exacta, gratis y por escrito, en menos de 24 horas."));
       const btns = el("div", "btns");
-      const wa = el("a", "btn", "Enviar por WhatsApp"); wa.href = waLink(`Hola {found}, usé el asistente de su página. ${resumen}`); wa.target = "_blank"; wa.rel = "noopener";
+      const wa = el("a", "btn", "Enviar por WhatsApp"); wa.href = waLink([
+        "¡Hola {found}! 👋",
+        "Usé el asistente de su página y me gustaría cotizar esto:",
+        `📋 *${servicio} para ${rubro.toLowerCase()}*`,
+        "*Incluye:*\n" + incluye.map(i => `• ${i}`).join("\n"),
+        waCampos([["Plazo", s.plazo === "urgente" ? `urgente (normalmente ${plazo})` : plazo], ["Estimado del asistente", rango]]),
+        "¿Lo vemos juntos?"
+      ].join("\n\n")); wa.target = "_blank"; wa.rel = "noopener";
       wa.addEventListener("click", () => track("whatsapp_click", { donde: "asistente", servicio: s.servicio }));
       const form = el("a", "btn btn-ghost", "Pedir cotización formal");
       const rubroForm = RUBROS.some(([v]) => v === s.rubro) ? s.rubro : "otro";
