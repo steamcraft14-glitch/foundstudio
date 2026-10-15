@@ -24,14 +24,14 @@ Supabase → **Authentication**:
    - Cuerpo: `<h2>Entra a tu proyecto</h2><p>Aprieta el botón para entrar. El enlace sirve una vez y dura 24 horas.</p><p><a href="{{ .ConfirmationURL }}">Entrar a mi proyecto</a></p><p>Si no lo pediste, ignora este correo.</p>`
 
 ## 4. Función del servidor (5 min)
-Supabase → **Edge Functions → Deploy a new function → Via Editor** → nombre **`found`** → pega `supabase/functions/found/index.ts` → **Deploy**.
+Supabase → **Edge Functions → Deploy a new function → Via Editor** → nombre **`found`** → pega `supabase/functions/found/index.ts` → en ajustes, **Verify JWT: apagado** (la clave `sb_publishable_…` no es un JWT; la función ya revisa la sesión del usuario por su cuenta) → **Deploy**.
 Luego **Edge Functions → Secrets** → agrega:
 
 | Nombre | Valor |
 |---|---|
 | `RESEND_API_KEY` | la clave `re_…` de Resend (secreta: nunca en el repo) |
 | `MAIL_FROM` | `{found} studio <hola@foundstudio.cl>` |
-| `ADMIN_EMAIL` | `contacto@foundstudio.cl` |
+| `ADMIN_EMAIL` | `contacto@foundstudio.cl` (dónde te llegan los avisos de briefs; puede ser distinto del usuario admin) |
 | `SITE_URL` | `https://foundstudio.cl` |
 | `GOATCOUNTER_TOKEN` | (opcional, paso 7) |
 
@@ -41,10 +41,10 @@ Pégala en `assets/js/site.js` → `SUPABASE_ANON_KEY`, sube `?v=` de `site.js` 
 La clave **service_role** nunca va en el sitio ni en el repo.
 
 ## 6. Hacerte administrador (2 min)
-1. Supabase → **Authentication → Users → Add user → Create new user** → `contacto@foundstudio.cl`, marca «Auto Confirm User».
+1. Supabase → **Authentication → Users → Add user → Create new user** → `admin@foundstudio.cl` (tiene que ser un buzón real: ahí llega el enlace), marca «Auto Confirm User».
 2. SQL Editor → Run:
-   `insert into private.admins (user_id) select id from auth.users where email = 'contacto@foundstudio.cl' on conflict do nothing;`
-3. Entra a `foundstudio.cl/panel/` con ese correo: te llega el enlace.
+   `insert into private.admins (user_id) select id from auth.users where email = 'admin@foundstudio.cl' on conflict do nothing;`
+3. Entra a `foundstudio.cl/panel/` con `admin@foundstudio.cl`: te llega el enlace.
 
 ## 7. Visitas en el panel (opcional)
 GoatCounter → Settings → **API** → New token con permiso de lectura de estadísticas → guárdalo como secreto `GOATCOUNTER_TOKEN` (paso 4).

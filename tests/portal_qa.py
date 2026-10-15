@@ -8,6 +8,7 @@ con una sesión falsa guardada en el navegador. Los permisos reales de la base d
 (tests/rls.mjs, ver docs/PORTAL.md).
 """
 import json
+import re
 import sys
 import time
 from urllib.parse import urlparse, parse_qs
@@ -33,10 +34,16 @@ def sesion_falsa(email):
     })
 
 
-def con_clave(route):
-    """Sirve site.js con una clave anon de prueba (en el repo va vacía hasta que se configure)."""
-    r = route.fetch()
-    route.fulfill(response=r, body=r.text().replace('SUPABASE_ANON_KEY: ""', 'SUPABASE_ANON_KEY: "clave-anon-de-prueba"'))
+def _clave(valor):
+    """Sirve site.js con la clave anon reemplazada (la real nunca llega a las pruebas)."""
+    def servir(route):
+        r = route.fetch()
+        route.fulfill(response=r, body=re.sub(r'SUPABASE_ANON_KEY: "[^"]*"', f'SUPABASE_ANON_KEY: "{valor}"', r.text(), count=1))
+    return servir
+
+
+con_clave = _clave("clave-anon-de-prueba")
+sin_clave = _clave("")
 
 
 class FalsoSupabase:
@@ -136,6 +143,7 @@ with sync_playwright() as p:
 
     # 0. sin clave configurada: el portal y el panel avisan que no están activos y nada llama a Supabase
     page = browser.new_page()
+    page.route("**/assets/js/site.js*", sin_clave)
     llamadas = []
     page.on("request", lambda r: llamadas.append(r.url) if "supabase.co" in r.url else None)
     page.goto(BASE + "/mi-proyecto/", wait_until="load")

@@ -233,4 +233,4 @@ create policy arc_borrar on storage.objects for delete to authenticated
 -- ---------- último paso, a mano: hacerte administrador ----------
 -- 1. Entra una vez a foundstudio.cl/panel/ con tu correo (te llega el enlace).
 -- 2. Corre esto con tu correo:
---    insert into private.admins (user_id) select id from auth.users where email = 'contacto@foundstudio.cl' on conflict do nothing;
+--    insert into private.admins (user_id) select id from auth.users where email = 'admin@foundstudio.cl' on conflict do nothing;

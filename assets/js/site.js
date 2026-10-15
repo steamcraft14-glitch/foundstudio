@@ -8,7 +8,7 @@ window.FOUND = {
   // Portal de clientes (Supabase → Project Settings → API). Ambos son públicos; la clave service_role NUNCA va aquí.
   // Vacíos = el sitio funciona como antes y /mi-proyecto/ y /panel/ muestran «aún no está activo».
   SUPABASE_URL: "https://qwmxzaeyhqdwndijquab.supabase.co",
-  SUPABASE_ANON_KEY: ""                    // clave "anon public"
+  SUPABASE_ANON_KEY: "sb_publishable_Vy6rXvvmfpVgef9WEod9MA_kK-rJ6TG"                    // clave "anon public"
 };
 
 (() => {
