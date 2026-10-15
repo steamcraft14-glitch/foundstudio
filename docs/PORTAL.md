@@ -11,7 +11,7 @@ Se puede volver a correr sin romper nada.
 
 ## 2. Inicio de sesión (3 min)
 Supabase → **Authentication**:
-- **Sign In / Providers → Email**: activado. **Allow new users to sign up: APAGADO** (las cuentas las crea el estudio al aceptar). **Email OTP Expiration: 86400** (el enlace dura 24 horas).
+- **Sign In / Providers → Email**: activado. **Allow new users to sign up: APAGADO** (las cuentas las crea el estudio al aceptar). **Email OTP Expiration: 3600** (el enlace dura 1 hora, lo que recomienda Supabase; si vence, el cliente pide otro desde el portal).
 - **URL Configuration**: Site URL `https://foundstudio.cl`. Redirect URLs: `https://foundstudio.cl/mi-proyecto/` y `https://foundstudio.cl/panel/`.
 
 ## 3. Correo con Resend (10 min + espera del DNS)
@@ -21,7 +21,7 @@ Supabase → **Authentication**:
    host `smtp.resend.com` · port `465` · user `resend` · password = tu clave de Resend · sender `hola@foundstudio.cl` · name `{found} studio`.
 3. **Authentication → Emails → Templates → Magic link**, en español:
    - Asunto: `Tu enlace para entrar a {found} studio`
-   - Cuerpo: `<h2>Entra a tu proyecto</h2><p>Aprieta el botón para entrar. El enlace sirve una vez y dura 24 horas.</p><p><a href="{{ .ConfirmationURL }}">Entrar a mi proyecto</a></p><p>Si no lo pediste, ignora este correo.</p>`
+   - Cuerpo: `<h2>Entra a tu proyecto</h2><p>Aprieta el botón para entrar. El enlace sirve una vez y dura 1 hora.</p><p><a href="{{ .ConfirmationURL }}">Entrar a mi proyecto</a></p><p>Si no lo pediste, ignora este correo.</p>`
 
 ## 4. Función del servidor (5 min)
 Supabase → **Edge Functions → Deploy a new function → Via Editor** → nombre **`found`** → pega `supabase/functions/found/index.ts` → en ajustes, **Verify JWT: apagado** (la clave `sb_publishable_…` no es un JWT; la función ya revisa la sesión del usuario por su cuenta) → **Deploy**.

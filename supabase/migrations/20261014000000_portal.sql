@@ -230,6 +230,13 @@ drop policy if exists arc_borrar on storage.objects;
 create policy arc_borrar on storage.objects for delete to authenticated
   using (bucket_id = 'archivos' and ((select private.is_admin()) or private.es_mi_proyecto((storage.foldername(name))[1])));
 
+-- la función de Supabase que activa RLS en tablas nuevas es un disparador: nadie necesita llamarla por la API
+do $$ begin
+  if exists (select 1 from pg_proc where proname = 'rls_auto_enable' and pronamespace = 'public'::regnamespace) then
+    revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
+  end if;
+end $$;
+
 -- ---------- último paso, a mano: hacerte administrador ----------
 -- 1. Entra una vez a foundstudio.cl/panel/ con tu correo (te llega el enlace).
 -- 2. Corre esto con tu correo:
