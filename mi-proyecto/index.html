@@ -10,17 +10,18 @@
 <title>Mi proyecto | {found} studio</title>
 <meta name="description" content="Tu proyecto con {found} studio: brief, archivos y avance.">
 <meta name="theme-color" content="#0F1528">
+<script src="/assets/js/tema.js?v=1"></script>
 <meta name="color-scheme" content="dark">
 <link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/sora-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css?v=10">
 <link rel="stylesheet" href="/assets/css/brief.css?v=1">
-<link rel="stylesheet" href="/assets/css/cuenta.css?v=4">
+<link rel="stylesheet" href="/assets/css/cuenta.css?v=5">
 <script defer src="/assets/js/site.js?v=8"></script>
 <script defer src="/assets/js/vendor/supabase-2.45.4.js"></script>
-<script defer src="/assets/js/sesion.js?v=2"></script>
-<script defer src="/assets/js/portal.js?v=2"></script>
+<script defer src="/assets/js/sesion.js?v=3"></script>
+<script defer src="/assets/js/portal.js?v=3"></script>
 </head>
 <body>
 <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -28,8 +29,9 @@
 <header class="bar">
   <a class="wordmark" href="/" aria-label="{found} studio, inicio"><img src="/assets/brand/found-horizontal.svg" alt="" width="1269" height="245"></a>
   <nav class="nav" aria-label="Cuenta">
-    <button class="btn btn-sm btn-ghost" type="button" id="p-salir" hidden>Salir</button>
-    <a class="btn btn-sm" href="https://wa.me/56942579133" data-msg="Hola {found}, tengo una duda con mi proyecto." data-track="whatsapp_click" data-where="portal" target="_blank" rel="noopener">WhatsApp</a>
+    <button class="btn btn-sm btn-ghost" type="button" id="p-vista" aria-pressed="false" hidden>Perfil</button>
+    <button class="btn btn-sm btn-ghost hide-sm" type="button" id="p-salir" hidden>Salir</button>
+    <a class="btn btn-sm" href="https://wa.me/56942579133" data-msg="¡Hola {found}! 👋 Tengo una duda sobre mi proyecto." data-track="whatsapp_click" data-where="portal" target="_blank" rel="noopener">WhatsApp</a>
   </nav>
 </header>
 
@@ -48,7 +50,7 @@
       <div class="card cuenta-aviso" id="p-off" hidden>
         <h2>El portal todavía no está activo</h2>
         <p>Mientras tanto, completa el brief en línea o escríbenos por WhatsApp.</p>
-        <div class="btns"><a class="btn" href="/brief/">Completar el brief</a><a class="btn btn-ghost" href="https://wa.me/56942579133" data-msg="Hola {found}, quiero ver mi proyecto." target="_blank" rel="noopener">WhatsApp</a></div>
+        <div class="btns"><a class="btn" href="/brief/">Completar el brief</a><a class="btn btn-ghost" href="https://wa.me/56942579133" data-msg="¡Hola {found}! 👋 Me gustaría ver cómo va mi proyecto." target="_blank" rel="noopener">WhatsApp</a></div>
       </div>
 
       <form class="card cuenta-entrada" id="p-entrada" novalidate hidden>
@@ -103,21 +105,11 @@
           <ul class="archivos" id="pa-lista"></ul>
         </section>
 
-        <details class="card cuenta-clave">
-          <summary><h2>Contraseña</h2><span class="soft">Créala para entrar sin esperar un correo</span></summary>
-          <form id="p-clave-form" novalidate>
-            <input type="email" autocomplete="username" hidden id="p-clave-user">
-            <div class="row-2">
-              <div class="field"><label for="p-clave1">Contraseña nueva</label><input id="p-clave1" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></div>
-              <div class="field"><label for="p-clave2">Repítela</label><input id="p-clave2" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></div>
-            </div>
-            <button class="btn btn-sm" type="submit">Guardar contraseña</button>
-            <p class="status" role="status" aria-live="polite"></p>
-          </form>
-        </details>
 
-        <p class="cuenta-pie soft">¿Dudas? Escríbenos por <a href="https://wa.me/56942579133" data-msg="Hola {found}, tengo una duda con mi proyecto." target="_blank" rel="noopener">WhatsApp</a>. Tus datos se usan solo para tu proyecto (<a href="/privacidad.html">privacidad</a>).</p>
+        <p class="cuenta-pie soft">¿Dudas? Escríbenos por <a href="https://wa.me/56942579133" data-msg="¡Hola {found}! 👋 Tengo una duda sobre mi proyecto." target="_blank" rel="noopener">WhatsApp</a>. Tus datos se usan solo para tu proyecto (<a href="/privacidad.html">privacidad</a>).</p>
       </div>
+
+      <div class="perfil" id="p-perfil"></div>
     </div>
   </div>
 </main>

@@ -7,6 +7,24 @@
   const mostrar = id => ["#p-cargando", "#p-off", "#p-entrada", "#p-app"].forEach(s => { $(s).hidden = s !== id; });
   let db, proyecto, brief, guardarT;
 
+  /* «Perfil» en la barra: alterna entre el proyecto y el perfil (también con #perfil en la dirección).
+     Lo hace una clase en .cuenta, así no choca con lo que muestra u oculta la carga del proyecto. */
+  function vistaPerfil() {
+    const btn = $("#p-vista"), cuenta = $(".cuenta"), titulo = $("#p-titulo"), sub = $("#p-sub");
+    let antes = null;
+    const poner = on => {
+      if (on === cuenta.classList.contains("ver-perfil")) return;
+      if (on) { antes = [titulo.textContent, sub.textContent]; titulo.textContent = "Tu perfil"; sub.textContent = "Tu nombre, tu contraseña y cómo se ve tu portal."; }
+      else if (antes) { titulo.textContent = proyecto?.negocio || antes[0]; sub.textContent = antes[1]; }
+      cuenta.classList.toggle("ver-perfil", on);
+      btn.setAttribute("aria-pressed", String(on)); btn.textContent = on ? "Mi proyecto" : "Perfil";
+      history.replaceState(null, "", on ? "#perfil" : location.pathname + location.search);
+    };
+    btn.hidden = false;
+    btn.addEventListener("click", () => poner(!cuenta.classList.contains("ver-perfil")));
+    if (location.hash === "#perfil") poner(true);
+  }
+
   async function iniciar() {
     if (!sesion.activo()) return mostrar("#p-off");
     db = sesion.db();
@@ -14,8 +32,8 @@
     if (!user) { sesion.montarEntrada($("#p-entrada")); return mostrar("#p-entrada"); }
     $("#p-salir").hidden = false;
     $("#p-salir").addEventListener("click", () => sesion.salir());
-    $("#p-clave-user").value = user.email;
-    sesion.montarClave($("#p-clave-form"));
+    sesion.montarPerfil($("#p-perfil"), user, { pre: "p", notaCorreo: "¿Cambiaste de correo? Escríbenos por WhatsApp y lo actualizamos." });
+    vistaPerfil();
 
     const { data: proyectos, error } = await db.from("proyectos").select("*").order("created_at", { ascending: false });
     if (error) return falla("No pudimos cargar tu proyecto. Recarga la página en un rato.");

@@ -27,12 +27,12 @@
     $("#a-quien").textContent = user.email;
     $("#a-salir").hidden = false;
     $("#a-salir").addEventListener("click", () => sesion.salir());
-    $("#a-clave-user").value = user.email;
-    sesion.montarClave($("#a-clave-form"));
+    sesion.montarPerfil($("#a-perfil"), user, { pre: "a", notaCorreo: "El correo del administrador se cambia en Supabase → Authentication → Users." });
     const { data: esAdmin } = await db.rpc("soy_admin");
     if (esAdmin !== true) return mostrar("#a-noadmin");
     mostrar("#a-app");
     pestañas();
+    $("#a-quien").addEventListener("click", () => irA($("#t-perfil")));
     await Promise.all([cargarProyectos(), cargarCotizaciones(), cargarFormularios()]);
     const m = location.hash.match(/p=([0-9a-f-]{36})/);
     if (m) abrirProyecto(m[1]);
@@ -206,7 +206,7 @@
       el("h2", {}, p.negocio),
       el("p", { class: "soft" }, `${p.cliente_nombre} · `, el("a", { href: `mailto:${p.cliente_email}` }, p.cliente_email), ` · ${SERVICIOS[p.servicio] || p.servicio} · desde ${fecha(p.created_at)}`),
       el("div", { class: "btns" },
-        waUrl ? el("a", { class: "btn btn-sm", href: waUrl + "?text=" + encodeURIComponent(`Hola ${p.cliente_nombre.split(" ")[0]}, te escribo de {found} studio por ${p.negocio}.`), target: "_blank", rel: "noopener" }, "WhatsApp") : null,
+        waUrl ? el("a", { class: "btn btn-sm", href: waUrl + "?text=" + encodeURIComponent(`¡Hola ${p.cliente_nombre.split(" ")[0]}! 👋 Te escribimos de {found} por el proyecto de ${p.negocio}. `), target: "_blank", rel: "noopener" }, "WhatsApp") : null,
         enlaceWA, claveTmp, reenviar),
       accesoCont);
 
@@ -322,8 +322,8 @@
   function cajaAcceso(p, a, waUrl) {
     const nombre = p.cliente_nombre.split(" ")[0];
     const msg = a.tipo === "enlace"
-      ? `Hola ${nombre}, este es tu enlace para entrar a tu proyecto en {found} studio (sirve una vez y dura 1 hora):\n${a.valor}\n\nYa dentro, crea tu contraseña al final de la página y después entras cuando quieras.`
-      : `Hola ${nombre}, para entrar a tu proyecto en {found} studio:\n${location.origin}/mi-proyecto/\nCorreo: ${p.cliente_email}\nContraseña: ${a.valor}\n\nAl entrar, cámbiala en «Contraseña», al final de la página.`;
+      ? `¡Hola ${nombre}! 👋 Tu proyecto ya tiene su espacio en {found}: ahí puedes ver cómo avanza, subir archivos y escribirnos.\n\nEntra con este enlace:\n${a.valor}\n\nOjo, sirve una sola vez y dura 1 hora. Ya adentro, crea tu contraseña al final de la página y listo, entras cuando quieras.\n\nCualquier duda, aquí estamos 🙌`
+      : `¡Hola ${nombre}! 👋 Te dejamos tus datos para entrar a tu proyecto en {found}:\n\n${location.origin}/mi-proyecto/\nCorreo: ${p.cliente_email}\nContraseña: ${a.valor}\n\nEs una contraseña temporal, así que apenas entres cámbiala en «Contraseña», al final de la página.\n\nCualquier duda, aquí estamos 🙌`;
     const campo = el("input", { type: "text", readonly: true, value: a.valor, "aria-label": a.tipo === "enlace" ? "Enlace de acceso" : "Contraseña temporal", onfocus: e => e.target.select() });
     const copiar = async (t, ok) => { try { await navigator.clipboard.writeText(t); avisar(ok); } catch (_) { campo.select(); avisar("No se pudo copiar: cópialo a mano.", "error"); } };
     return el("div", { class: "acceso" },
@@ -451,7 +451,7 @@
         c.estado === "nueva" || c.estado === "propuesta" ? el("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: () => cambiarEstadoCot([c.id], "descartada") }, "Descartar") : null,
         c.estado === "descartada" ? el("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: () => cambiarEstadoCot([c.id], "nueva") }, "Volver a abrir") : null,
         proyecto ? el("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: () => { irA($("#t-proyectos")); filtroP = "todos"; pintarProyectos(); abrirProyecto(proyecto.id); } }, "Ver proyecto") : null,
-        waUrl ? el("a", { class: "btn btn-sm btn-ghost", href: waUrl + "?text=" + encodeURIComponent(`Hola ${c.nombre.split(" ")[0]}, te escribo de {found} studio por tu cotización.`), target: "_blank", rel: "noopener" }, "WhatsApp") : null,
+        waUrl ? el("a", { class: "btn btn-sm btn-ghost", href: waUrl + "?text=" + encodeURIComponent(`¡Hola ${c.nombre.split(" ")[0]}! 👋 Te escribimos de {found}. Muchas gracias por cotizar con nosotros${c.negocio ? ` para ${c.negocio}` : ""}. `), target: "_blank", rel: "noopener" }, "WhatsApp") : null,
         el("button", { class: "btn btn-sm btn-ghost", type: "button", "aria-expanded": "false", onclick: e => abrirEditar(c, editar, e.currentTarget) }, "Editar"),
         el("button", { class: "btn btn-sm btn-ghost btn-peligro", type: "button", onclick: () => eliminarCot([c.id]) }, "Eliminar")),
       editar, formAceptar(c), st);
@@ -631,7 +631,7 @@
         f.estado !== "archivado" ? el("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: () => cambiarForm(f, { estado: "archivado" }) }, "Archivar")
           : el("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: () => cambiarForm(f, { estado: "nuevo" }) }, "Recuperar"),
         copiar,
-        waUrl ? el("a", { class: "btn btn-sm btn-ghost", href: waUrl + "?text=" + encodeURIComponent(`Hola ${f.nombre.split(" ")[0]}, te escribo de {found} studio: recibimos lo que nos mandaste de ${f.negocio}.`), target: "_blank", rel: "noopener" }, "WhatsApp") : null,
+        waUrl ? el("a", { class: "btn btn-sm btn-ghost", href: waUrl + "?text=" + encodeURIComponent(`¡Hola ${f.nombre.split(" ")[0]}! 👋 Te escribimos de {found}. Ya nos llegó lo que nos mandaste de ${f.negocio}, ¡muchas gracias! Lo estamos revisando y muy pronto te contamos los próximos pasos.`), target: "_blank", rel: "noopener" }, "WhatsApp") : null,
         el("button", { class: "btn btn-sm btn-ghost btn-peligro", type: "button", onclick: () => eliminarForm(f) }, "Eliminar")));
   }
 

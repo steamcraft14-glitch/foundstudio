@@ -59,7 +59,8 @@ GoatCounter → Settings → **API** → New token con permiso de lectura de est
 4. El cliente completa el brief (se guarda solo), sube logo y fotos y lo envía: te llega un correo y el proyecto pasa a Diseño.
 5. Tú cambias la etapa (Diseño → Revisión → Publicado) con «Avisar al cliente por correo» marcado.
 6. Ahorrar correos (Resend gratis tiene un límite diario): en «Aceptada» desmarca «Mandar el acceso por correo» y te da el enlace para mandarlo por WhatsApp. En cada proyecto: «Enlace sin correo» (enlace de 1 hora) o «Contraseña temporal» (el cliente la cambia al entrar), ambos con botón «Mandar por WhatsApp». «Reenviar acceso por correo» y «Escribir al cliente por correo» sí gastan un correo cada uno.
-7. Limpieza: en «Cotizaciones» puedes editar, agregar notas internas, buscar, exportar a CSV y eliminar (una o varias seleccionadas). En cada proyecto puedes editar los datos del cliente, borrar archivos o eliminar el proyecto entero (brief, historial y archivos). Todo borrado pide confirmación y no se puede deshacer.
+7. Perfil: en el panel, la pestaña «Perfil» (o tu correo arriba a la derecha); en el portal, el botón «Perfil» de la barra. Ahí se cambia el nombre, la contraseña, el tema (oscuro, claro o automático; se guarda en la cuenta y sigue a la persona en cualquier dispositivo) y se puede cerrar la sesión en todos los dispositivos.
+8. Limpieza: en «Cotizaciones» puedes editar, agregar notas internas, buscar, exportar a CSV y eliminar (una o varias seleccionadas). En cada proyecto puedes editar los datos del cliente, borrar archivos o eliminar el proyecto entero (brief, historial y archivos). Todo borrado pide confirmación y no se puede deshacer.
 
 ## Ojo
 - Plan gratis: si el proyecto pasa 7 días sin uso, Supabase lo pausa. Se reactiva con un clic en el panel de Supabase. Con clientes constantes conviene el plan pagado (~USD 25/mes).

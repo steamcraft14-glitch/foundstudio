@@ -22,7 +22,75 @@
       return data.session?.user || null;
     },
 
-    async salir() { await this.db().auth.signOut(); location.replace(location.pathname); },
+    // global: cierra la sesión en todos los dispositivos (invalida todos los accesos de la cuenta)
+    async salir(global = false) { await this.db().auth.signOut({ scope: global ? "global" : "local" }); location.replace(location.pathname); },
+
+    /* Perfil: nombre, contraseña, apariencia (tema.js) y sesiones. Se arma dentro de `cont`.
+       pre: prefijo de los id ("a" en el panel, "p" en el portal) · notaCorreo: cómo se cambia el correo */
+    montarPerfil(cont, user, { pre, notaCorreo }) {
+      const meta = user.user_metadata || {};
+      // la preferencia guardada en la cuenta sigue a la persona en cualquier dispositivo
+      if (window.tema && tema.OPCIONES.includes(meta.tema) && meta.tema !== tema.actual()) tema.poner(meta.tema);
+      const st = () => el("p", { class: "status", role: "status", "aria-live": "polite" });
+      const msg = (s, kind, texto) => { if (kind) s.dataset.kind = kind; else s.removeAttribute("data-kind"); s.textContent = texto; };
+
+      // datos
+      const fDatos = el("form", { novalidate: true },
+        el("div", { class: "field" }, el("label", { for: pre + "-nombre" }, "Tu nombre"), el("input", { id: pre + "-nombre", name: "nombre", maxlength: "80", autocomplete: "name", value: meta.nombre || "" })),
+        el("div", { class: "field" }, el("label", { for: pre + "-correo" }, "Correo"), el("input", { id: pre + "-correo", type: "email", value: user.email || "", readonly: true, autocomplete: "username" })),
+        el("p", { class: "soft perfil-nota" }, notaCorreo),
+        el("button", { class: "btn btn-sm", type: "submit" }, "Guardar nombre"), st());
+      fDatos.addEventListener("submit", async e => {
+        e.preventDefault();
+        const s = fDatos.querySelector(".status"), nombre = fDatos.nombre.value.trim();
+        if (!nombre) { msg(s, "error", "Escribe tu nombre."); return; }
+        const { error } = await this.db().auth.updateUser({ data: { nombre } });
+        error ? msg(s, "error", "No se pudo guardar: " + error.message) : msg(s, "ok", "Nombre guardado.");
+      });
+
+      // contraseña
+      const fClave = el("form", { id: pre + "-clave-form", novalidate: true },
+        el("p", { class: "soft perfil-nota" }, "Con contraseña entras con tu correo, sin esperar un enlace. Si la olvidas, pide un enlace en la entrada y créala de nuevo aquí."),
+        el("div", { class: "row-2" },
+          el("div", { class: "field" }, el("label", { for: pre + "-clave1" }, "Contraseña nueva"), el("input", { id: pre + "-clave1", type: "password", autocomplete: "new-password", minlength: "8", maxlength: "72", required: true })),
+          el("div", { class: "field" }, el("label", { for: pre + "-clave2" }, "Repítela"), el("input", { id: pre + "-clave2", type: "password", autocomplete: "new-password", minlength: "8", maxlength: "72", required: true }))),
+        el("button", { class: "btn btn-sm", type: "submit" }, "Guardar contraseña"), st());
+      this.montarClave(fClave);
+
+      // apariencia
+      const sTema = st();
+      const opcion = (valor, titulo, detalle) => el("label", { class: "tema-op" },
+        el("input", { type: "radio", name: pre + "-tema", value: valor, checked: window.tema?.actual() === valor, onchange: async () => {
+          tema.poner(valor);
+          const { error } = await this.db().auth.updateUser({ data: { tema: valor } });
+          error ? msg(sTema, "error", "Se aplicó aquí, pero no se guardó en tu cuenta.") : msg(sTema, null, "");
+        } }),
+        el("span", { class: `tema-muestra tema-${valor}`, "aria-hidden": "true" }),
+        el("span", { class: "tema-txt" }, el("b", {}, titulo), el("small", {}, detalle)));
+      const apariencia = el("fieldset", { class: "temas" }, el("legend", { class: "sr" }, "Tema"),
+        opcion("oscuro", "Oscuro", "El de la marca"), opcion("claro", "Claro", "Fondo crema"), opcion("auto", "Automático", "Igual que tu dispositivo"));
+
+      // sesiones
+      let confirmando;
+      const todos = el("button", { class: "btn btn-sm btn-ghost btn-peligro", type: "button", onclick: () => {
+        if (confirmando) return this.salir(true);
+        confirmando = setTimeout(() => { confirmando = null; todos.textContent = "Cerrar sesión en todos los dispositivos"; }, 5000);
+        todos.textContent = "¿Seguro? Toca otra vez";
+      } }, "Cerrar sesión en todos los dispositivos");
+      const sesiones = el("div", {},
+        el("dl", { class: "perfil-datos" },
+          user.last_sign_in_at ? el("div", {}, el("dt", {}, "Último ingreso"), el("dd", {}, fecha(user.last_sign_in_at, true))) : null,
+          user.created_at ? el("div", {}, el("dt", {}, "Cuenta desde"), el("dd", {}, fecha(user.created_at))) : null),
+        el("p", { class: "soft perfil-nota" }, "Si entraste desde un computador que no es tuyo, cierra la sesión en todos lados: tendrás que volver a entrar en cada dispositivo."),
+        el("div", { class: "btns" }, el("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: () => this.salir() }, "Cerrar sesión"), todos));
+
+      const tarjeta = (titulo, ...hijos) => el("section", { class: "card perfil-card" }, el("h2", {}, titulo), ...hijos);
+      cont.replaceChildren(
+        tarjeta("Tus datos", fDatos),
+        tarjeta("Contraseña", fClave),
+        tarjeta("Apariencia", apariencia, sTema),
+        tarjeta("Sesión", sesiones));
+    },
 
     /* Llama a la función del servidor; devuelve los datos o lanza un Error con un mensaje legible */
     async funcion(accion, datos = {}) {

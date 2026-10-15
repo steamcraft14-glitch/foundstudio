@@ -8,15 +8,16 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Panel | {found} studio</title>
 <meta name="theme-color" content="#0F1528">
+<script src="/assets/js/tema.js?v=1"></script>
 <meta name="color-scheme" content="dark">
 <link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="/assets/fonts/sora-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css?v=10">
-<link rel="stylesheet" href="/assets/css/cuenta.css?v=4">
+<link rel="stylesheet" href="/assets/css/cuenta.css?v=5">
 <script defer src="/assets/js/site.js?v=8"></script>
 <script defer src="/assets/js/vendor/supabase-2.45.4.js"></script>
-<script defer src="/assets/js/sesion.js?v=2"></script>
-<script defer src="/assets/js/panel.js?v=4"></script>
+<script defer src="/assets/js/sesion.js?v=3"></script>
+<script defer src="/assets/js/panel.js?v=5"></script>
 </head>
 <body class="panel">
 <a class="skip" href="#contenido">Saltar al contenido</a>
@@ -25,7 +26,7 @@
   <a class="wordmark" href="/" aria-label="{found} studio, inicio"><img src="/assets/brand/found-horizontal.svg" alt="" width="1269" height="245"></a>
   <nav class="nav" aria-label="Cuenta">
     <a class="soft panel-sitio" href="/">Ver sitio</a>
-    <span class="soft panel-quien" id="a-quien"></span>
+    <button class="panel-quien" type="button" id="a-quien" title="Abrir tu perfil"></button>
     <button class="btn btn-sm btn-ghost" type="button" id="a-salir" hidden>Salir</button>
   </nav>
 </header>
@@ -72,6 +73,7 @@
           <button role="tab" id="t-formularios" aria-controls="v-formularios" aria-selected="false" tabindex="-1">Formularios <span class="cuenta-n" id="n-formularios"></span></button>
           <button role="tab" id="t-estimados" aria-controls="v-estimados" aria-selected="false" tabindex="-1">Estimados</button>
           <button role="tab" id="t-visitas" aria-controls="v-visitas" aria-selected="false" tabindex="-1">Visitas</button>
+          <button role="tab" id="t-perfil" aria-controls="v-perfil" aria-selected="false" tabindex="-1">Perfil</button>
         </div>
 
         <section role="tabpanel" id="v-proyectos" aria-labelledby="t-proyectos">
@@ -142,18 +144,9 @@
           <p class="soft vi-link">Detalle completo en <a href="https://foundstudio.goatcounter.com" target="_blank" rel="noopener">foundstudio.goatcounter.com</a>.</p>
         </section>
 
-        <details class="card cuenta-clave">
-          <summary><h2>Contraseña</h2><span class="soft">Para entrar sin gastar correos</span></summary>
-          <form id="a-clave-form" novalidate>
-            <input type="email" autocomplete="username" hidden id="a-clave-user">
-            <div class="row-2">
-              <div class="field"><label for="a-clave1">Contraseña nueva</label><input id="a-clave1" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></div>
-              <div class="field"><label for="a-clave2">Repítela</label><input id="a-clave2" type="password" autocomplete="new-password" minlength="8" maxlength="72" required></div>
-            </div>
-            <button class="btn btn-sm" type="submit">Guardar contraseña</button>
-            <p class="status" role="status" aria-live="polite"></p>
-          </form>
-        </details>
+        <section role="tabpanel" id="v-perfil" aria-labelledby="t-perfil" hidden>
+          <div class="perfil" id="a-perfil"></div>
+        </section>
       </div>
     </div>
   </div>
