@@ -412,7 +412,7 @@ $('zout').onclick=()=>V3.on?camTo({dist:CAM.dist*1.6},350):zoom(1.4);
 $('zfit').onclick=()=>V3.on?frame(CAMPUS):fit(CAMPUS,30);
 
 /* ---------- AR ---------- */
-const AR={on:false,real:false,stream:null,watch:null,heading:0,pos:null,demoT:0,raf:0,last:0,wake:null};
+const AR={on:false,stream:null,watch:null,heading:0,demoT:0,raf:0,last:0,wake:null};
 const bearing=(a,b)=>((Math.atan2(b[0]-a[0],-(b[1]-a[1]))*180/Math.PI)+360)%360;
 const wrap=d=>((d+540)%360)-180;
 function poly(){ return S.route.indoor ? [...S.route.walk, S.route.indoor[1]] : S.route.walk; }
@@ -421,30 +421,57 @@ function project(pts,p){ let best={d:Infinity}; let acc=0;
     const q=[a[0]+dx*t,a[1]+dy*t], d=Math.hypot(p[0]-q[0],p[1]-q[1]); if(d<best.d) best={d,i,t,q,along:acc+L*t}; acc+=L; }
   best.total=acc; return best; }
 function pointAt(pts,s){ let acc=0; for(let i=0;i<pts.length-1;i++){ const a=pts[i],b=pts[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]); if(acc+L>=s){ const t=(s-acc)/L; return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]; } acc+=L; } return pts[pts.length-1]; }
+/* sensors: compass heading of the BACK CAMERA, smoothed GPS snapped to the route */
+function cameraHeading(e){
+  if(e.webkitCompassHeading!=null && e.webkitCompassHeading>=0) return {h:e.webkitCompassHeading, acc:e.webkitCompassAccuracy}; // iOS: already true north, compensated for tilt
+  if(!e.absolute || e.alpha==null || e.beta==null || e.gamma==null) return null;
+  const r=Math.PI/180, a=e.alpha*r, b=e.beta*r, g=e.gamma*r;
+  // direction the back camera looks at: -Z axis of the device in earth frame (x east, y north)
+  let ex=-(Math.cos(a)*Math.sin(g)+Math.sin(a)*Math.sin(b)*Math.cos(g)), ny=-(Math.sin(a)*Math.sin(g)-Math.cos(a)*Math.sin(b)*Math.cos(g));
+  if(Math.hypot(ex,ny)<.35){ ex=-Math.sin(a)*Math.cos(b); ny=Math.cos(a)*Math.cos(b); } // phone lying flat: use its top edge
+  return {h:(Math.atan2(ex,ny)/r+360)%360};
+}
+function onOrientation(e){
+  if(e.type==='deviceorientation' && AR.absEvents && e.webkitCompassHeading==null) return; // prefer the absolute event on Android
+  if(e.type==='deviceorientationabsolute') AR.absEvents=true;
+  const c=cameraHeading(e); if(!c) return;
+  AR.headT=performance.now(); AR.headAcc=c.acc;
+  AR.rawHead = AR.rawHead==null ? c.h : (AR.rawHead + wrap(c.h-AR.rawHead)*.22 + 360)%360;
+}
+function onGPS(p){
+  const v=xy([p.coords.latitude,p.coords.longitude]), acc=p.coords.accuracy||30, now=performance.now();
+  AR.acc=acc; AR.fixT=now; AR.far = Math.hypot(v[0],v[1])>1200;
+  if(!AR.gpsPos || AR.far) AR.gpsPos=v;
+  else { const k=Math.min(1, Math.max(.18, 10/acc)); AR.gpsPos=[AR.gpsPos[0]+(v[0]-AR.gpsPos[0])*k, AR.gpsPos[1]+(v[1]-AR.gpsPos[1])*k]; }
+  if(p.coords.speed>.8 && p.coords.heading!=null && !isNaN(p.coords.heading)){ AR.course=p.coords.heading; AR.courseT=now; }
+}
+function arMsg(t,warn){ const m=$('arMode'); m.hidden=!t; m.textContent=t||''; m.classList.toggle('warn',!!warn); }
 async function startAR(){
   if(!S.route) return;
-  const ar=$('ar'); ar.hidden=false; AR.on=true; $('arrived').hidden=true;
+  // iOS asks for motion access only inside the tap, so this goes first
+  let motionDenied=false;
+  try{ if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){ motionDenied = (await DeviceOrientationEvent.requestPermission())!=='granted'; } }catch(e){ motionDenied=true; }
+  const ar=$('ar'); ar.hidden=false; AR.on=true; $('arrived').hidden=true; lastTurnKey='';
+  Object.assign(AR,{rawHead:null,headT:0,gpsPos:null,fixT:0,far:false,course:null,courseT:0,absEvents:false,demo:false,demoT:0,gpsDenied:false,motionDenied,camOK:false,rerouting:false,arrivedShown:false});
   $('arDest').textContent = `${S.dest.title} · ${S.dest.sub}`;
   $('ptagL').innerHTML = `${esc(S.dest.badge||'')}<small>${esc(S.dest.kind==='bldg'?'':'edificio '+(S.dest.n||CARTNUM[(DATA.places.find(p=>p[0]===S.dest.name)||[])[4]]||''))}</small>`;
-  let headingOK=false, gpsOK=false;
-  try{ if(typeof DeviceOrientationEvent!=='undefined' && DeviceOrientationEvent.requestPermission){ headingOK = (await DeviceOrientationEvent.requestPermission())==='granted'; } }catch(e){}
-  try{ AR.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false}); const v=$('cam'); v.srcObject=AR.stream; v.hidden=false; $('fake').hidden=true; }catch(e){ $('cam').hidden=true; $('fake').hidden=false; }
+  arMsg('Preparando cámara…');
+  addEventListener('deviceorientationabsolute',onOrientation); addEventListener('deviceorientation',onOrientation);
+  if(navigator.geolocation){ try{ AR.watch=navigator.geolocation.watchPosition(onGPS, err=>{ if(err.code===1) AR.gpsDenied=true; }, {enableHighAccuracy:true,maximumAge:1000,timeout:15000}); }catch(e){ AR.gpsDenied=true; } } else AR.gpsDenied=true;
   try{ AR.wake=await navigator.wakeLock?.request('screen'); }catch(e){}
-  const onOri=e=>{ let h=null; if(e.webkitCompassHeading!=null) h=e.webkitCompassHeading; else if(e.absolute && e.alpha!=null) h=360-e.alpha; if(h!=null){ headingOK=true; AR.sensorHeading=h; } };
-  AR.onOri=onOri; addEventListener('deviceorientationabsolute',onOri); addEventListener('deviceorientation',onOri);
-  gpsOK = await new Promise(res=>{ if(!navigator.geolocation) return res(false); let done=false;
-    try{ AR.watch=navigator.geolocation.watchPosition(p=>{ AR.gpsPos=xy([p.coords.latitude,p.coords.longitude]); AR.acc=p.coords.accuracy; if(!done){done=true;res(true);} }, ()=>{ if(!done){done=true;res(false);} }, {enableHighAccuracy:true,maximumAge:1000,timeout:9000}); }catch(e){ res(false); }
-    setTimeout(()=>{ if(!done){done=true;res(false);} },6000); });
-  if(!AR.on) return;
-  AR.real = gpsOK && headingOK && AR.gpsPos && Math.hypot(...AR.gpsPos)<1200;
-  $('arMode').hidden=false;
-  $('arMode').textContent = AR.real ? `GPS ±${Math.round(AR.acc||0)} m` : (gpsOK? 'Demo · estás lejos del campus' : 'Demo · sin cámara ni GPS en esta vista');
-  AR.demoT=0; AR.last=performance.now(); AR.raf=requestAnimationFrame(tick);
+  try{
+    AR.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false});
+    const v=$('cam'); v.setAttribute('playsinline',''); v.muted=true; v.srcObject=AR.stream; v.hidden=false; $('fake').hidden=true; await v.play().catch(()=>{}); AR.camOK=true;
+  }catch(e){ $('cam').hidden=true; $('fake').hidden=false; AR.camErr=e&&e.name; }
+  if(!AR.on){ stopAR(); return; }
+  AR.t0=performance.now(); AR.last=AR.t0; AR.raf=requestAnimationFrame(tick);
 }
 function stopAR(){ AR.on=false; cancelAnimationFrame(AR.raf); $('ar').hidden=true;
-  AR.stream?.getTracks().forEach(t=>t.stop()); AR.stream=null; if(AR.watch!=null) navigator.geolocation.clearWatch(AR.watch); AR.watch=null;
-  removeEventListener('deviceorientationabsolute',AR.onOri); removeEventListener('deviceorientation',AR.onOri); try{AR.wake?.release();}catch(e){} }
+  AR.stream?.getTracks().forEach(t=>t.stop()); AR.stream=null; const v=$('cam'); v.srcObject=null;
+  if(AR.watch!=null) navigator.geolocation.clearWatch(AR.watch); AR.watch=null;
+  removeEventListener('deviceorientationabsolute',onOrientation); removeEventListener('deviceorientation',onOrientation); try{AR.wake?.release();}catch(e){} AR.wake=null; }
 $('arClose').onclick=stopAR; $('arrOk').onclick=stopAR;
+document.addEventListener('visibilitychange',async()=>{ if(AR.on && !document.hidden){ try{ AR.wake=await navigator.wakeLock?.request('screen'); }catch(e){} const v=$('cam'); if(v.srcObject) v.play().catch(()=>{}); } });
 const TURN_SVG = {
   straight:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5M6 10l6-6 6 6"/></svg>',
   left:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20v-7a3 3 0 0 0-3-3H5M9 6l-4 4 4 4"/></svg>',
@@ -454,10 +481,28 @@ let lastTurnKey='';
 function tick(now){
   if(!AR.on) return; const dt=Math.min(.1,(now-AR.last)/1000); AR.last=now;
   const pts=poly(); let pos, heading;
-  if(AR.real){ pos=AR.gpsPos; heading=AR.sensorHeading;
-    const pr=project(S.route.walk,pos); if(pr.d>28 && !AR.rerouting){ AR.rerouting=true; const r=route(pos,S.dest.xy); if(r){ S.route=r; drawRoute(); } setTimeout(()=>AR.rerouting=false,4000); } }
-  else { AR.demoT+=dt*5.5; const total=project(pts,pts[0]).total; const s=Math.min(AR.demoT,total); pos=pointAt(pts,s);
-    const ahead=pointAt(pts,Math.min(total,s+6)); heading=bearing(pos,ahead)+Math.sin(now/1300)*38+Math.sin(now/530)*6; if(s>=total) heading=bearing(pts[pts.length-2],pts[pts.length-1]); }
+  const since=(now-AR.t0)/1000, fresh=AR.gpsPos && now-AR.fixT<20000;
+  const compass=AR.rawHead!=null && now-AR.headT<2500, course=AR.course!=null && now-AR.courseT<5000;
+  // demo only when the guide cannot work here: no GPS permission, or far from campus
+  const demo = AR.gpsDenied || (fresh && AR.far) || (!fresh && since>25);
+  if(!demo && fresh && (compass||course)){
+    heading = compass ? AR.rawHead : AR.course;
+    let p=AR.gpsPos; const pr0=project(S.route.walk,p), snap=Math.max(12,Math.min(25,(AR.acc||15)*1.2));
+    if(pr0.d<=snap) p=pr0.q; // stick to the path like a car navigator
+    else if(pr0.d>Math.max(30,(AR.acc||15)*1.8) && !AR.rerouting){ AR.rerouting=true; const r=route(AR.gpsPos,S.dest.xy); if(r){ S.route=r; drawRoute(true); arMsg('Ruta recalculada'); setTimeout(()=>AR.on&&arMsg(''),1800); } setTimeout(()=>AR.rerouting=false,5000); }
+    pos=p;
+    if(!AR.rerouting){ const weak=(AR.acc||0)>35, cal=AR.headAcc!=null && AR.headAcc>30;
+      arMsg(weak?`Señal GPS débil (±${Math.round(AR.acc)} m)`:cal?'Calibra la brújula: mueve el teléfono haciendo un 8':!compass?'Sin brújula: te guío con tu dirección al caminar':'', weak||cal||!compass); }
+  } else if(!demo){
+    // waiting for sensors: hold position at the start, keep the arrow still
+    pos=AR.gpsPos&&fresh?AR.gpsPos:pts[0]; heading=compass?AR.rawHead:(AR.heading||bearing(pts[0],pts[1]));
+    arMsg(!fresh?'Buscando señal GPS… sal a un lugar abierto':AR.motionDenied?'Activa el acceso al movimiento para usar la brújula':'Mueve el teléfono para activar la brújula', true);
+  } else {
+    AR.demoT+=dt*5.5; const total=project(pts,pts[0]).total; const s=Math.min(AR.demoT,total); pos=pointAt(pts,s);
+    const ahead=pointAt(pts,Math.min(total,s+6)); heading=bearing(pos,ahead)+Math.sin(now/1300)*38+Math.sin(now/530)*6; if(s>=total) heading=bearing(pts[pts.length-2],pts[pts.length-1]);
+    arMsg(AR.gpsDenied?'Demo · permite la ubicación para la guía real':AR.far?'Demo · estás lejos del campus':'Demo · no llega señal GPS', true);
+  }
+  if(!AR.camOK && since>.5 && !AR.camHint){ AR.camHint=true; const n=document.createElement('div'); n.className='camhint'; n.textContent=AR.camErr==='NotAllowedError'?'Sin permiso de cámara: actívalo en los ajustes del navegador para ver el camino sobre la calle.':'No pude abrir la cámara. Si estás en Instagram o WhatsApp, abre el enlace en Safari o Chrome.'; $('ar').querySelector('.arhud').appendChild(n); setTimeout(()=>n.remove(),7000); }
   AR.heading=heading;
   const pr=project(pts,pos), remain=Math.max(0,pr.total-pr.along);
   const target=pointAt(pts,Math.min(pr.total,pr.along+14));
@@ -483,7 +528,7 @@ function tick(now){
   const k=.5; const m=$('mini'); m.innerHTML = `<g transform="rotate(${-heading})">`+
     `<polyline points="${pts.map(p=>((p[0]-pos[0])*k).toFixed(1)+','+((p[1]-pos[1])*k).toFixed(1)).join(' ')}" fill="none" stroke="#5B9AEB" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`+
     `<circle cx="${((S.dest.xy[0]-pos[0])*k).toFixed(1)}" cy="${((S.dest.xy[1]-pos[1])*k).toFixed(1)}" r="4" fill="#F2D10F"/></g><path d="M0 -9 7 7 0 3 -7 7Z" fill="#fff"/>`;
-  if(remain<12 && $('arrived').hidden){ $('arrived').hidden=false; $('arrT').textContent='Llegaste a '+S.dest.title; $('arrS').textContent=[S.dest.sub, S.dest.floor?`Piso ${S.dest.floor}`:''].filter(Boolean).join(' · '); }
+  if(remain<12 && !AR.arrivedShown){ AR.arrivedShown=true; $('arrived').hidden=false; $('arrT').textContent='Llegaste a '+S.dest.title; $('arrS').textContent=[S.dest.sub, S.dest.floor?`Piso ${S.dest.floor}`:''].filter(Boolean).join(' · '); }
   AR.raf=requestAnimationFrame(tick);
 }
 

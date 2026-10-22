@@ -201,3 +201,6 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--uc);outline-off
 
 html,body{margin:0}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+.mode.warn{background:#FFFFFF;color:#17202B}
+.camhint{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));top:calc(130px + env(safe-area-inset-top,0px));background:rgba(14,20,28,.88);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.4;text-align:center}
