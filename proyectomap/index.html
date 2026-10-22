@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: blob:; media-src 'self' blob: mediastream:; connect-src 'self' https://foundstudio.goatcounter.com; worker-src 'self' blob:; form-action 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#EDEFF0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#12161D" media="(prefers-color-scheme: dark)">
+<title>Guía AR San Joaquín · Prototipo · {found} studio</title>
+<meta name="description" content="Prototipo de {found} studio: mapa 3D del Campus San Joaquín UC con rutas a pie y guía en realidad aumentada.">
+<link rel="icon" href="/assets/brand/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fuentes/fira-sans-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="app.css?v=1">
+<script defer src="vendor/three.min.js"></script>
+<script defer src="vendor/CopyShader.js"></script>
+<script defer src="vendor/LuminosityHighPassShader.js"></script>
+<script defer src="vendor/EffectComposer.js"></script>
+<script defer src="vendor/RenderPass.js"></script>
+<script defer src="vendor/ShaderPass.js"></script>
+<script defer src="vendor/UnrealBloomPass.js"></script>
+<script defer src="datos.js?v=1"></script>
+<script defer src="app.js?v=1"></script>
+</head>
+<body>
+<div class="app">
+  <main class="mapwrap" id="mapwrap">
+    <svg id="map" aria-label="Mapa del Campus San Joaquín"></svg>
+    <div id="map3d" class="map3d" hidden role="application" aria-label="Mapa 3D del Campus San Joaquín. Arrastra para mover, usa dos dedos para girar, inclinar y hacer zoom."></div>
+    <div class="mapctl" id="mapctl">
+      <div class="ctlgroup">
+        <button type="button" id="compass" aria-label="Orientar el mapa al norte" title="Orientar al norte">
+          <svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="13" fill="none" stroke="var(--line)" stroke-width="1.5"/><path d="M15 5.5 18.6 15h-7.2Z" fill="var(--pin)"/><path d="M15 24.5 11.4 15h7.2Z" fill="var(--muted)" opacity=".55"/><circle cx="15" cy="15" r="1.6" fill="var(--surface)"/></svg>
+        </button>
+        <button type="button" id="tiltBtn" aria-label="Ver el mapa desde arriba" title="Cambiar entre vista 3D y 2D">2D</button>
+        <button type="button" class="fine" id="rotL" aria-label="Girar el mapa a la izquierda" title="Girar a la izquierda"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+        <button type="button" class="fine" id="rotR" aria-label="Girar el mapa a la derecha" title="Girar a la derecha"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg></button>
+      </div>
+      <div class="ctlgroup">
+        <button type="button" id="locBtn" aria-label="Usar mi ubicación" title="Mi ubicación"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21 3 3 10.5l7.2 2.3L12.5 20Z"/></svg></button>
+      </div>
+      <div class="ctlgroup zoomgrp">
+        <button type="button" id="zin" class="zbig" aria-label="Acercar">+</button>
+        <button type="button" id="zout" class="zbig" aria-label="Alejar">−</button>
+        <button type="button" id="zfit" aria-label="Ver todo el campus"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="coach" id="coach" hidden><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V12m0-1.5V5a1.5 1.5 0 0 1 3 0v6m0-4a1.5 1.5 0 0 1 3 0v6.5c0 4-2.5 6.5-6 6.5-3 0-4.5-1.6-6-4l-2-3.3a1.5 1.5 0 0 1 2.4-1.8L8 13"/></svg><span>Gira e inclina el mapa con dos dedos</span></div>
+  </main>
+
+  <header class="top" id="top">
+    <div class="searchcard">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Busca una sala: B14, K203, AL1…" aria-label="Buscar sala, edificio o lugar" role="combobox" aria-expanded="false" aria-controls="results">
+      <button class="iconbtn" id="clr" type="button" aria-label="Borrar búsqueda" hidden>×</button>
+    </div>
+    <div class="chips" id="cats" role="toolbar" aria-label="Lo más cercano"></div>
+    <div class="results" id="results" hidden role="listbox" aria-label="Resultados"></div>
+  </header>
+
+  <section class="sheet" id="sheet" data-state="peek" aria-label="Ruta">
+    <button type="button" class="grab" id="grab" aria-label="Expandir detalles de la ruta"><i></i></button>
+    <div class="sheetbody" id="sheetBody" aria-live="polite"></div>
+  </section>
+  <div class="toast" id="toast" role="status" hidden></div>
+</div>
+
+<div class="ar" id="ar" hidden>
+  <video id="cam" playsinline muted autoplay hidden></video>
+  <div class="fake" id="fake"><svg class="skyline" viewBox="0 0 400 70" preserveAspectRatio="none"><path d="M0 70V40h30V22h40v18h22V30h60v40h10V12h70v28h30V26h50v14h30V20h58v50Z" fill="#c9d6e0"/></svg><div class="ground"><div class="floor" id="floor"></div></div></div>
+  <div class="arhud">
+    <div class="instr">
+      <div class="turn" id="turnIc"></div>
+      <div><b id="instrT">Sigue derecho</b><small id="instrS">hacia el destino</small></div>
+      <button type="button" class="x" id="arClose" aria-label="Salir de la vista AR">×</button>
+    </div>
+    <div class="mode" id="arMode">Modo demostración</div>
+    <div class="ptag" id="ptag"><div class="lbl" id="ptagL"></div><div class="stem"></div></div>
+    <div class="edge" id="edge" hidden></div>
+    <div class="stage"><div class="arrow" id="arrow">
+      <svg viewBox="0 0 200 200"><defs><linearGradient id="ag" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#0077FF"/><stop offset="1" stop-color="#7DF3FF"/></linearGradient></defs>
+      <path d="M100 14 172 98h-40v86H68V98H28Z" fill="url(#ag)" stroke="#fff" stroke-width="6" stroke-linejoin="round"/></svg>
+    </div></div>
+    <div class="arbottom">
+      <svg class="mini" id="mini" viewBox="-60 -60 120 120"></svg>
+      <div class="arstats"><b id="arDist">—</b> <span id="arEta"></span><small id="arDest"></small></div>
+    </div>
+    <div class="arrived" id="arrived" hidden>
+      <div class="arrpin">📍</div>
+      <h3 id="arrT">Llegaste</h3>
+      <p id="arrS"></p>
+      <button type="button" class="btn" id="arrOk">Volver al mapa</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
