@@ -43,6 +43,21 @@ for (const p of DATA.polys.filter(p=>p.kind==='yard'||p.kind==='park')){ let x0=
 for (const line of [...OSM.foot, ...OSM.svc]) for (let s=0;s<line.length-1;s++){ const a=line[s], b=line[s+1], L=Math.hypot(b[0]-a[0],b[1]-a[1]), n=Math.max(1,Math.ceil(L/1));
   for(let t=0;t<=n;t++){ const [i,j]=toCell([a[0]+(b[0]-a[0])*t/n, a[1]+(b[1]-a[1])*t/n]); const k=j*GW+i; onPath[k]=1; blocked[k]=0; } }
 
+/* the campus is fenced: you can only cross the edge at the pedestrian access (P/1, by the guard house on Vicuña Mackenna) */
+const wall = new Uint8Array(GW*GH);
+const segX=(a,b,c,d)=>{ const r=[b[0]-a[0],b[1]-a[1]], q=[d[0]-c[0],d[1]-c[1]], den=r[0]*q[1]-r[1]*q[0]; if(Math.abs(den)<1e-9) return null;
+  const t=((c[0]-a[0])*q[1]-(c[1]-a[1])*q[0])/den, u=((c[0]-a[0])*r[1]-(c[1]-a[1])*r[0])/den; return t>=0&&t<=1&&u>=0&&u<=1?[a[0]+t*r[0],a[1]+t*r[1]]:null; };
+const ENTRIES=[]; // where paths cross the fence near the pedestrian gate
+for(const L of [...OSM.foot,...OSM.svc,...OSM.road]) for(let i=0;i<L.length-1;i++) for(let j=0;j<CAMPUS.length;j++){ const p=segX(L[i],L[i+1],CAMPUS[j],CAMPUS[(j+1)%CAMPUS.length]); if(p && Math.hypot(p[0]-GATES.P1[0],p[1]-GATES.P1[1])<40) ENTRIES.push(p); }
+if(!ENTRIES.length) ENTRIES.push(GATES.P1);
+const GATE = DATA.net ? DATA.net.gate : ENTRIES.reduce((s,p)=>[s[0]+p[0]/ENTRIES.length,s[1]+p[1]/ENTRIES.length],[0,0]);
+const GUARD = (()=>{ let best=null,bd=45; OSM.bld.forEach(r=>{ const c=r.reduce((s,p)=>[s[0]+p[0]/r.length,s[1]+p[1]/r.length],[0,0]); const d=Math.hypot(c[0]-GATE[0],c[1]-GATE[1]); if(d<bd){bd=d;best=c;} }); return best; })();
+for(let j=0;j<CAMPUS.length;j++){ const a=CAMPUS[j], b=CAMPUS[(j+1)%CAMPUS.length], n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/(CELL*.35));
+  for(let t=0;t<=n;t++){ const p=[a[0]+(b[0]-a[0])*t/n,a[1]+(b[1]-a[1])*t/n]; if(ENTRIES.some(e=>Math.hypot(e[0]-p[0],e[1]-p[1])<6)) continue; const [i,k]=toCell(p); wall[k*GW+i]=1; } }
+const inCampus = p => { const [i,j]=toCell(p); return !outside[j*GW+i]; };
+let ALLOW_OUT=false;
+const stop = n => blocked[n] || wall[n] || (outside[n] && !ALLOW_OUT);
+
 function nearestFree(k){ // BFS from a blocked cell to the free cells that border its block
   if(!blocked[k]) return [k];
   const seen=new Uint8Array(GW*GH), q=[k], out=[]; seen[k]=1; let h=0;
@@ -55,7 +70,7 @@ function astar(from, to){
   const s0=toCell(from), t0=toCell(to);
   let starts=nearestFree(s0[1]*GW+s0[0]);
   if(starts.length>1){ starts.sort((a,b)=>Math.hypot(cx(a%GW)-from[0],cy((a/GW)|0)-from[1])-Math.hypot(cx(b%GW)-from[0],cy((b/GW)|0)-from[1])); starts=[starts[0]]; }
-  const goals=new Set(nearestFree(t0[1]*GW+t0[0]));
+  const goals=new Set(nearestFree(t0[1]*GW+t0[0]).filter(k=>ALLOW_OUT||!outside[k]));
   const ti=t0[0], tj=t0[1];
   const g=new Float32Array(GW*GH).fill(Infinity), came=new Int32Array(GW*GH).fill(-1), closed=new Uint8Array(GW*GH);
   const heap=[]; const push=(k,f)=>{heap.push([f,k]);let i=heap.length-1;while(i>0){const p=(i-1)>>1;if(heap[p][0]<=heap[i][0])break;[heap[p],heap[i]]=[heap[i],heap[p]];i=p;}};
@@ -64,16 +79,61 @@ function astar(from, to){
   const s=starts[0]; g[s]=0; push(s,hfun(s)); let end=-1;
   while(heap.length){ const [,k]=pop(); if(closed[k]) continue; closed[k]=1; if(goals.has(k)){end=k;break;}
     const i=k%GW, j=(k/GW)|0;
-    for(let dj=-1;dj<=1;dj++) for(let di=-1;di<=1;di++){ if(!di&&!dj) continue; const ni=i+di,nj=j+dj; if(ni<0||nj<0||ni>=GW||nj>=GH) continue; const n=nj*GW+ni; if(blocked[n]||closed[n]) continue;
-      if(di&&dj&&(blocked[j*GW+ni]||blocked[nj*GW+i])) continue;
+    for(let dj=-1;dj<=1;dj++) for(let di=-1;di<=1;di++){ if(!di&&!dj) continue; const ni=i+di,nj=j+dj; if(ni<0||nj<0||ni>=GW||nj>=GH) continue; const n=nj*GW+ni; if(stop(n)||closed[n]) continue;
+      if(di&&dj&&(stop(j*GW+ni)||stop(nj*GW+i))) continue;
       const cost=(di&&dj?1.4142:1)*(onPath[n]?1:plaza[n]?1.12:1.9)*(outside[n]?1.6:1); const ng=g[k]+cost; if(ng<g[n]){g[n]=ng;came[n]=k;push(n,ng+hfun(n));} } }
   if(end<0) return null;
   const cells=[]; for(let k=end;k!==-1;k=came[k]) cells.push(k); cells.reverse();
   return cells;
 }
 function los(a,b){ const [x0,y0]=a,[x1,y1]=b; const d=Math.hypot(x1-x0,y1-y0), n=Math.ceil(d/(CELL*.5));
-  for(let s=1;s<n;s++){ const p=[x0+(x1-x0)*s/n,y0+(y1-y0)*s/n], c=toCell(p), k=c[1]*GW+c[0]; if(blocked[k]) return false; if(!onPath[k] && d>18) return false; } return true; }
+  for(let s=1;s<n;s++){ const p=[x0+(x1-x0)*s/n,y0+(y1-y0)*s/n], c=toCell(p), k=c[1]*GW+c[0]; if(stop(k)) return false; if(!onPath[k] && d>18) return false; } return true; }
+/* ---------- walking network: only real paths (OpenStreetMap footways, campus lanes and, outside, sidewalks) ----------
+   The fence can only be crossed at the pedestrian access by the guard house. Buildings are entered through mapped doors:
+   where a footway meets or crosses the building outline. */
+const NET=(()=>{ if(!DATA.net) return null; const f=DATA.net.n, N=[]; for(let i=0;i<f.length;i+=2) N.push([f[i],f[i+1]]);
+  const e=DATA.net.e, E=[], adj=N.map(()=>[]); const PEN=[1,1.12,1.3];
+  for(let i=0;i<e.length;i+=4){ const a=e[i],b=e[i+1],k=e[i+2],st=e[i+3], w=Math.hypot(N[a][0]-N[b][0],N[a][1]-N[b][1])*PEN[k]*(st?1.15:1); const id=E.length; E.push({a,b,k,st,w}); adj[a].push(id); adj[b].push(id); }
+  const ins=N.map(p=>pip(p,CAMPUS)); E.forEach(x=>x.in=ins[x.a]&&ins[x.b]); return {N,E,adj,doors:DATA.net.doors}; })();
+function snapNet(p, sameSide=true){ const side=pip(p,CAMPUS); let best=null;
+  for(let i=0;i<NET.E.length;i++){ const x=NET.E[i]; if(sameSide && x.in!==side && !(x.k===0 && dist2(NET.N[x.a],GATE)<45)) continue; const A=NET.N[x.a],B=NET.N[x.b], dx=B[0]-A[0],dy=B[1]-A[1], L2=dx*dx+dy*dy||1e-9;
+    let t=((p[0]-A[0])*dx+(p[1]-A[1])*dy)/L2; t=Math.max(0,Math.min(1,t)); const q=[A[0]+t*dx,A[1]+t*dy], d=dist2(p,q); if(!best||d<best.d) best={e:i,t,q,d}; }
+  return best; }
+function dijkstra(src, targets){ // src/targets: [{node, cost, ...}]
+  const N=NET.N, g=new Float64Array(N.length).fill(Infinity), prev=new Int32Array(N.length).fill(-1), pe=new Int32Array(N.length).fill(-1), done=new Uint8Array(N.length);
+  const tmap=new Map(); targets.forEach(t=>{ const c=tmap.get(t.node); if(!c||t.cost<c.cost) tmap.set(t.node,t); });
+  const heap=[]; const push=(k,f)=>{heap.push([f,k]);let i=heap.length-1;while(i>0){const q=(i-1)>>1;if(heap[q][0]<=heap[i][0])break;[heap[q],heap[i]]=[heap[i],heap[q]];i=q;}};
+  const pop=()=>{const top=heap[0],last=heap.pop();if(heap.length){heap[0]=last;let i=0;for(;;){const l=2*i+1,r=l+1;let m=i;if(l<heap.length&&heap[l][0]<heap[m][0])m=l;if(r<heap.length&&heap[r][0]<heap[m][0])m=r;if(m===i)break;[heap[m],heap[i]]=[heap[i],heap[m]];i=m;}}return top;};
+  src.forEach(s=>{ if(s.cost<g[s.node]){ g[s.node]=s.cost; push(s.node,s.cost); } });
+  let best=null;
+  while(heap.length){ const [f,u]=pop(); if(done[u]) continue; done[u]=1; if(best && f>=best.total) break;
+    const t=tmap.get(u); if(t && (!best || g[u]+t.cost<best.total)) best={node:u,total:g[u]+t.cost,t};
+    for(const ei of NET.adj[u]){ const x=NET.E[ei], v=x.a===u?x.b:x.a, ng=g[u]+x.w; if(ng<g[v]){ g[v]=ng; prev[v]=u; pe[v]=ei; push(v,ng); } } }
+  if(!best) return null; const nodes=[], edges=[]; for(let u=best.node;u!==-1;u=prev[u]){ nodes.push(u); if(pe[u]>=0) edges.push(pe[u]); } nodes.reverse(); edges.reverse();
+  return {nodes,edges,best}; }
+function buildingAt(p){ let bi=-1,ba=Infinity; OSM.bld.forEach((r,i)=>{ if(pip(p,r)){ const a=Math.abs(r.reduce((s,q,k)=>{const n=r[(k+1)%r.length]; return s+q[0]*n[1]-n[0]*q[1];},0)); if(a<ba){ba=a;bi=i;} } }); return bi; }
+function routeNet(from,to){
+  const s=snapNet(from); if(!s) return null; const x=NET.E[s.e];
+  const src=[{node:x.a,cost:s.d*1.3+dist2(s.q,NET.N[x.a])},{node:x.b,cost:s.d*1.3+dist2(s.q,NET.N[x.b])}];
+  const bi=buildingAt(to); const doors=bi>=0?(NET.doors[bi]||[]):[]; let targets=[], approx=false;
+  if(doors.length) targets=doors.map(n=>({node:n,cost:dist2(NET.N[n],to)*1.2,door:n}));
+  else { const t=snapNet(to,false); if(!t) return null; const y=NET.E[t.e]; approx=bi>=0;
+    targets=[{node:y.a,cost:dist2(NET.N[y.a],t.q)+t.d,q:t.q},{node:y.b,cost:dist2(NET.N[y.b],t.q)+t.d,q:t.q}]; }
+  const r=dijkstra(src,targets); if(!r) return null;
+  const pts=r.nodes.map(n=>NET.N[n].slice()), stairs=[];
+  r.edges.forEach((ei,i)=>{ if(NET.E[ei].st) stairs.push(i+1); });
+  // first leg: from where you are to the path (projected point), then along the edges
+  const walk=[]; if(s.d>2) walk.push(from); walk.push(s.q); let off=walk.length;
+  if(dist2(s.q,pts[0])<.3) pts.shift(), off--; pts.forEach(p=>walk.push(p));
+  let indoor=null, door=null;
+  if(r.best.t.door!=null){ door={xy:NET.N[r.best.t.door].slice(),approx:false,bi}; if(dist2(door.xy,to)>2) indoor=[door.xy,to]; }
+  else { const q=r.best.t.q; if(dist2(walk[walk.length-1],q)>.3) walk.push(q); if(approx){ door={xy:q,approx:true,bi}; if(dist2(q,to)>2) indoor=[q,to]; } else if(dist2(q,to)>2) walk.push(to); }
+  let len=0; for(let i=1;i<walk.length;i++) len+=dist2(walk[i-1],walk[i]);
+  return {walk, indoor, len, total:len+(indoor?dist2(indoor[0],indoor[1]):0), door, stairs:stairs.map(i=>i+off-1), net:true};
+}
 function route(from,to){
+  if(NET){ try{ const r=routeNet(from,to); if(r) return r; }catch(e){ console.error(e); } }
+  ALLOW_OUT = !inCampus(from) || !inCampus(to);
   const cells=astar(from,to); if(!cells) return null;
   const pts=[from, ...cells.map(k=>[cx(k%GW),cy((k/GW)|0)])];
   const out=[pts[0]]; let a=0;
@@ -131,7 +191,7 @@ function search(q){
 
 /* ---------- state ---------- */
 const S = { origin:'cartel', originXY:HERE, gps:null, dest:null, route:null, cat:null, catHits:[] };
-const ORIGINS = { cartel:{l:'Cartel (Helen Lee Lassen)', xy:HERE}, metro:{l:'Entrada metro (P/1)', xy:GATES.P1}, gps:{l:'Mi ubicación'} };
+const ORIGINS = { cartel:{l:'Cartel (Helen Lee Lassen)', xy:HERE}, metro:{l:'Metro San Joaquín', xy:DATA.net?DATA.net.metro:[GATE[0]-28,GATE[1]]}, gps:{l:'Mi ubicación'} };
 
 /* ---------- map ---------- */
 const svg = document.getElementById('map'); const NS='http://www.w3.org/2000/svg';
@@ -296,19 +356,44 @@ const STEP_SVG = {
   left:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20v-7a3 3 0 0 0-3-3H5M9 6l-4 4 4 4"/></svg>',
   right:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20v-7a3 3 0 0 1 3-3h8M15 6l4 4-4 4"/></svg>',
   door:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M3 21h18M13 12h.01"/></svg>',
+  gate:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l5-4 5 4v13M14 21h6V11h-6M9 21v-5"/></svg>',
+  stairs:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h5v-4h5v-4h5V8h3"/></svg>',
+  under:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M5 9v12M19 9v12M9 21v-6a3 3 0 0 1 6 0v6"/><path d="M3 9l9-6 9 6"/></svg>',
   pin:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12Zm0-9.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/></svg>'};
+function simplify(pts,tol){ if(pts.length<3) return pts.slice(); const keep=new Uint8Array(pts.length); keep[0]=keep[pts.length-1]=1; const st=[[0,pts.length-1]];
+  while(st.length){ const [a,b]=st.pop(); let md=0,mi=-1; const A=pts[a],B=pts[b],dx=B[0]-A[0],dy=B[1]-A[1],L=Math.hypot(dx,dy)||1e-9;
+    for(let i=a+1;i<b;i++){ const d=Math.abs((pts[i][0]-A[0])*dy-(pts[i][1]-A[1])*dx)/L; if(d>md){md=d;mi=i;} } if(md>tol){ keep[mi]=1; st.push([a,mi],[mi,b]); } }
+  return pts.filter((_,i)=>keep[i]); }
 function steps(r,d){
-  const pts=r.walk, out=[]; if(pts.length<2) return out;
+  const full=r.walk, pts=simplify(full,3), out=[]; if(pts.length<2) return out;
   const card=b=>['norte','noreste','este','sureste','sur','suroeste','oeste','noroeste'][Math.round(b/45)%8];
   out.push({ic:'straight',t:`Camina hacia el ${card(bearing(pts[0],pts[1]))}`,at:pts[0],d:0});
   for(let i=1;i<pts.length-1;i++){ out[out.length-1].d+=dist2(pts[i-1],pts[i]); const ang=wrap(bearing(pts[i],pts[i+1])-bearing(pts[i-1],pts[i]));
-    if(Math.abs(ang)>35){ const turn={ic:ang>0?'right':'left',t:Math.abs(ang)>125?`Da la vuelta hacia la ${ang>0?'derecha':'izquierda'}`:`Gira a la ${ang>0?'derecha':'izquierda'}`,at:pts[i],d:0};
+    if(Math.abs(ang)>35){ const turn={nx:pts[i+1],ic:ang>0?'right':'left',t:Math.abs(ang)>125?`Da la vuelta hacia la ${ang>0?'derecha':'izquierda'}`:Math.abs(ang)<60?`Sigue por la ${ang>0?'derecha':'izquierda'}`:`Gira a la ${ang>0?'derecha':'izquierda'}`,at:pts[i],d:0};
       if(out[out.length-1].d<7 && out.length>1) out[out.length-1]=turn; else out.push(turn); } }
   out[out.length-1].d+=dist2(pts[pts.length-2],pts[pts.length-1]);
-  if(r.indoor) out.push({ic:'door',t:'Entra al edificio',s:d.floor?`Sube al ${floorTxt(d.floor).toLowerCase()}${d.floorGuess?' (según el número)':''}`:'',at:r.indoor[0],d:dist2(r.indoor[0],r.indoor[1])});
+  if(out.length>1 && out[0].d<8 && out[1].nx){ out[0].t=`Camina hacia el ${card(bearing(out[1].at,out[1].nx))}`; out[0].d=out[1].d; out.splice(1,1); }
+  const along=p=>{ let best=0,bd=Infinity,acc=0; for(let i=1;i<full.length;i++){ const a=full[i-1],b=full[i],L=dist2(a,b)||1e-9; let t=((p[0]-a[0])*(b[0]-a[0])+(p[1]-a[1])*(b[1]-a[1]))/(L*L); t=Math.max(0,Math.min(1,t)); const q=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t], dd=dist2(p,q); if(dd<bd){bd=dd;best=acc+L*t;} acc+=L; } return best; };
+  const extra=[];
+  if(!inCampus(full[0])){ let bi=-1,bd=30; full.forEach((p,i)=>{ const dd=dist2(p,GATE); if(dd<bd){bd=dd;bi=i;} }); if(bi>=0) extra.push({ic:'gate',t:'Entra por el acceso peatonal',s:'Junto a la caseta de guardia, frente al metro',at:full[bi],d:0}); }
+  // stairs along the way
+  let lastSt=-9; (r.stairs||[]).forEach(i=>{ if(i-lastSt>2 && full[i]) extra.push({ic:'stairs',t:'Toma la escalera',s:'',at:full[i],d:0}); lastSt=i; });
+  // covered passages: the path runs through a building
+  const seen=new Set(); for(let i=1;i<full.length;i++){ const a=full[i-1],b=full[i],L=dist2(a,b),n=Math.max(2,Math.ceil(L/3)); for(let k=1;k<n;k++){ const q=[a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n];
+      const bi=OSM.bld.findIndex(rg=>pip(q,rg)&&[[2,0],[-2,0],[0,2],[0,-2]].every(o=>pip([q[0]+o[0],q[1]+o[1]],rg))); if(bi>=0 && !seen.has(bi) && !(r.door&&r.door.bi===bi)){ seen.add(bi); const nm=buildingInfo(bi).title; if(seen.has('t:'+nm)) continue; seen.add('t:'+nm); extra.push({ic:'under',t:`Cruza por el pasillo de ${nm}`,s:'Pasa por dentro o por debajo del edificio',at:q,d:0}); } } }
+  extra.forEach(e=>e.al=along(e.at)); out.forEach(o=>o.al=along(o.at));
+  extra.forEach(e=>{ let idx=out.findIndex(o=>o.al>e.al); if(idx<1) idx=idx<0?out.length:1; out.splice(idx,0,e); });
+  if(r.door){ const dname=r.door.approx?'Entra al edificio':'Entra por la puerta'; out.push({ic:'door',t:dname,s:[floorAction(d), r.door.approx?'Esta entrada no está mapeada; búscala cerca':''].filter(Boolean).join(' · '),at:r.door.xy,d:r.indoor?dist2(r.indoor[0],r.indoor[1]):0}); }
+  else if(r.indoor) out.push({ic:'door',t:'Entra al edificio',s:floorAction(d),at:r.indoor[0],d:dist2(r.indoor[0],r.indoor[1])});
   out.push({ic:'pin',t:`Llegas a ${d.title}`,at:d.xy});
   return out;
 }
+function floorAction(d){ const txt=((d.sub||'')+' '+(d.title||'')).toLowerCase(), f=d.floor, g=d.floorGuess?' (según el número)':'';
+  if(/z[oó]calo/.test(txt)) return 'Baja al zócalo';
+  if(f==='S'||/subterr|piso -1/.test(txt)) return 'Baja al subterráneo';
+  if(f===''||f==null) return '';
+  if(+f===1) return 'Está en el primer piso'+g;
+  return `Sube al piso ${f}`+g; }
 const clock=min=>{ const t=new Date(Date.now()+min*60000); return String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'); };
 const walkMin=m=>Math.max(1,Math.round(m/1.3/60));
 function originBlock(){ return `<div class="sec-title">Desde</div><div class="from">${Object.entries(ORIGINS).map(([k,o])=>`<button type="button" class="chip" data-o="${k}" aria-pressed="${S.origin===k}">${o.l}</button>`).join('')}</div>`; }
@@ -421,19 +506,21 @@ function project(pts,p){ let best={d:Infinity}; let acc=0;
     const q=[a[0]+dx*t,a[1]+dy*t], d=Math.hypot(p[0]-q[0],p[1]-q[1]); if(d<best.d) best={d,i,t,q,along:acc+L*t}; acc+=L; }
   best.total=acc; return best; }
 function pointAt(pts,s){ let acc=0; for(let i=0;i<pts.length-1;i++){ const a=pts[i],b=pts[i+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]); if(acc+L>=s){ const t=(s-acc)/L; return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]; } acc+=L; } return pts[pts.length-1]; }
-/* sensors: compass heading of the BACK CAMERA, smoothed GPS snapped to the route */
+/* ---------- AR: the route painted on the floor ----------
+   The camera image is real; the path is drawn in 3D on a ground plane placed about 1.4 m below the phone.
+   The view follows the phone's tilt (gyroscope), points where the compass says, and sits where the GPS says (snapped to the path). */
 function cameraHeading(e){
-  if(e.webkitCompassHeading!=null && e.webkitCompassHeading>=0) return {h:e.webkitCompassHeading, acc:e.webkitCompassAccuracy}; // iOS: already true north, compensated for tilt
+  if(e.webkitCompassHeading!=null && e.webkitCompassHeading>=0) return {h:e.webkitCompassHeading, acc:e.webkitCompassAccuracy}; // iOS: true heading of the back camera
   if(!e.absolute || e.alpha==null || e.beta==null || e.gamma==null) return null;
   const r=Math.PI/180, a=e.alpha*r, b=e.beta*r, g=e.gamma*r;
-  // direction the back camera looks at: -Z axis of the device in earth frame (x east, y north)
   let ex=-(Math.cos(a)*Math.sin(g)+Math.sin(a)*Math.sin(b)*Math.cos(g)), ny=-(Math.sin(a)*Math.sin(g)-Math.cos(a)*Math.sin(b)*Math.cos(g));
-  if(Math.hypot(ex,ny)<.35){ ex=-Math.sin(a)*Math.cos(b); ny=Math.cos(a)*Math.cos(b); } // phone lying flat: use its top edge
+  if(Math.hypot(ex,ny)<.35){ ex=-Math.sin(a)*Math.cos(b); ny=Math.cos(a)*Math.cos(b); }
   return {h:(Math.atan2(ex,ny)/r+360)%360};
 }
 function onOrientation(e){
-  if(e.type==='deviceorientation' && AR.absEvents && e.webkitCompassHeading==null) return; // prefer the absolute event on Android
+  if(e.type==='deviceorientation' && AR.absEvents && e.webkitCompassHeading==null) return; // Android: keep the absolute stream
   if(e.type==='deviceorientationabsolute') AR.absEvents=true;
+  if(e.beta!=null && e.gamma!=null){ AR.o={a:e.alpha||0,b:e.beta,g:e.gamma}; AR.oT=performance.now(); }
   const c=cameraHeading(e); if(!c) return;
   AR.headT=performance.now(); AR.headAcc=c.acc;
   AR.rawHead = AR.rawHead==null ? c.h : (AR.rawHead + wrap(c.h-AR.rawHead)*.22 + 360)%360;
@@ -446,16 +533,90 @@ function onGPS(p){
   if(p.coords.speed>.8 && p.coords.heading!=null && !isNaN(p.coords.heading)){ AR.course=p.coords.heading; AR.courseT=now; }
 }
 function arMsg(t,warn){ const m=$('arMode'); m.hidden=!t; m.textContent=t||''; m.classList.toggle('warn',!!warn); }
+function aim(title,sub,icon){ const el=$('arAim'); if(!title){ el.hidden=true; return; } el.hidden=false; el.dataset.icon=icon||'phone'; $('aimT').textContent=title; $('aimS').textContent=sub||''; }
+
+/* ---- 3D overlay ---- */
+const ARG={};
+const PATH_VS=`varying vec2 vUv; varying vec3 vW; void main(){ vUv=uv; vec4 w=modelMatrix*vec4(position,1.0); vW=w.xyz; gl_Position=projectionMatrix*viewMatrix*w; }`;
+const PATH_FS=`uniform float uT; uniform float uReveal; uniform float uWalk; uniform vec3 uCol; uniform vec3 uCam; varying vec2 vUv; varying vec3 vW;
+ void main(){ float s=vUv.x, v=vUv.y, av=abs(v); if(s>uReveal) discard;
+   float d=distance(vW.xz,uCam.xz);
+   float fade=smoothstep(1.2,4.5,d)*(1.0-smoothstep(38.0,60.0,d));
+   float edge=smoothstep(.74,.84,av);
+   float body=1.0-smoothstep(.94,1.0,av);
+   float ph=fract(s/2.2 + av*.38 - uT*.45);
+   float chev=(1.0-step(.2,ph))*(1.0-edge)*step(av,.66);
+   vec3 col=mix(uCol,vec3(1.0),max(edge*.95,chev*.92));
+   float a=body*(.58+.34*max(edge,chev));
+   if(s>uWalk) a*=step(.45,fract(s/1.4));
+   float head=smoothstep(uReveal-.1,uReveal-2.5,s);
+   gl_FragColor=vec4(col,a*fade*mix(1.0,head,step(uReveal,9999.0)));
+ }`;
+const SCAN_FS=`uniform float uR; uniform float uA; uniform vec3 uCam; varying vec2 vUv; varying vec3 vW;
+ void main(){ vec2 p=vW.xz; float d=distance(p,uCam.xz); if(d>uR) discard;
+   vec2 g=abs(fract(p/1.2-.5)-.5)/fwidth(p/1.2); float line=1.0-min(min(g.x,g.y),1.0);
+   float ring=smoothstep(uR-1.4,uR,d)*(1.0-smoothstep(uR,uR+.1,d));
+   float a=(line*.32*(1.0-d/(uR+.01))+ring*.75)*uA*(1.0-smoothstep(9.0,16.0,d));
+   gl_FragColor=vec4(vec3(1.0),a); }`;
+
+function initARGL(){
+  if(ARG.ok!=null) return ARG.ok;
+  try{
+    const cv=$('arGL'); const r=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true});
+    r.setPixelRatio(Math.min(devicePixelRatio,2)); r.setClearColor(0x000000,0);
+    const scene=new THREE.Scene(), cam=new THREE.PerspectiveCamera(64,1,.1,400); cam.rotation.order='YXZ';
+    const pathMat=new THREE.ShaderMaterial({vertexShader:PATH_VS,fragmentShader:PATH_FS,transparent:true,depthWrite:false,side:THREE.DoubleSide,
+      uniforms:{uT:{value:0},uReveal:{value:0},uWalk:{value:1e9},uCol:{value:new THREE.Color(0x2F7BF6)},uCam:{value:new THREE.Vector3()}}});
+    const scanMat=new THREE.ShaderMaterial({vertexShader:PATH_VS,fragmentShader:SCAN_FS,transparent:true,depthWrite:false,extensions:{derivatives:true},
+      uniforms:{uR:{value:0},uA:{value:0},uCam:{value:new THREE.Vector3()}}});
+    const scan=new THREE.Mesh(new THREE.PlaneGeometry(60,60).rotateX(-Math.PI/2),scanMat); scan.renderOrder=1; scene.add(scan);
+    const ring=new THREE.Mesh(new THREE.RingGeometry(1.1,1.5,64).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:0xF5D428,transparent:true,opacity:.9,depthWrite:false}));
+    const ring2=new THREE.Mesh(new THREE.CircleGeometry(1.1,64).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:0xF5D428,transparent:true,opacity:.28,depthWrite:false}));
+    ring.renderOrder=ring2.renderOrder=3; scene.add(ring,ring2);
+    Object.assign(ARG,{r,scene,cam,pathMat,scanMat,scan,ring,ring2,ok:true,q:new THREE.Quaternion(),qy:new THREE.Quaternion(),e:new THREE.Euler(),q1:new THREE.Quaternion(-Math.sqrt(.5),0,0,Math.sqrt(.5)),q0:new THREE.Quaternion(),Y:new THREE.Vector3(0,1,0),Z:new THREE.Vector3(0,0,1),f:new THREE.Vector3(),camPos:null,yawOff:null});
+    new ResizeObserver(sizeARGL).observe(cv);
+  }catch(e){ ARG.ok=false; }
+  return ARG.ok;
+}
+function sizeARGL(){ if(!ARG.ok) return; const cv=$('arGL'), w=cv.clientWidth||1, h=cv.clientHeight||1; ARG.r.setSize(w,h,false); ARG.cam.aspect=w/h; ARG.cam.updateProjectionMatrix(); }
+/* the walking route as a flat ribbon with distance along it in uv.x (metres) and -1..1 across in uv.y */
+function buildPath(){
+  if(!ARG.ok) return; if(ARG.path){ ARG.scene.remove(ARG.path); ARG.path.geometry.dispose(); }
+  const walk=S.route.walk, all=S.route.indoor?[...walk,S.route.indoor[1]]:walk;
+  const v3=all.map(p=>new THREE.Vector3(p[0],0,p[1])); const clean=[v3[0]]; v3.slice(1).forEach(v=>{ if(v.distanceTo(clean[clean.length-1])>.6) clean.push(v); });
+  if(clean.length<2) return;
+  const curve=new THREE.CatmullRomCurve3(clean,false,'centripetal',.35), L=curve.getLength(), n=Math.max(2,Math.min(2400,Math.round(L/.5)));
+  const pts=curve.getSpacedPoints(n), W=.58, pos=[], uv=[], idx=[];
+  let s=0; for(let i=0;i<=n;i++){ const p=pts[i], a=pts[Math.max(0,i-1)], b=pts[Math.min(n,i+1)]; const tx=b.x-a.x, tz=b.z-a.z, tl=Math.hypot(tx,tz)||1, nx=-tz/tl, nz=tx/tl;
+    if(i>0) s+=p.distanceTo(pts[i-1]);
+    pos.push(p.x+nx*W,.02,p.z+nz*W, p.x-nx*W,.02,p.z-nz*W); uv.push(s,1, s,-1);
+    if(i<n){ const k=i*2; idx.push(k,k+1,k+2, k+1,k+3,k+2); } }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2)); g.setIndex(idx);
+  let walkLen=0; for(let i=1;i<walk.length;i++) walkLen+=dist2(walk[i-1],walk[i]);
+  ARG.pathMat.uniforms.uWalk.value=S.route.indoor? walkLen*(L/Math.max(1,walkLen+dist2(S.route.indoor[0],S.route.indoor[1]))) : 1e9;
+  ARG.path=new THREE.Mesh(g,ARG.pathMat); ARG.path.renderOrder=2; ARG.path.frustumCulled=false; ARG.scene.add(ARG.path); ARG.pathLen=L;
+  ARG.ring.position.set(S.dest.xy[0],.03,S.dest.xy[1]); ARG.ring2.position.copy(ARG.ring.position);
+}
+/* phone orientation -> camera; yaw corrected so the view points where the compass says */
+function orientCam(o, heading){
+  const r=Math.PI/180, orient=((screen.orientation&&screen.orientation.angle)||window.orientation||0)*r;
+  ARG.e.set(o.b*r, o.a*r, -o.g*r, 'YXZ'); ARG.q.setFromEuler(ARG.e); ARG.q.multiply(ARG.q1); ARG.q.multiply(ARG.q0.setFromAxisAngle(ARG.Z,-orient));
+  ARG.f.set(0,0,-1).applyQuaternion(ARG.q); const flat=Math.hypot(ARG.f.x,ARG.f.z);
+  if(flat>.25 && heading!=null){ const hq=Math.atan2(ARG.f.x,-ARG.f.z)/r, d=wrap(heading-hq); ARG.yawOff = ARG.yawOff==null ? d : ARG.yawOff + wrap(d-ARG.yawOff)*.12; }
+  ARG.qy.setFromAxisAngle(ARG.Y,-(ARG.yawOff||0)*r); ARG.cam.quaternion.copy(ARG.qy).multiply(ARG.q);
+  return o.b; // tilt: ~90 upright, smaller when looking down
+}
+
 async function startAR(){
   if(!S.route) return;
-  // iOS asks for motion access only inside the tap, so this goes first
   let motionDenied=false;
   try{ if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){ motionDenied = (await DeviceOrientationEvent.requestPermission())!=='granted'; } }catch(e){ motionDenied=true; }
   const ar=$('ar'); ar.hidden=false; AR.on=true; $('arrived').hidden=true; lastTurnKey='';
-  Object.assign(AR,{rawHead:null,headT:0,gpsPos:null,fixT:0,far:false,course:null,courseT:0,absEvents:false,demo:false,demoT:0,gpsDenied:false,motionDenied,camOK:false,rerouting:false,arrivedShown:false});
+  Object.assign(AR,{rawHead:null,headT:0,o:null,oT:0,gpsPos:null,fixT:0,far:false,course:null,courseT:0,absEvents:false,demoT:0,gpsDenied:false,motionDenied,camOK:false,rerouting:false,arrivedShown:false,phase:'aim',phaseT:0,camHint:false});
   $('arDest').textContent = `${S.dest.title} · ${S.dest.sub}`;
   $('ptagL').innerHTML = `${esc(S.dest.badge||'')}<small>${esc(S.dest.kind==='bldg'?'':'edificio '+(S.dest.n||CARTNUM[(DATA.places.find(p=>p[0]===S.dest.name)||[])[4]]||''))}</small>`;
-  arMsg('Preparando cámara…');
+  const gl=initARGL(); ar.classList.toggle('gl',!!gl); if(gl){ sizeARGL(); buildPath(); ARG.yawOff=null; ARG.camPos=null; ARG.pathMat.uniforms.uReveal.value=0; }
+  arMsg(''); aim('Preparando la cámara…','');
   addEventListener('deviceorientationabsolute',onOrientation); addEventListener('deviceorientation',onOrientation);
   if(navigator.geolocation){ try{ AR.watch=navigator.geolocation.watchPosition(onGPS, err=>{ if(err.code===1) AR.gpsDenied=true; }, {enableHighAccuracy:true,maximumAge:1000,timeout:15000}); }catch(e){ AR.gpsDenied=true; } } else AR.gpsDenied=true;
   try{ AR.wake=await navigator.wakeLock?.request('screen'); }catch(e){}
@@ -472,63 +633,89 @@ function stopAR(){ AR.on=false; cancelAnimationFrame(AR.raf); $('ar').hidden=tru
   removeEventListener('deviceorientationabsolute',onOrientation); removeEventListener('deviceorientation',onOrientation); try{AR.wake?.release();}catch(e){} AR.wake=null; }
 $('arClose').onclick=stopAR; $('arrOk').onclick=stopAR;
 document.addEventListener('visibilitychange',async()=>{ if(AR.on && !document.hidden){ try{ AR.wake=await navigator.wakeLock?.request('screen'); }catch(e){} const v=$('cam'); if(v.srcObject) v.play().catch(()=>{}); } });
+
 const TURN_SVG = {
   straight:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5M6 10l6-6 6 6"/></svg>',
   left:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20v-7a3 3 0 0 0-3-3H5M9 6l-4 4 4 4"/></svg>',
   right:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20v-7a3 3 0 0 1 3-3h8M15 6l4 4-4 4"/></svg>',
   door:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M3 21h18M13 12h.01"/></svg>'};
 let lastTurnKey='';
+const PHONE_H=1.4;
 function tick(now){
   if(!AR.on) return; const dt=Math.min(.1,(now-AR.last)/1000); AR.last=now;
-  const pts=poly(); let pos, heading;
+  const pts=poly(); let pos, heading, o=null;
   const since=(now-AR.t0)/1000, fresh=AR.gpsPos && now-AR.fixT<20000;
-  const compass=AR.rawHead!=null && now-AR.headT<2500, course=AR.course!=null && now-AR.courseT<5000;
-  // demo only when the guide cannot work here: no GPS permission, or far from campus
+  const compass=AR.rawHead!=null && now-AR.headT<2500, course=AR.course!=null && now-AR.courseT<5000, gyro=AR.o && now-AR.oT<1500;
   const demo = AR.gpsDenied || (fresh && AR.far) || (!fresh && since>25);
+  let ready=false;
   if(!demo && fresh && (compass||course)){
-    heading = compass ? AR.rawHead : AR.course;
+    ready=true; heading = compass ? AR.rawHead : AR.course;
     let p=AR.gpsPos; const pr0=project(S.route.walk,p), snap=Math.max(12,Math.min(25,(AR.acc||15)*1.2));
-    if(pr0.d<=snap) p=pr0.q; // stick to the path like a car navigator
-    else if(pr0.d>Math.max(30,(AR.acc||15)*1.8) && !AR.rerouting){ AR.rerouting=true; const r=route(AR.gpsPos,S.dest.xy); if(r){ S.route=r; drawRoute(true); arMsg('Ruta recalculada'); setTimeout(()=>AR.on&&arMsg(''),1800); } setTimeout(()=>AR.rerouting=false,5000); }
-    pos=p;
+    if(pr0.d<=snap) p=pr0.q;
+    else if(pr0.d>Math.max(30,(AR.acc||15)*1.8) && !AR.rerouting){ AR.rerouting=true; const r=route(AR.gpsPos,S.dest.xy); if(r){ S.route=r; drawRoute(true); buildPath(); if(ARG.ok) ARG.pathMat.uniforms.uReveal.value=1e6; arMsg('Ruta recalculada'); setTimeout(()=>AR.on&&arMsg(''),1800); } setTimeout(()=>AR.rerouting=false,5000); }
+    pos=p; o=gyro?AR.o:null;
     if(!AR.rerouting){ const weak=(AR.acc||0)>35, cal=AR.headAcc!=null && AR.headAcc>30;
       arMsg(weak?`Señal GPS débil (±${Math.round(AR.acc)} m)`:cal?'Calibra la brújula: mueve el teléfono haciendo un 8':!compass?'Sin brújula: te guío con tu dirección al caminar':'', weak||cal||!compass); }
   } else if(!demo){
-    // waiting for sensors: hold position at the start, keep the arrow still
-    pos=AR.gpsPos&&fresh?AR.gpsPos:pts[0]; heading=compass?AR.rawHead:(AR.heading||bearing(pts[0],pts[1]));
-    arMsg(!fresh?'Buscando señal GPS… sal a un lugar abierto':AR.motionDenied?'Activa el acceso al movimiento para usar la brújula':'Mueve el teléfono para activar la brújula', true);
+    pos=AR.gpsPos&&fresh?AR.gpsPos:pts[0]; heading=compass?AR.rawHead:(AR.heading||bearing(pts[0],pts[1])); o=gyro?AR.o:null;
+    aim(!fresh?'Buscando señal GPS…':AR.motionDenied?'Permite el acceso al movimiento':'Mueve el teléfono para activar la brújula', !fresh?'Sal a un lugar abierto, lejos de techos':'');
   } else {
-    AR.demoT+=dt*5.5; const total=project(pts,pts[0]).total; const s=Math.min(AR.demoT,total); pos=pointAt(pts,s);
-    const ahead=pointAt(pts,Math.min(total,s+6)); heading=bearing(pos,ahead)+Math.sin(now/1300)*38+Math.sin(now/530)*6; if(s>=total) heading=bearing(pts[pts.length-2],pts[pts.length-1]);
+    ready=true;
+    AR.demoT+=dt*(AR.phase==='guide'?1.35:0); const total=project(pts,pts[0]).total; const s=Math.min(AR.demoT,total); pos=pointAt(pts,s);
+    const ahead=pointAt(pts,Math.min(total,s+6)); heading=bearing(pos,ahead)+Math.sin(now/2600)*14; if(s>=total) heading=bearing(pts[pts.length-2],pts[pts.length-1]);
+    o={a:(360-heading+360)%360,b:62+Math.sin(now/1900)*3,g:Math.sin(now/2300)*2};
     arMsg(AR.gpsDenied?'Demo · permite la ubicación para la guía real':AR.far?'Demo · estás lejos del campus':'Demo · no llega señal GPS', true);
   }
-  if(!AR.camOK && since>.5 && !AR.camHint){ AR.camHint=true; const n=document.createElement('div'); n.className='camhint'; n.textContent=AR.camErr==='NotAllowedError'?'Sin permiso de cámara: actívalo en los ajustes del navegador para ver el camino sobre la calle.':'No pude abrir la cámara. Si estás en Instagram o WhatsApp, abre el enlace en Safari o Chrome.'; $('ar').querySelector('.arhud').appendChild(n); setTimeout(()=>n.remove(),7000); }
   AR.heading=heading;
   const pr=project(pts,pos), remain=Math.max(0,pr.total-pr.along);
-  const target=pointAt(pts,Math.min(pr.total,pr.along+14));
-  const rel=wrap(bearing(pos,target)-heading);
-  $('arrow').style.transform=`rotateX(62deg) rotateZ(${rel.toFixed(1)}deg)`;
-  // floating destination tag
-  const rd=wrap(bearing(pos,S.dest.xy)-heading), FOV=34;
-  if(Math.abs(rd)<=FOV){ $('ptag').hidden=false; $('edge').hidden=true; $('ptag').style.left=(50+rd/FOV*42)+'%'; }
-  else { $('ptag').hidden=true; const e=$('edge'); e.hidden=false; e.textContent = rd>0 ? 'Destino a tu derecha ›' : '‹ Destino a tu izquierda'; e.style.left = rd>0?'auto':'max(12px, env(safe-area-inset-left,0px))'; e.style.right = rd>0?'max(12px, env(safe-area-inset-right,0px))':'auto'; }
-  // next instruction
-  let acc=0, turn=null; const walkEnd = S.route.indoor ? S.route.walk.length-1 : -1;
-  for(let i=pr.i+1;i<pts.length-1;i++){ const a=pts[i-1],b=pts[i],c=pts[i+1]; const ang=wrap(bearing(b,c)-bearing(a,b)); const dist=project(pts,b).along-pr.along;
-    if(i===walkEnd){ turn={type:'door',dist}; break; } if(Math.abs(ang)>32){ turn={type:ang>0?'right':'left',dist}; break; } }
+
+  /* floor path */
+  if(ARG.ok){
+    const tgt=new THREE.Vector3(pos[0],PHONE_H,pos[1]); if(!ARG.camPos) ARG.camPos=tgt.clone(); else ARG.camPos.lerp(tgt,Math.min(1,dt*3));
+    ARG.cam.position.copy(ARG.camPos);
+    const tilt = o ? orientCam(o,heading) : (ARG.cam.rotation.set(-.45,-heading*Math.PI/180,0,'YXZ'), 62);
+    ARG.pathMat.uniforms.uT.value=now/1000; ARG.pathMat.uniforms.uCam.value.copy(ARG.camPos); ARG.scanMat.uniforms.uCam.value.copy(ARG.camPos);
+    // aim at the floor -> scan -> route draws in
+    if(ready){
+      if(AR.phase==='aim'){ if(tilt<82 || demo){ AR.phase='scan'; AR.phaseT=now; } else aim('Apunta la cámara hacia el piso','Inclina el teléfono un poco hacia adelante','phone'); }
+      if(AR.phase==='scan'){ const k=(now-AR.phaseT)/1500; aim('Detectando el suelo…','Mantén el teléfono estable','scan'); ARG.scanMat.uniforms.uR.value=k*13; ARG.scanMat.uniforms.uA.value=1;
+        if(k>=1){ AR.phase='guide'; AR.phaseT=now; aim(''); } }
+      if(AR.phase==='guide'){ const k=(now-AR.phaseT)/1000; ARG.scanMat.uniforms.uA.value=Math.max(0,1-k*1.5); ARG.scanMat.uniforms.uR.value=13+k*6;
+        ARG.pathMat.uniforms.uReveal.value = Math.min(1e6, pr.along + Math.pow(Math.min(1,k/1.6),.7)*(ARG.pathLen||200)) + (k>1.6?1e6:0); }
+    } else { ARG.scanMat.uniforms.uA.value=0; }
+    const pulse=1+.15*Math.sin(now/300); ARG.ring.scale.set(pulse,1,pulse);
+    if(!$('fake').hidden){ const f=new THREE.Vector3(0,0,-1).applyQuaternion(ARG.cam.quaternion); f.y=0; f.normalize().multiplyScalar(800).add(ARG.camPos); f.y=PHONE_H; const hv=f.project(ARG.cam); $('fake').style.setProperty('--hz',Math.max(2,Math.min(98,(1-hv.y)/2*100)).toFixed(1)+'%'); }
+    ARG.r.render(ARG.scene,ARG.cam);
+  } else {
+    if(ready) aim('');
+    const target=pointAt(pts,Math.min(pr.total,pr.along+14)); $('arrow').style.transform=`rotateX(62deg) rotateZ(${wrap(bearing(pos,target)-heading).toFixed(1)}deg)`;
+  }
+
+  /* destination label: placed on screen where the destination is */
+  const tag=$('ptag'), edge=$('edge'); let shown=false;
+  if(ARG.ok && AR.phase==='guide'){ const v=new THREE.Vector3(S.dest.xy[0],2.4,S.dest.xy[1]).project(ARG.cam);
+    if(v.z<1 && Math.abs(v.x)<.92 && v.y>-1.2 && v.y<1.3){ shown=true; tag.hidden=false; edge.hidden=true; tag.style.left=((v.x+1)/2*100)+'%'; tag.style.top=Math.max(30,Math.min(62,(1-v.y)/2*100))+'%'; } }
+  else if(!ARG.ok){ const rd=wrap(bearing(pos,S.dest.xy)-heading); if(Math.abs(rd)<=34){ shown=true; tag.hidden=false; edge.hidden=true; tag.style.left=(50+rd/34*42)+'%'; tag.style.top='30%'; } }
+  if(!shown){ tag.hidden=true; if(AR.phase==='guide'||!ARG.ok){ const rd=wrap(bearing(pos,S.dest.xy)-heading); edge.hidden=false; edge.textContent = rd>0 ? 'Destino a tu derecha ›' : '‹ Destino a tu izquierda';
+      edge.style.left = rd>0?'auto':'max(12px, env(safe-area-inset-left,0px))'; edge.style.right = rd>0?'max(12px, env(safe-area-inset-right,0px))':'auto'; } else edge.hidden=true; }
+
+  /* next instruction */
+  if(AR.simpFor!==S.route){ AR.simpFor=S.route; AR.simp=simplify(S.route.walk,3); if(S.route.indoor) AR.simp=[...AR.simp,S.route.indoor[1]]; }
+  const sp=AR.simp, spr=project(sp,pos); let turn=null; const walkEnd = S.route.indoor ? sp.length-2 : -1;
+  for(let i=spr.i+1;i<sp.length-1;i++){ const a=sp[i-1],b=sp[i],c=sp[i+1]; const ang=wrap(bearing(b,c)-bearing(a,b)); const dist=project(sp,b).along-spr.along;
+    if(i===walkEnd){ turn={type:'door',dist}; break; } if(Math.abs(ang)>35){ turn={type:ang>0?'right':'left',dist}; break; } }
   let T,Sb,ic;
-  if(remain<12){ T='Llegaste'; Sb=S.dest.title; ic='door'; }
-  else if(turn && turn.dist<90){ const dd=Math.max(0,Math.round(turn.dist/5)*5); ic=turn.type; T = turn.type==='door' ? (dd<8?'Entra al edificio':`Entrada en ${dd} m`) : (dd<8?`Gira a la ${turn.type==='left'?'izquierda':'derecha'}`:`En ${dd} m, a la ${turn.type==='left'?'izquierda':'derecha'}`); Sb = turn.type==='door'? (S.dest.floor?`Luego sube al piso ${S.dest.floor}`:'Tu destino está adentro') : 'Sigue la flecha'; }
+  if(remain<10){ T='Llegaste'; Sb=S.dest.title; ic='door'; }
+  else if(turn && turn.dist<90){ const dd=Math.max(0,Math.round(turn.dist/5)*5); ic=turn.type; T = turn.type==='door' ? (dd<8?'Entra al edificio':`Entrada en ${dd} m`) : (dd<8?`Gira a la ${turn.type==='left'?'izquierda':'derecha'}`:`En ${dd} m, a la ${turn.type==='left'?'izquierda':'derecha'}`); Sb = turn.type==='door'? (floorAction(S.dest)||'Tu destino está adentro') : 'Sigue el camino'; }
   else { ic='straight'; T='Sigue derecho'; Sb=`por ${fmtM(turn?turn.dist:remain)}`; }
   if(ic+T!==lastTurnKey){ $('turnIc').innerHTML=TURN_SVG[ic]; $('instrT').textContent=T; lastTurnKey=ic+T; } $('instrS').textContent=Sb;
   $('arDist').textContent=fmtM(remain); $('arEta').textContent=`· ${Math.max(1,Math.ceil(remain/1.25/60))} min`;
-  // fake camera floor
   if(!$('fake').hidden) $('floor').style.transform=`rotateX(72deg) rotateZ(${(-heading).toFixed(1)}deg) translateY(${(-(pr.along*12)%60).toFixed(1)}px)`;
-  // minimap (heading-up)
-  const k=.5; const m=$('mini'); m.innerHTML = `<g transform="rotate(${-heading})">`+
-    `<polyline points="${pts.map(p=>((p[0]-pos[0])*k).toFixed(1)+','+((p[1]-pos[1])*k).toFixed(1)).join(' ')}" fill="none" stroke="#5B9AEB" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`+
-    `<circle cx="${((S.dest.xy[0]-pos[0])*k).toFixed(1)}" cy="${((S.dest.xy[1]-pos[1])*k).toFixed(1)}" r="4" fill="#F2D10F"/></g><path d="M0 -9 7 7 0 3 -7 7Z" fill="#fff"/>`;
-  if(remain<12 && !AR.arrivedShown){ AR.arrivedShown=true; $('arrived').hidden=false; $('arrT').textContent='Llegaste a '+S.dest.title; $('arrS').textContent=[S.dest.sub, S.dest.floor?`Piso ${S.dest.floor}`:''].filter(Boolean).join(' · '); }
+  const k=.5; $('mini').innerHTML = `<g transform="rotate(${-heading})">`+
+    `<polyline points="${pts.map(p=>((p[0]-pos[0])*k).toFixed(1)+','+((p[1]-pos[1])*k).toFixed(1)).join(' ')}" fill="none" stroke="#4C9BFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`+
+    `<circle cx="${((S.dest.xy[0]-pos[0])*k).toFixed(1)}" cy="${((S.dest.xy[1]-pos[1])*k).toFixed(1)}" r="4" fill="#F5D428"/></g><path d="M0 -9 7 7 0 3 -7 7Z" fill="#fff"/>`;
+  if(!AR.camOK && since>.5 && !AR.camHint){ AR.camHint=true; const n=document.createElement('div'); n.className='camhint'; n.textContent=AR.camErr==='NotAllowedError'?'Sin permiso de cámara: actívalo en los ajustes del navegador para ver el camino sobre el piso.':'No pude abrir la cámara. Si estás en Instagram o WhatsApp, abre el enlace en Safari o Chrome.'; $('ar').querySelector('.arhud').appendChild(n); setTimeout(()=>n.remove(),7000); }
+  if(remain<10 && !AR.arrivedShown && ready){ AR.arrivedShown=true; $('arrived').hidden=false; $('arrT').textContent='Llegaste a '+S.dest.title; $('arrS').textContent=[S.dest.sub, floorAction(S.dest)].filter(Boolean).join(' · '); }
   AR.raf=requestAnimationFrame(tick);
 }
 
@@ -537,10 +724,10 @@ const V3 = { ok:false, on:false, t:0 };
 const isDark = () => { const a=document.documentElement.getAttribute('data-theme'); return a ? a==='dark' : matchMedia('(prefers-color-scheme: dark)').matches; };
 const PAL = {
   light:{ bg:0xE8EAEB, ground:0xE4E6E7, campus:0xDEE1E2, grass:0xC4DBBE, pitch:0xD3E5CC, water:0x9CC2D6, road:0xF8F8F8, svc:0xF4F4F4, foot:0xFDFDFD,
-    city:0xD6D4CF, bone:0xE6E1D6, concrete:0xC9C5BE, modern:0xDAD7D1, glass:0x9FB8C2, copper2:0xB98A68, wood:0xC2A37C, metal:0xCDD2D6, green:0x9BC48F, hi:0xF2D10F,
+    city:0xD6D4CF, bone:0xE6E1D6, concrete:0xC9C5BE, modern:0xDAD7D1, glass:0x9FB8C2, copper2:0xB98A68, wood:0xC2A37C, metal:0xCDD2D6, green:0x9BC48F, hi:0xF2D10F, zocalo:0x9A9EA4, route:0x2F7BF6, routeEdge:0x1A55C0,
     neon:[0.0,0.72,1.0], hemi:.66, sun:.42, bloom:.45, bloomR:.25 },
   dark:{ bg:0x12161D, ground:0x161A21, campus:0x1A1F27, grass:0x1D3125, pitch:0x21382A, water:0x183243, road:0x2A303A, svc:0x252B34, foot:0x303742,
-    city:0x262B33, bone:0x464B53, concrete:0x484B51, modern:0x4C5057, glass:0x3B5563, copper2:0x6B4733, wood:0x66533D, metal:0x4A5159, green:0x2D4A2A, hi:0xE8C60C,
+    city:0x262B33, bone:0x464B53, concrete:0x484B51, modern:0x4C5057, glass:0x3B5563, copper2:0x6B4733, wood:0x66533D, metal:0x4A5159, green:0x2D4A2A, hi:0xE8C60C, zocalo:0x2B3038, route:0x4C9BFF, routeEdge:0x0E2A5C,
     neon:[0.05,0.85,1.0], hemi:.5, sun:.32, bloom:1.15, bloomR:.5 }
 };
 const pal = () => PAL[isDark()?'dark':'light'];
@@ -623,6 +810,19 @@ function frame(pts, opts={}){
   camTo({tx,tz,dist,tilt,az},opts.dur||1000);
 }
 
+function insetRing(r,d){ const pts=ringPts(r); let A=0,P=0; for(let i=0;i<pts.length;i++){ const p=pts[i],q=pts[(i+1)%pts.length]; A+=p[0]*q[1]-q[0]*p[1]; P+=Math.hypot(q[0]-p[0],q[1]-p[1]); }
+  const c=pts.reduce((s,p)=>[s[0]+p[0]/pts.length,s[1]+p[1]/pts.length],[0,0]), rad=Math.abs(A)/Math.max(1,P), f=Math.max(.55,1-d/Math.max(2,rad));
+  const out=pts.map(p=>[c[0]+(p[0]-c[0])*f,c[1]+(p[1]-c[1])*f]); out.push(out[0]); return out; }
+function chevronGeo(){ if(V3.chev) return V3.chev; const sh=new THREE.Shape(); sh.moveTo(-1.5,-.9); sh.lineTo(0,.7); sh.lineTo(1.5,-.9); sh.lineTo(1.5,-.1); sh.lineTo(0,1.5); sh.lineTo(-1.5,-.1); sh.lineTo(-1.5,-.9);
+  const g=new THREE.ShapeGeometry(sh); g.rotateX(-Math.PI/2); g.rotateY(Math.PI); V3.chev=g; return g; }
+/* buildings with a recessed ground floor: covered passages (a footway runs underneath) and the ones the research names with a zócalo or pórticos */
+function zocaloSet(){
+  const z=new Map(), ZOC={'36':4.2,'24':4,'25':4,'3':4,'4':4,'18':4,'41':4,'15':3.2,'30':7.4};
+  DATA.cart.forEach(c=>{ if(ZOC[c.n]==null) return; const bi=OSM.bld.findIndex(r=>pip(c.xy,r)); if(bi>=0) z.set(bi,ZOC[c.n]); });
+  OSM.bld.forEach((r,i)=>{ if(z.has(i)) return; let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity; r.forEach(([x,y])=>{x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);});
+    const [i0,j0]=toCell([x0,y0]),[i1,j1]=toCell([x1,y1]); let n=0; for(let j=j0;j<=j1;j++) for(let ii=i0;ii<=i1;ii++){ const k=j*GW+ii; if(onPath[k] && pip([cx(ii),cy(j)],r) && !outside[k]) n++; }
+    if(n>=4 && DATA.osm.bh[i][0]>6) z.set(i,3.6); });
+  return z; }
 function init3D(){
   if(!window.THREE) return false;
   _ray=new THREE.Raycaster(); _plane=new THREE.Plane(new THREE.Vector3(0,1,0),0); _v=new THREE.Vector3();
@@ -645,8 +845,10 @@ function init3D(){
   const addB=(ring,h,base,key,idx)=>{ if(ring.length<4||h<=0) return; const g=new THREE.ExtrudeGeometry(shapeOf(ring),{depth:h,bevelEnabled:false}); g.rotateX(-Math.PI/2); if(base) g.translate(0,base,0);
     const ng=g.index?g.toNonIndexed():g; if(ng!==g) g.dispose(); geos.push(ng); keys.push([key,ng.attributes.position.count]); owner.push([idx,ng.attributes.position.count]); };
   let luk=null;
+  V3.zoc=zocaloSet();
   OSM.bld.forEach((r,i)=>{ const [h,key,sp]=DATA.osm.bh[i]; V3.bh[i]=h;
     if(sp==='siam'){ addB(r,26,0,key,i); obbHalves(r,3.2).forEach(q=>addB([...q,q[0]],10.6,26,key,i)); V3.bh[i]=36.6; }
+    else if(V3.zoc.has(i) && h>6){ const zh=V3.zoc.get(i); addB(insetRing(r,1.3),zh,0,'zocalo',i); addB(r,h-zh,zh,key,i); }
     else addB(r,h,0,key,i);
     if(sp==='luksic' && !luk){ const pts=ringPts(r); luk=pts.reduce((s,p)=>[s[0]+p[0],s[1]+p[1]],[0,0]).map(v=>v/pts.length); } });
   const bg=mergeGeos(geos,true); V3.bKeys=keys; V3.owner=new Int32Array(bg.attributes.position.count); let o=0; owner.forEach(([idx,n])=>{V3.owner.fill(idx,o,o+n); o+=n;});
@@ -657,9 +859,8 @@ function init3D(){
   DATA.cart.forEach(c=>{ if(/^8[a-j]$/.test(c.n)) return; const lib=c.n.startsWith('L'), fac=!lib && /^\d+$/.test(c.n) && +c.n<=19;
     const s=sprite(lib?'Bib':c.n, lib?'#F5D428':fac?'#2F6FDE':'#FFFFFF', lib?'#1B1F12':fac?'#FFFFFF':'#2A3442', lib||fac?null:'#C9D1DB', .027);
     const bi=OSM.bld.findIndex(r=>pip(c.xy,r)); s.position.set(c.xy[0],(bi>=0?V3.bh[bi]:4)+5,c.xy[1]); s.userData={n:c.n,bi,prio:fac?3:lib?2:1}; scene.add(s); V3.labels.push(s); });
+  { const g=sprite('Acceso peatonal','#1F2A3A','#FFFFFF',null,.026); g.position.set(GATE[0],7,GATE[1]); g.userData={n:'P1',bi:-1,prio:3,gate:true}; scene.add(g); V3.labels.push(g); }
   V3.dyn=new THREE.Group(); scene.add(V3.dyn);
-  try{ const rt=new THREE.WebGLRenderTarget(2,2,{type:THREE.HalfFloatType}); const comp=new THREE.EffectComposer(renderer,rt); comp.addPass(new THREE.RenderPass(scene,cam));
-    V3.bloom=new THREE.UnrealBloomPass(new THREE.Vector2(512,512),1,.55,.97); comp.addPass(V3.bloom); V3.composer=comp; }catch(e){ V3.composer=null; }
   applyTheme3D(false);
   new ResizeObserver(resize3D).observe(host); resize3D();
   bindGestures(renderer.domElement);
@@ -704,7 +905,7 @@ function bindGestures(el){
 function pick3D(x,y){
   const r=V3.renderer.domElement.getBoundingClientRect(); _ray.setFromCamera({x:(x-r.left)/r.width*2-1,y:-(y-r.top)/r.height*2+1},V3.cam);
   const vis=[...V3.labels.filter(s=>s.visible),...(V3.hitSprites||[])];
-  const hl=_ray.intersectObjects(vis); if(hl.length){ const u=hl[0].object.userData; if(u.item) return choose(u.item); if(u.bi>=0) return selectBuilding(u.bi); return choose(items.find(i=>i.kind==='bldg'&&i.n===u.n)); }
+  const hl=_ray.intersectObjects(vis); if(hl.length){ const u=hl[0].object.userData; if(u.item) return choose(u.item); if(u.gate) return toast('Acceso peatonal del campus, junto a la caseta de guardia (frente al metro San Joaquín). Es la entrada que usan las rutas desde afuera.'); if(u.bi>=0) return selectBuilding(u.bi); return choose(items.find(i=>i.kind==='bldg'&&i.n===u.n)); }
   const hb=_ray.intersectObject(V3.bMesh); if(hb.length) return selectBuilding(V3.owner[hb[0].face.a]);
   if(S.info){ S.info=null; drawRoute(); renderSheet(); }
 }
@@ -735,17 +936,22 @@ function sync3D(noFly){
   if(S.info && S.info.bi>=0){ const m=new THREE.Mesh(extrudeOf(S.info.bi,.4),new THREE.MeshLambertMaterial({color:p.hi,transparent:true,opacity:.55,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4})); V3.dyn.add(m); V3.selBi=S.info.bi; }
   if(S.dest){ const bi=OSM.bld.findIndex(r=>pip(S.dest.xy,r)); const top=bi>=0?V3.bh[bi]:0; V3.selBi=bi;
     if(bi>=0){ const m=new THREE.Mesh(extrudeOf(bi,.05),new THREE.MeshLambertMaterial({color:p.hi,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4})); m.castShadow=true; V3.dyn.add(m); }
-    const beam=new THREE.Mesh(new THREE.CylinderGeometry(3.2,3.2,130,32,1,true),neonMat(BEAM_FS,{transparent:true,depthWrite:false,blending:isDark()?THREE.AdditiveBlending:THREE.NormalBlending,side:THREE.DoubleSide}));
-    beam.position.set(S.dest.xy[0],65,S.dest.xy[1]); V3.dyn.add(beam); V3.neon.push(beam);
     const s=sprite(S.dest.badge||'•','#F5D428','#1B1F12',null,.034); s.position.set(S.dest.xy[0],top+16,S.dest.xy[1]); s.userData={item:S.dest,prio:9}; s.renderOrder=12; V3.dyn.add(s); V3.destSprite=s; }
   else V3.destSprite=null;
+  if(S.route && S.route.door){ const dr=S.route.door; const s2=sprite(dr.approx?'Entrada aprox.':'Entrada','#FFFFFF','#1B2430','#C9D1DB',.022); s2.position.set(dr.xy[0],4.5,dr.xy[1]); s2.userData={prio:8}; s2.renderOrder=11; V3.dyn.add(s2);
+    const dm=new THREE.Mesh(new THREE.CircleGeometry(1.9,32).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:0xffffff,polygonOffset:true,polygonOffsetFactor:-16,polygonOffsetUnits:-32})); dm.position.set(dr.xy[0],.25,dr.xy[1]); dm.renderOrder=7; V3.dyn.add(dm);
+    const dm2=new THREE.Mesh(new THREE.CircleGeometry(1.2,32).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:p.route,polygonOffset:true,polygonOffsetFactor:-17,polygonOffsetUnits:-34})); dm2.position.set(dr.xy[0],.27,dr.xy[1]); dm2.renderOrder=8; V3.dyn.add(dm2); }
   if(S.route){ const pts=(S.route.indoor?[...S.route.walk,S.route.indoor[1]]:S.route.walk).map(q=>new THREE.Vector3(q[0],1.8,q[1]));
     const clean=[pts[0]]; pts.slice(1).forEach(v=>{ if(v.distanceTo(clean[clean.length-1])>.8) clean.push(v); });
     if(clean.length>1){ const curve=new THREE.CatmullRomCurve3(clean,false,'centripetal'); const L=curve.getLength(), seg=Math.min(900,Math.max(60,Math.round(L/1.5)));
-      const core=new THREE.Mesh(new THREE.TubeGeometry(curve,seg,.7,10,false),neonMat(CORE_FS)); core.material.uniforms.uLen.value=L;
-      const glow=new THREE.Mesh(new THREE.TubeGeometry(curve,seg,3.1,14,false),neonMat(GLOW_FS,{transparent:true,depthWrite:false,blending:isDark()?THREE.AdditiveBlending:THREE.NormalBlending})); glow.material.uniforms.uLen.value=L;
-      const floorPts=curve.getSpacedPoints(seg).map(v=>[v.x,v.z]); const fl=new THREE.Mesh(ribbonGeo([floorPts],6),new THREE.MeshBasicMaterial({color:neonC().multiplyScalar(.9),transparent:true,opacity:isDark()?.22:.28,depthWrite:false,blending:isDark()?THREE.AdditiveBlending:THREE.NormalBlending,polygonOffset:true,polygonOffsetFactor:-9,polygonOffsetUnits:-18}));
-      fl.position.y=.05; V3.dyn.add(fl,glow,core); V3.neon.push(core,glow); } }
+      const flat=curve.getSpacedPoints(seg).map(v=>[v.x,v.z]);
+      const mk=(w,col,y,ord)=>{ const m=new THREE.Mesh(ribbonGeo([flat],w),new THREE.MeshBasicMaterial({color:col,polygonOffset:true,polygonOffsetFactor:-10-ord,polygonOffsetUnits:-20-ord*2})); m.position.y=y; m.renderOrder=3+ord; return m; };
+      V3.dyn.add(mk(8.6,p.routeEdge,.12,0), mk(6,p.route,.16,1));
+      // the parts hidden behind buildings still show, faintly, like a see-through overlay
+      const ghost=new THREE.Mesh(ribbonGeo([flat],5),new THREE.MeshBasicMaterial({color:p.route,transparent:true,opacity:.38,depthTest:false,depthWrite:false})); ghost.position.y=.3; ghost.renderOrder=20; V3.dyn.add(ghost);
+      // direction ticks every ~22 m, small and white
+      const n=Math.floor(L/22); for(let k=1;k<=n;k++){ const u=k/(n+1), a=curve.getPointAt(u), t=curve.getTangentAt(u); const ch=new THREE.Mesh(chevronGeo(),new THREE.MeshBasicMaterial({color:0xffffff,polygonOffset:true,polygonOffsetFactor:-14,polygonOffsetUnits:-28}));
+        ch.position.set(a.x,.2,a.z); ch.rotation.y=Math.atan2(t.x,t.z); ch.renderOrder=6; V3.dyn.add(ch); } } }
   V3.declutterAt=0; V3.dirty=true;
   if(noFly) return;
   if(S.route) frame([...S.route.walk.map(q=>[q[0],q[1]]),S.dest.xy],{minDist:220});
@@ -777,7 +983,7 @@ function loop3D(now){
   const cp=$('compass').firstElementChild; cp.style.transform=`rotate(${CAM.az}rad)`;
   const td=CAM.tilt<.1; const tb=$('tiltBtn'); const want=td?'3D':'2D'; if(tb.textContent!==want){ tb.textContent=want; tb.setAttribute('aria-label',td?'Ver el mapa en 3D':'Ver el mapa desde arriba'); }
   V3.dirty=false;
-  V3.composer ? V3.composer.render() : V3.renderer.render(V3.scene,V3.cam);
+  V3.renderer.render(V3.scene,V3.cam);
 }
 const NEON_VS=`varying vec2 vUv; varying vec3 vN; void main(){ vUv=uv; vN=normalize(normalMatrix*normal); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`;
 const CORE_FS=`uniform float uTime; uniform float uLen; uniform vec3 uColor; varying vec2 vUv;

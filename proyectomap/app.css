@@ -204,3 +204,23 @@ html,body{margin:0}
 
 .mode.warn{background:#FFFFFF;color:#17202B}
 .camhint{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));top:calc(130px + env(safe-area-inset-top,0px));background:rgba(14,20,28,.88);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.4;text-align:center}
+
+.argl{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.ar.gl .stage{display:none}
+.aim{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;background:rgba(14,20,28,.72);backdrop-filter:blur(6px);border-radius:18px;padding:18px 22px;max-width:calc(100% - 48px);pointer-events:none}
+.aim b{font-family:var(--f-display);font-weight:700;font-size:19px}
+.aim small{color:#C9D2DE;font-size:13.5px}
+.aim svg{width:56px;height:56px}
+.aim .aim-scan{display:none}
+.aim[data-icon="scan"] .aim-scan{display:block}
+.aim[data-icon="scan"] .aim-phone{display:none}
+.aim-phone rect{transform-origin:32px 46px;animation:tilt 1.8s ease-in-out infinite}
+.aim-scan{animation:scanbob 1.4s ease-in-out infinite}
+@keyframes tilt{0%,15%{transform:rotateX(0) rotate(0)}50%,70%{transform:rotate(0) skewX(0) scaleY(.62) translateY(10px)}100%{transform:none}}
+@keyframes scanbob{0%,100%{opacity:.6}50%{opacity:1}}
+.ptag{top:30%}
+@media (prefers-reduced-motion: reduce){.aim-phone rect,.aim-scan{animation:none}}
+
+.fake{--hz:46%;background:linear-gradient(#5f7d99 0%,#9db6c9 var(--hz),#7d8a7a calc(var(--hz) + .2%),#56644f 100%)}
+.fake .ground{top:var(--hz)}
+.fake .skyline{top:calc(var(--hz) - 70px)}
