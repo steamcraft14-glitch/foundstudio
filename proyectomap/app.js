@@ -190,8 +190,10 @@ function search(q){
 }
 
 /* ---------- state ---------- */
-const S = { origin:'cartel', originXY:HERE, gps:null, dest:null, route:null, cat:null, catHits:[] };
-const ORIGINS = { cartel:{l:'Cartel (Helen Lee Lassen)', xy:HERE}, metro:{l:'Metro San Joaquín', xy:DATA.net?DATA.net.metro:[GATE[0]-28,GATE[1]]}, gps:{l:'Mi ubicación'} };
+const S = { origin:'metro', originXY:null, gps:null, dest:null, route:null, cat:null, catHits:[] };
+const ORIGINS = { gps:{l:'Mi ubicación'}, metro:{l:'Entrada principal (metro)', xy:DATA.net?DATA.net.metro:[GATE[0]-28,GATE[1]]}, cartel:{l:'Cartel del campus', xy:HERE} };
+S.originXY = ORIGINS.metro.xy;
+let gpsState = 'off'; // off | asking | on | denied | far
 
 /* ---------- map ---------- */
 const svg = document.getElementById('map'); const NS='http://www.w3.org/2000/svg';
@@ -249,7 +251,7 @@ function drawRoute(){
     if(r.indoor) el('polyline',{points:P(r.indoor),fill:'none',stroke:'var(--uc)','stroke-width':3,'stroke-dasharray':'2 5','stroke-linecap':'round','vector-effect':'non-scaling-stroke'},gRoute);
     if(!matchMedia('(prefers-reduced-motion: reduce)').matches){ line.setAttribute('stroke-dasharray','14 10'); line.animate([{strokeDashoffset:24},{strokeDashoffset:0}],{duration:900,iterations:Infinity}); }
   }
-  if(S.originXY){ const g=el('g',{'data-pin':S.originXY[0]+','+S.originXY[1]},gMk); el('circle',{r:9,fill:'var(--pin)','fill-opacity':.2},g); el('circle',{r:5.5,fill:'var(--pin)',stroke:'#fff','stroke-width':2},g); }
+  if(S.originXY && (S.origin==='gps'||S.route)){ const g=el('g',{'data-pin':S.originXY[0]+','+S.originXY[1]},gMk); el('circle',{r:9,fill:'var(--pin)','fill-opacity':.2},g); el('circle',{r:5.5,fill:'var(--pin)',stroke:'#fff','stroke-width':2},g); }
   if(S.dest){ const hb=OSM.bld.findIndex(r=>pip(S.dest.xy,r)); if(hb>=0) osmBld[hb].classList.add('hit');
     pin(S.dest.xy,'var(--uc)',S.dest.badge && S.dest.badge.length<9?S.dest.badge:''); }
   setVB();
@@ -429,10 +431,11 @@ function renderSheet(){
     measure(); return;
   }
   if(!d){
-    sbody.innerHTML=`<div class="idle"><h2>¿A dónde vas?<span class="tag">Prototipo</span></h2><p>Busca una sala o toca un edificio para ver qué hay adentro.</p>
+    sbody.innerHTML=`<div class="idle"><h2>¿A dónde vas?<span class="tag">Prototipo</span></h2><p>Busca una sala o toca un edificio para ver qué hay adentro.</p>${gpsState==='on'?'':`<p class="where">${gpsState==='asking'?'Buscando tu ubicación…':gpsState==='far'?'Estás lejos del campus: las rutas parten desde la entrada principal.':'Las rutas parten desde la entrada principal.'}${gpsState==='denied'||gpsState==='off'?' <button type="button" class="linkbtn" id="useLoc">Usar mi ubicación</button>':''}</p>`}
       ${recents.length?`<div class="recents">${recents.map((x,i)=>`<button type="button" class="chip" data-rec="${i}"><code>${esc(x.badge)}</code>${x.badge!==x.title?esc(x.title.length>22?x.title.slice(0,21)+'…':x.title):''}</button>`).join('')}</div>`:''}</div>
       <div class="more">${originBlock()}<small class="src">${SRC}</small></div>`;
     sbody.querySelectorAll('[data-rec]').forEach(b=>b.onclick=()=>choose(recents[+b.dataset.rec]));
+    $('useLoc') && ($('useLoc').onclick=()=>setOrigin('gps'));
     measure(); return;
   }
   const min=r?walkMin(r.total):0, fl=floorTxt(d.floor);
@@ -461,18 +464,19 @@ sheet.addEventListener('click',e=>{ const b=e.target.closest('[data-o]'); if(!b)
 
 /* origin: the sign, the metro entrance, or live GPS (the route is recomputed as you move) */
 let gpsWatch=null;
-function setOrigin(k){
+function setOrigin(k, auto){
   if(k==='gps'){
-    if(!navigator.geolocation){ toast('Este navegador no entrega tu ubicación.'); return; }
-    let first=true;
+    if(!navigator.geolocation){ gpsState='denied'; if(!auto) toast('Este navegador no entrega tu ubicación.'); renderSheet(); return; }
+    let first=true; gpsState='asking';
     const ok=p=>{ const v=xy([p.coords.latitude,p.coords.longitude]);
-      if(!pip(v,CAMPUS) && Math.hypot(v[0],v[1])>900){ if(first) toast('Estás fuera del campus. Sigo usando el cartel como punto de partida.'); first=false; return; }
-      const moved=!S.originXY||S.origin!=='gps'||dist2(v,S.originXY)>8; S.origin='gps'; S.originXY=v; $('locBtn').setAttribute('aria-pressed','true');
+      if(!pip(v,CAMPUS) && Math.hypot(v[0],v[1])>900){ if(first){ gpsState='far'; if(!auto) toast('Estás lejos del campus: las rutas parten desde la entrada principal.'); renderSheet(); } first=false; return; }
+      const moved=!S.originXY||S.origin!=='gps'||dist2(v,S.originXY)>8; S.origin='gps'; S.originXY=v; gpsState='on'; $('locBtn').setAttribute('aria-pressed','true');
       if(first){ first=false; refresh(); if(V3.on&&!S.route) frame([v],{minDist:260}); } else if(moved) refresh(true); };
-    const err=()=>{ toast('No pude leer tu ubicación aquí. Funciona al abrir la app en tu propio dominio con HTTPS.'); if(gpsWatch!=null) navigator.geolocation.clearWatch(gpsWatch); gpsWatch=null; };
+    const err=e=>{ gpsState='denied'; if(!auto) toast(e&&e.code===1?'Sin permiso de ubicación: actívalo en los ajustes del navegador.':'No pude leer tu ubicación. Prueba al aire libre.'); if(gpsWatch!=null) navigator.geolocation.clearWatch(gpsWatch); gpsWatch=null; renderSheet(); };
     try{ if(gpsWatch!=null) navigator.geolocation.clearWatch(gpsWatch); gpsWatch=navigator.geolocation.watchPosition(ok,err,{enableHighAccuracy:true,maximumAge:2000,timeout:10000}); }catch(e){ err(); }
+    if(!S.dest&&!S.info) renderSheet();
     return; }
-  if(gpsWatch!=null){ navigator.geolocation.clearWatch(gpsWatch); gpsWatch=null; } $('locBtn').setAttribute('aria-pressed','false');
+  if(gpsWatch!=null){ navigator.geolocation.clearWatch(gpsWatch); gpsWatch=null; } gpsState='off'; $('locBtn').setAttribute('aria-pressed','false');
   S.origin=k; S.originXY=ORIGINS[k].xy; refresh();
 }
 function refresh(silent){ // recompute the best route from the current origin
@@ -927,7 +931,7 @@ function sync3D(noFly){
   V3.dyn.children.slice().forEach(o=>{ V3.dyn.remove(o); o.geometry?.dispose(); });
   V3.neon=[]; V3.hitSprites=[]; V3.selBi=-1;
   S.catHits.forEach(h=>{ const s=sprite(h.badge&&h.badge.length<5?h.badge:'•','#2F6FDE','#FFFFFF',null,.024); const bi=OSM.bld.findIndex(r=>pip(h.xy,r)); s.position.set(h.xy[0],(bi>=0?V3.bh[bi]:0)+3,h.xy[1]); s.userData={item:h}; V3.dyn.add(s); V3.hitSprites.push(s); });
-  if(S.originXY){ const gps=S.origin==='gps', colr=gps?0x2C8CFF:0xF0584C;
+  if(S.originXY && (S.origin==='gps'||S.route)){ const gps=S.origin==='gps', colr=gps?0x2C8CFF:0xF0584C;
     const ring=new THREE.Mesh(new THREE.RingGeometry(4,5.4,48),new THREE.MeshBasicMaterial({color:colr,transparent:true,depthWrite:false,side:THREE.DoubleSide}));
     ring.rotation.x=-Math.PI/2; ring.position.set(S.originXY[0],.6,S.originXY[1]); ring.userData.pulse=true; V3.dyn.add(ring);
     const dot=new THREE.Mesh(new THREE.CylinderGeometry(2.8,2.8,1.2,32),new THREE.MeshBasicMaterial({color:colr})); dot.position.set(S.originXY[0],.7,S.originXY[1]); V3.dyn.add(dot);
@@ -1000,7 +1004,7 @@ const neonMat=(fs,extra={})=>new THREE.ShaderMaterial({vertexShader:NEON_VS,frag
 requestAnimationFrame(()=>{ measure(); fit(CAMPUS,30); let ok=false; try{ ok=init3D(); }catch(e){ console.error(e); }
   if(ok){ $('map3d').hidden=false; svg.style.visibility='hidden'; } else { ['compass','tiltBtn','rotL','rotR'].forEach(id=>$(id).hidden=true); }
   renderSheet(); drawRoute();
-  const ex=items.find(i=>i.kind==='place'&&i.name==='K203'); if(ex) choose(ex,null,false,true);
+  setOrigin('gps',true); // start where you are; if not possible, from the main entrance
   showCoach();
 });
 addEventListener('resize',()=>{ vb.h=vb.w*(svg.clientHeight/svg.clientWidth); setVB(); });

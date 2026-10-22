@@ -224,3 +224,6 @@ html,body{margin:0}
 .fake{--hz:46%;background:linear-gradient(#5f7d99 0%,#9db6c9 var(--hz),#7d8a7a calc(var(--hz) + .2%),#56644f 100%)}
 .fake .ground{top:var(--hz)}
 .fake .skyline{top:calc(var(--hz) - 70px)}
+
+.where{margin-top:8px!important;font-size:13px!important;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+.linkbtn{border:0;background:none;padding:6px 0;color:var(--uc);font-weight:600;font-size:13px}
