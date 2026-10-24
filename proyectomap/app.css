@@ -227,3 +227,11 @@ html,body{margin:0}
 
 .where{margin-top:8px!important;font-size:13px!important;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
 .linkbtn{border:0;background:none;padding:6px 0;color:var(--uc);font-weight:600;font-size:13px}
+
+.fromto{display:flex;align-items:center;gap:7px;margin-top:10px;font-size:13px;color:var(--muted);min-width:0}
+.fromto span:not(.o):not(.d){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.fromto .o,.fromto .d{flex:none;width:9px;height:9px;border-radius:50%}
+.fromto .o{background:var(--pin);box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--pin)}
+.fromto .d{background:var(--sign);box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--sign-ink)}
+.fromto svg{flex:none}
+.picking .searchcard{box-shadow:0 0 0 2px var(--pin),var(--shadow)}
